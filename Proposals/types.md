@@ -31,7 +31,7 @@ contracts proposal:
 
 ```go
 type Nothing struct{}
-type Maybe(type T) {
+type Maybe(type T) union {
     T
     Nothing
 }
