@@ -6,6 +6,25 @@ The goal is to implement a functional language based on the currently existing
 language `Go`. With Go supporting first-class functions, making it purely functional
 would consist mainly of changes to the linter and possibly compiler (for optimisations).
 
+## Why
+
+Last semester, I had a course on functional programming. This involved learning Haskell.
+Although I am a big fan of Haskell, getting started with the functional primitives
+_and_ learning a new language and syntax at the same time can be difficult
+(and Haskell is not really known for its simplicity :-) ).
+
+While Haskell's syntax is great if you are used to functional programming, what
+threw me off quite a few times was that I didn't know what was being passed to
+which function, with which parameters.
+To ease the transition into functional programming (from a imperative or object
+oriented approach), Functional Go would stand in between both. While forcing you
+to write functional code, the syntax is still "imperative" (and quite verbose),
+which should make it easier to understand what is going on.
+
+Thus, Functional Go should mostly be an "educational" language, and it is not the
+goal to make it "production ready" (although you may define production ready
+however you want).
+
 ## Description
 
 Go is mainly an imperative language. While allowing functional constructs (which
@@ -45,3 +64,12 @@ once Go 2 is released (and changes in fgo rebased onto that).
 
 A list-implementation without generics could be done with the help of the compiler
 (as maps and slices currently do already, too).
+
+## Further Ideas and Notes
+
+Functional Go files would likely have the file ending `.fgo`. It would be nice
+if a project, maybe even a single package, could consist of both `.go` and
+`.fgo` files, with zero interoperability overhead.
+
+Once bootstrapped, the compiler optimisations could maybe also be (re)written
+in Functional Go.
