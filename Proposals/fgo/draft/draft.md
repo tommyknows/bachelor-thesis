@@ -33,7 +33,7 @@ There are a few decisions that need to be taken:
 - make it possible to write "normal" go and functional go in a single:
   - file? (build tags)
   - package (separate files, e.g. `.fgo` & `.go`)
-  or not at all? if compilation is done `.fgo -> .go`, package-level should
+  - or not at all? if compilation is done `.fgo -> .go`, package-level should
   certainly be possible. However, this has some implications on optimisations
   (they'd either need to be done when transpiling, or built into the compiler
   in such a way that we'd not "damage" existing Go code)
