@@ -40,6 +40,14 @@ There are a few decisions that need to be taken:
 
 ## Stretch Goals
 
+### Optimising Recursion
+
+Research should be concluded regarding different ways on how to optimise recursive
+calls (at compile time preferably). There could also be further work regarding this:
+- comparing different languages and their optimisation techniques (if properly documented,
+  I am not going to read compiler code of different languages :-) ).
+- Maybe implement a few of these techniques and, if possible, benchmark them
+
 ### Immutability & pointers
 
 As the language is now immutable, we could pass everything as pointers. This will
@@ -53,8 +61,8 @@ Benchmark different solutions (copy-vs-pointer-pass-sizes)
   meaning that there should be a flag to enable / disable it.
 - conversion of recursive calls to either a for-loop or goto (Single static assignment, SSA).
   This _could_ (?) be implemented in the compiler when using SSA, or in the transpiler
-  by using for-loops
-- more optimisations for recursive calls could be researched, implemented and benchmarked.
+  by using, for example, for-loops
+- alternative optimisations for recursive calls will be researched, implemented and benchmarked.
   This means doing some research on these kind of optimisations, finding suitable ones,
   implement them and do a performance test.
 
