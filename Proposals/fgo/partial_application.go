@@ -13,7 +13,6 @@
 //   Right now, partial application could be done like the
 //   `partialFunc` example in this file.
 //   This is, however, not really beautiful ;-)
-//   Also, make all variable declarations "const"
 // - Will Variadic functions still be possible somehow?
 // - Pointers in functional programming?
 
@@ -25,11 +24,11 @@ import "fmt"
 // a -> a -> a -> a
 // Function that allows for partial application
 func partialFunc(x int) func(int) func(int) int {
-	// technically, this is it
-	// but not really readable :-(
+	// technically, this is what enabling partial appliccation looks like.
+	// but it's not really readable anymore.
 	// the program would always (?) need this and have the logic
 	// in the innermost return
-	return func(y int) func(z int) int {
+	return func(y int) func(int) int {
 		return func(z int) int {
 			return x + y + z
 		}
@@ -43,12 +42,13 @@ func partialFunc(x int) func(int) func(int) int {
 // and have this to be rewritten to the `partialFunc` example
 
 func main() {
-	const a = 3
 	x := partialFunc(3)(5)
 	fmt.Println(x(1))
 	fmt.Println(x(2))
+	fmt.Printf("%T\n", partialFunc(3)) // func(int) func(int) int
 }
 
+// constants / immutability:
 // x := "abc" -> const x := "abc"
 // sadly, assigned return values from functions cannot be
 // made constant:
