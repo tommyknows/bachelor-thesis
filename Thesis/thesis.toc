@@ -1,0 +1,15 @@
+\babel@toc {nswissgerman}{}
+\contentsline {chapter}{\nonumberline Zusammenfassung}{v}{chapter*.1}%
+\contentsline {chapter}{\nonumberline Abstract}{vi}{chapter*.3}%
+\contentsline {chapter}{\nonumberline Vorwort}{vii}{chapter*.5}%
+\contentsline {chapter}{\numberline {1}Einleitung}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Ausgangslage}{2}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Zielsetzung}{2}{section.1.2}%
+\contentsline {chapter}{\numberline {2}Verwandte Arbeit}{3}{chapter.2}%
+\contentsline {chapter}{\numberline {3}Methoden}{4}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Application}{5}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Resultate}{6}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Diskussion}{7}{chapter.6}%
+\contentsline {chapter}{\nonumberline Literaturverzeichnis}{8}{chapter*.15}%
+\contentsline {chapter}{\nonumberline Abbildungsverzeichnis}{9}{chapter*.16}%
+\contentsline {chapter}{\nonumberline Tabellenverzeichnis}{10}{chapter*.17}%
