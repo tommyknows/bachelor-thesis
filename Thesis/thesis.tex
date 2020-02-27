@@ -1,0 +1,173 @@
+% -*- mode: latex; coding: utf-8 -*-
+% !TEX TS-program = pdflatexmk
+% !TEX encoding = UTF-8 Unicode
+
+\documentclass[%
+  a4paper,
+  twoside,
+  numbers=noenddot,
+  parskip=half+,
+  open=any,
+  headsepline,
+  german,  % german, english
+  ba  % ba, pa
+]{zhawthesis}
+
+\usepackage{etoolbox}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Parameters
+% - Adjust these to your needs:
+
+\title{Solving all the world's problems}
+\subtitle{\dots at once!}
+\author{% Komma getrennt
+    Ramon Rüttimann
+}
+\newcommand\twodigits[1]{\ifnum#1<10 0#1\else #1\fi}
+\date{\twodigits{\the\day}.\twodigits{\number\month}.\the\year}
+
+\major{Informatik}  % Studiengang
+\zhawsemester{Spring 2020}
+\zhawinstitute{init}
+\zhawlogocolour{pantone2945}  % pantone2945, cmyk, sw
+\mainsupervisor{Prof. Dr. B. Treuer}
+\subsupervisor{Dr. A. U. Ch. Betreuer}
+\industrypartner{Awesome Corp.}
+\externalsupervisor{Mr. Ex. Ternal}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Base packages used by the template (any commonly used packages)
+
+\usepackage{float}
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg,.gif}
+
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{todonotes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Custom packages
+% - Add packages used by your thesis here:
+
+
+
+\begin{document}
+
+\frontmatter
+
+\maketitle
+
+\cleardoublepage % chktex 1
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Declaration of Originality
+
+\makedeclarationoforiginality % chktex 1
+
+
+\cleardoublepage % chktex 1
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\IfLanguageName{nswissgerman}{\chapter{Zusammenfassung}}{\chapter{Summary}}
+\label{ch:summary} % chktex 24
+\input{chapters/01_zusammenfassung.tex}
+
+\chapter{Abstract}
+\label{ch:abstract} % chktex 24
+\input{chapters/02_abstract.tex}
+
+\IfLanguageName{nswissgerman}{\chapter{Vorwort}}{\chapter{Preface}}
+\label{ch:preface} % chktex 24
+\input{chapters/10_preface.tex}
+
+\cleardoublepage % chktex 1
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mainmatter % chktex 1
+
+\tableofcontents
+
+\IfLanguageName{nswissgerman}{\chapter{Einleitung}}{\chapter{Introduction}}
+\label{ch:introduction} % chktex 24
+\input{chapters/20_introduction.tex}
+
+\IfLanguageName{nswissgerman}{\chapter{Verwandte Arbeit}}{\chapter{Related Work}}
+\label{ch:related-work} % chktex 24
+\input{chapters/30_related_work.tex}
+
+\IfLanguageName{nswissgerman}{\chapter{Methoden}}{\chapter{Methodology}}
+\label{ch:methodology} % chktex 24
+\input{chapters/40_methodology.tex}
+
+\chapter{Application}
+\label{ch:application} % chktex 24
+\input{chapters/50_application.tex}
+
+\IfLanguageName{nswissgerman}{\chapter{Resultate}}{\chapter{Experiments and Results}}
+\label{ch:results} % chktex 24
+\input{chapters/60_results.tex}
+
+\IfLanguageName{nswissgerman}{\chapter{Diskussion}}{\chapter{Discussion}}
+\label{ch:discussion} % chktex 24
+\input{chapters/70_discussion.tex}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\backmatter % chktex 1
+
+% \let\clearpage\relax
+% \vspace{-4em}
+\bibliography{thesis}
+% \endgroup
+
+
+% \begingroup
+% \let\clearpage\relax
+% \vspace{-4em}
+\listoffigures
+% \endgroup
+
+% \begingroup
+% \let\clearpage\relax
+% \vspace{-4em}
+\listoftables
+% \endgroup
+\cleardoublepage % chktex 1
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+
+% - Add your appendix here:
+
+\todo[inline]{
+  Anhang/Appendix:
+
+  \quad -- Projektmanagement: \\ % chktex 8
+  \qquad -- Offizielle Aufgabenstellung, Projektauftrag \\ % chktex 8
+  \qquad -- (Zeitplan) \\ % chktex 8
+  \qquad -- (Besprechungsprotokolle oder Journals) % chktex 8
+
+  \quad -- Weiteres: \\ % chktex 8
+  \qquad -- CD/USB-Stick mit dem vollständigen Bericht als PDF-File inklusive Film- und Fotomaterial \\ % chktex 8
+  \qquad -- (Schaltpläne und Ablaufschemata) \\ % chktex 8
+  \qquad -- (Spezifikation u. Datenblätter der verwendeten Messgeräte und/oder Komponenten) \\ % chktex 8
+  \qquad -- (Berechnungen, Messwerte, Simulationsresultate) \\ % chktex 8
+  \qquad -- (Stoffdaten) \\ % chktex 8
+  \qquad -- (Fehlerrechnungen mit Messunsicherheiten) \\ % chktex 8
+  \qquad -- (Grafische Darstellungen, Fotos) \\ % chktex 8
+  \qquad -- (Datenträger mit weiteren Daten (z. B. Software-Komponenten) inkl. Verzeichnis der auf diesem Datenträger abgelegten Dateien) \\ % chktex 8
+  \qquad -- (Softwarecode) % chktex 8
+}
+
+\end{document}
