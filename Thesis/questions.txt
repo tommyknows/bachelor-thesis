@@ -1,0 +1,6 @@
+- Cite Wikipedia?
+- Personal statements & opinions? (clearly marked)
+- citation for things like "these features are also what makes Haskell famously hard to learn."
+- cite Blog posts? (e.g. stackoverflow.blog)
+- BA rights?
+- should or will?

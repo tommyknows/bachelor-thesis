@@ -1,3 +1,71 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{10}
+
+\bibitem{python-popularity}
+{David Robinson}, ``{The incredible growth of Python}.''
+  \url{https://stackoverflow.blog/2017/09/06/incredible-growth-python/?_ga=2.199625454.1908037254.1532442133-221121599.1532442133}.
+
+\bibitem{rust-loved}
+``{Stack Overflow Developer Survey 2019},'' tech. rep., Stack Overflow, 2019.
+
+\bibitem{rust-functional}
+{Rust Core Team}, ``{Functional Language Features}.''
+  \url{https://doc.rust-lang.org/book/ch13-00-functional-features.html}.
+
+\bibitem{functional-controversy}
+A.~SABRY, ``{What is a purely functional language?},'' {\em Journal of
+  Functional Programming}, vol.~8, no.~1, p.~1–22, 1998.
+
+\bibitem{comparison-functional-languages}
+``{Comparison of functional progrramming languages}.''
+  \url{https://en.wikipedia.org/wiki/Comparison_of_functional_programming_languages}.
+\newblock Accessed: 2020-03-04.
+
+\bibitem{haskell-hard-one}
+``{Why is Haskell so hard to learn?}.''
+  \url{https://www.quora.com/Why-is-Haskell-so-hard-to-learn}.
+\newblock Accessed: 2020-03-04.
+
+\bibitem{haskell-hard-two}
+``{A lazy evaluation}.'' \url{http://connolly.io/posts/lazy-evaluation/}.
+\newblock Accessed: 2020-03-04.
+
+\bibitem{haskell-hard-three}
+``{Haskell's steep learning curve}.''
+  \url{https://www.quora.com/How-much-of-Haskells-steep-learning-curve-is-related-to-the-number-of-terms-one-has-to-memorize?share=1}.
+\newblock Accessed: 2020-03-04.
+
+\bibitem{haskell-hard-four}
+``{The Haskell learning curve}.''
+  \url{https://wiki.haskell.org/Humor/LearningCurve}.
+\newblock Accessed: 2020-03-04.
+
+\bibitem{haskell-quicksort}
+``{Introduction - Haskell Wiki}.'' \url{https://wiki.haskell.org/Introduction}.
+\newblock Accessed: 2020-02-29.
+
+\bibitem{golang-publish}
+{Jason Kincaid}, ``{Google's Go: A New Programming Language That's Python Meets
+  C++}.'' \url{https://techcrunch.com/2009/11/10/google-go-language/}, Nov. 10
+  2009.
+\newblock Accessed: 2020-02-29.
+
+\bibitem{golang-slices}
+{Andrew Gerrand}, ``{Go Slices: usage and internals}.''
+  \url{https://blog.golang.org/go-slices-usage-and-internals}, Jan. 5 2011.
+\newblock Accessed: 2020-02-29.
+
+\bibitem{slice-tricks}
+``{SliceTricks}.'' \url{https://github.com/golang/go/wiki/SliceTricks}.
+\newblock Accessed: 2020-03-04.
+
+\bibitem{haskell-list-funcs}
+``{How to work on lists}.''
+  \url{https://wiki.haskell.org/How_to_work_on_lists}.
+\newblock Accessed: 2020-03-04.
+
+\bibitem{go-basetypes}
+``{The Go Programming Language Specification}.''
+  \url{https://golang.org/ref/spec#Boolean_types}, Jan. 14 2020.
+\newblock Accessed: 2020-03-02.
 
 \end{thebibliography}

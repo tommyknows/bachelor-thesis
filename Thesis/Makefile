@@ -3,7 +3,7 @@ PDFLATEX ?= pdflatex
 PLANTUML ?= plantuml
 MAIN_TEX ?= ./thesis.tex
 
-MKARGS = -interaction=nonstopmode -use-make
+MKARGS = -interaction=nonstopmode -use-make -shell-escape
 
 default: pdf
 
