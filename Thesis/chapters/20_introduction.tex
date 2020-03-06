@@ -4,8 +4,9 @@
 % !TEX root = ../thesis.tex
 
 \section{Learning Functional Programming}
-When Python started to take off around 2010\autocite{python-popularity},
-it also brought with it the idea of functional programming. Since then, many new multi-paradigm
+When Javascript and Python started to take off around 2010\autocite{python-popularity},
+they also brought rise to a lot of concepts borrowed from functional programming.
+Since then, many new multi-paradigm
 languages have appeared and gotten more popular, as for example Go, Rust,
 Kotlin and Dart.
 Most of the languages mentioned support an imperative, object-oriented, as well as a functional programming style.
@@ -18,11 +19,11 @@ way to think and approach problems when programming. For those reasons, and many
 advocate learning a functional programming language.
 
 Though the exact definition of what a \textit{purely} functional language consists of remains a controversy\autocite{functional-controversy},
-the most popular programming language within that space seems to be Haskell\autocite{comparison-functional-languages}.
+the most popular, pure functional programming language seems to be Haskell\autocite{comparison-functional-languages}.
 
 \section{Haskell}
 
-Haskell, the \textit{lingua franca} between functional programmers, is a lazely-evaluated, purely functional programming
+Haskell, the \textit{lingua franca} amongst functional programmers, is a lazely-evaluated, purely functional programming
 language. While Haskell's strengths stem from all it's features like type classes, type polymorphism, purity and more,
 these features are also what makes Haskell famously hard to learn\autocite{haskell-hard-one}\autocite{haskell-hard-two}\autocite{haskell-hard-three}\autocite{haskell-hard-four}.
 
@@ -46,8 +47,9 @@ While this is only a very short and clean piece of code, these 6 lines already p
     \item The function's signature with no `fn' or `func' statement as they often appear in imperative languages
     \item The pattern matching, which would be a `switch' statement or a chain of `if / else' conditions
     \item The deconstruction of the list within the pattern matching
-    \item The application of the `filter' function with no clear indicator at which arguments it takes and which types are returned
-    \item The functional nature of the program, passing `(< p)' (a function) to another function
+    \item The functional nature of the program, passing `(< p)' (a function returning a function) to another function
+    \item The function call to `filter' without paranthesised arguments and no clear indicator at which arguments
+        it takes and which types are returned
 \end{itemize}
 
 Though some of these points are also available to programmers in imperative or object-oriented languages, the cumulative difference
@@ -57,8 +59,7 @@ is not to underestimate and adds to Haskell's steep learning curve.
 
 \section{Goals}
 
-The goal of this thesis is not to create a production-ready functional language. Rather, it will
-try to solve the issue of the first steps in functional programming.
+The goal is to solve the issue of the first steps in functional programming.
 Learning a new paradigm and syntax at the same time can be daunting and discouraging for novices.
 By using a modern, multi-paradigm language with a clear
 and familiar syntax, the functional programming beginner should be able to focus on the paradigm
@@ -78,6 +79,9 @@ To ease the learning curve of functional programming, this thesis will consist o
     \item Create a linter that checks code on its functional purity. For this, some rules will have
         to be curated to define what pure functional code is.
 \end{itemize}
+
+It s not the goal to create a production-ready functional language, so runtime and performance requirements
+can be ignored.
 
 \section{Why Go}
 
@@ -133,6 +137,10 @@ be copied into the new one. This happens transparently to the user.
 `head', `tail' and `last' operations can be done with index expressions:
 
 \begin{minted}{go}
+// []<T> initialises a slice, while [n]<T> initialises an
+// array, which is of fixed length n. One can also use `...'
+// instead of a natural number, to let the compiler count
+// the number of elements.
 s := []string{"first", "second", "third"}
 head := s[0]
 tail := s[1:]
@@ -222,8 +230,52 @@ within the standard library.
 
 A software design pattern that has gained popularity is `functional options'. The pattern has been
 outlined in Dave Cheney's blog post `Functional options for friendly APIs'
-and is a great example on how to use the support for multiple paradigms:
+and is a great example on how to use the support for multiple paradigms.
 
+To give a quick example of how functional options look like and are used:
+
+\begin{minted}{go}
+package webserver
+
+type Server struct {
+    Timeout time.Duration
+    Port int
+    ListenAddress string
+}
+
+type Option func(*Server)
+
+func Timeout(d time.Duration) Option {
+    return func(s *Server) {
+        s.Timeout = d
+    }
+}
+func Port(p int) Option {
+    return func(s *Server) {
+        s.Port = p
+    }
+}
+
+func New(opts ...Option) *Server {
+    // initialise the server with the default values
+    s := &Server{
+        Timeout: 500*time.Millisecond,
+        Port: 0, // uses a random port on the host
+        ListenAddres: "http://localhost",
+    }
+    // apply all options
+    for _, opt := range opts {
+        opt(s)
+    }
+    return s
+}
+
+// usage examples from outside the package:
+s := webserver.New() // uses all the default options
+s := webserver.New(webserver.Timeout(time.Second), webserver.Port(8080))
+\end{minted}
+
+Dave Cheney's summary on functional options is thus:
 \begin{quote}
     In summary
     \begin{itemize}
@@ -234,8 +286,8 @@ and is a great example on how to use the support for multiple paradigms:
     \end{itemize}
 \end{quote}\autocite{functional-options}
 
-A purely functional approach to go has so far been discouraged by the core Go team, which is understandable for
-a multi-paradigm programming language.
+While this is a great example of what can be done with support for functional concepts, a purely functional approach to
+Go has so far been discouraged by the core Go team, which is understandable for a multi-paradigm programming language.
 However, multiple developers have already researched and tested Go's ability to do functional programming.
 
 \subsubsection{Functional Go?}
