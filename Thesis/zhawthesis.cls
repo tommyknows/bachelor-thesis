@@ -11,7 +11,7 @@
 %% Released under the LaTeX Project Public License v1.3c or later
 %% See http://www.latex-project.org/lppl.txt
 %% ----------------------------------------------------------------
-%%
+%% 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{zhawthesis}[2019/02/28 v1.0 Initial version]
 %% ========================================================================== %%
@@ -218,7 +218,6 @@
 
 \AtBeginDocument{%
   \pagestyle{scrheadings}
-  \bibliographystyle{ieeetr}
 
   % Set 1st level itemize bullet symbol to --
   \def\labelitemi{--}
@@ -232,22 +231,22 @@
   \hbox{}\nobreak\hfil(#1)%
   \parfillskip=0pt \finalhyphendemerits=0 \endgraf}}
 
-%%
+%% 
 %% Copyright (C) 2019 by Dennis Camera <camerden@students.zhaw.ch>
-%%
+%% 
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License (LPPL), either
 %% version 1.3c of this license or (at your option) any later
 %% version.  The latest version of this license is in the file:
-%%
+%% 
 %% http://www.latex-project.org/lppl.txt
-%%
+%% 
 %% This work is "maintained" (as per LPPL maintenance status).
-%%
+%% 
 %% This work consists of the file  zhawthesis.dtx
 %% and the derived files           zhawthesis.ins,
 %%                                 zhawthesis.pdf and
 %%                                 zhawthesis.cls.
-%%
+%% 
 %%
 %% End of file `zhawthesis.cls'.

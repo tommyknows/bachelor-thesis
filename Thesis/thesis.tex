@@ -53,6 +53,12 @@
 % - Add packages used by your thesis here:
 
 \usepackage{minted}
+\usepackage[
+    backend=biber,
+    style=ieee,
+]{biblatex}
+%\bibliography{thesis}
+\addbibresource{thesis.bib}
 
 \begin{document}
 
@@ -124,7 +130,7 @@
 
 % \let\clearpage\relax
 % \vspace{-4em}
-\bibliography{thesis}
+\printbibliography
 % \endgroup
 
 

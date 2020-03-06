@@ -3,56 +3,33 @@
 % !TEX encoding = UTF-8 Unicode
 % !TEX root = ../thesis.tex
 
-%\IfLanguageName{nswissgerman}{\section{Ausgangslage}}{\section{Starting point}}
-%\label{sec:starting-point}
-
-%\todo[inline]{%
-  %\quad -- Nennt bestehende Arbeiten/Literatur zum Thema - Literaturrecherche \\
-  %\quad -- Stand der Technik: Bisherige Lösungen des Problems und deren Grenzen \\
-  %\quad -- (Nennt kurz den Industriepartner und/oder weitere Kooperationspartner und dessen/deren Interesse am Thema Fragestellung)
-%}
-
-
-%\IfLanguageName{nswissgerman}{\section{Zielsetzung}}{\section{Objective}}
-%\label{sec:objective}
-
-%\todo[inline]{%
-  %\quad -- Formuliert das Ziel der Arbeit \\
-  %\quad -- Verweist auf die offizielle Aufgabenstellung des/der Dozierenden im Anhang \\
-  %\quad -- (Pflichtenheft, Spezifikation) \\
-  %\quad -- (Spezifiziert die Anforderungen an das Resultat der Arbeit) \\
-  %\quad -- (Übersicht über die Arbeit: stellt die folgenden Teile der Arbeit kurz vor) \\
-  %\quad -- (Angaben zum Zielpublikum: nennt das für die Arbeit vorausgesetzte Wissen) \\
-  %\quad -- (Terminologie: Definiert die in der Arbeit verwendeten Begriffe)
-%}
-
 \section{Learning Functional Programming}
-When Python started to take off around 2010\cite{python-popularity},
+When Python started to take off around 2010\autocite{python-popularity},
 it also brought with it the idea of functional programming. Since then, many new multi-paradigm
 languages have appeared and gotten more popular, as for example Go, Rust,
 Kotlin and Dart.
-Most of the languages mentioned support an imperative, object-oriented, as well as functional programming style.
-Rust, being the `most popular programming language'\cite{rust-loved} for 4 years in a row (2016--2019), has been
-significantly influenced by functional programming languages\cite{rust-functional} and borrows a lot of functional
+Most of the languages mentioned support an imperative, object-oriented, as well as a functional programming style.
+Rust, being the `most popular programming language'\autocite{rust-loved} for 4 years in a row (2016--2019), has been
+significantly influenced by functional programming languages\autocite{rust-functional} and borrows a lot of functional
 concepts in idiomatic Rust code.
 
 Learning a functional programming language increases fluency with these concepts and teaches a different
 way to think and approach problems when programming. For those reasons, and many more, a lot of programmers
 advocate learning a functional programming language.
 
-Though the exact definition of what a \textit{purely} functional language consists of remains a controversy\cite{functional-controversy},
-the most popular programming language within that space seems to be Haskell\cite{comparison-functional-languages}.
+Though the exact definition of what a \textit{purely} functional language consists of remains a controversy\autocite{functional-controversy},
+the most popular programming language within that space seems to be Haskell\autocite{comparison-functional-languages}.
 
 \section{Haskell}
 
 Haskell, the \textit{lingua franca} between functional programmers, is a lazely-evaluated, purely functional programming
-language. While Haskell's strengths stem from all it's features like the type classes, type polymorphism, purity and more,
-these features are also what makes Haskell famously hard to learn\cite{haskell-hard-one}\cite{haskell-hard-two}\cite{haskell-hard-three}\cite{haskell-hard-four}.
+language. While Haskell's strengths stem from all it's features like type classes, type polymorphism, purity and more,
+these features are also what makes Haskell famously hard to learn\autocite{haskell-hard-one}\autocite{haskell-hard-two}\autocite{haskell-hard-three}\autocite{haskell-hard-four}.
 
 Beginner Haskell programmers face a very distinctive challenge in contrast to learning a new, non-functional programming language:
 Not only do they need to learn a new language with an unusual syntax (compared to imperative or object-oriented languages), they
 also need to change their way of thinking and reasoning about problems.
-For example, the renowned quicksort-implementation from the Haskell Introduction Page\cite{haskell-quicksort}:
+For example, the renowned quicksort-implementation from the Haskell Introduction Page\autocite{haskell-quicksort}:
 
 \begin{minted}{haskell}
 quicksort :: Ord a => [a] -> [a]
@@ -105,7 +82,7 @@ To ease the learning curve of functional programming, this thesis will consist o
 \section{Why Go}
 
 The language of choice for this task is Go, a statically typed, garbage-collected programming language
-designed at Google in 2009\cite{golang-publish}. With its strong syntactic similarity to C, it should
+designed at Google in 2009\autocite{golang-publish}. With its strong syntactic similarity to C, it should
 be familiar to most programmers.
 Go is an extremely verbose language with almost no syntactic sugar. This makes it a perfect fit to
 grasp the concepts and trace the inner workings of functional programming.
@@ -115,7 +92,7 @@ There are, however, a few downsides of using Go:
 \begin{itemize}
     \item No polymorphism. Go 2 will likely have support for polymorphism, but at the time of writing,
         there is no implementation available.
-    \item Missing implementations for `map', `filter', `reduce' and more.
+    \item Missing implementations for common functions like `map', `filter', `reduce' and more.
     \item No list implementation. Go has `slices', which are `views' on arrays, but
         no list datatype.
 \end{itemize}
@@ -127,19 +104,22 @@ compared to lists.
 
 \begin{quote}
     Arrays have their place, but they're a bit inflexible, so you don't see them too often in Go code.
-    Slices, though, are everywhere. They build on arrays to provide great power and convenience.\cite{golang-slices}
+    Slices, though, are everywhere. They build on arrays to provide great power and convenience.\autocite{golang-slices}
 \end{quote}
 
 Slices can be visualised as a `struct' over an array:
 
 \begin{minted}{go}
+    // NOTE: this type does not really exist, it
+    // is just to visualise how they are implemented.
     type Slice struct {
         // the underlying "backing store" array
         array *[]T
-        // the length of the slice / view on the array
+        // the length of the slice / view on the
+        //array
         len   int
-        // the capacity of the array from
-        // the starting index of the slice
+        // the capacity of the array from the
+        // starting index of the slice
         cap   int
     }
 \end{minted}
@@ -150,13 +130,13 @@ be copied into the new one. This happens transparently to the user.
 
 \subsubsection{Using Slices}
 
-`head', `tail' `last' operations can be done with index expressions:
+`head', `tail' and `last' operations can be done with index expressions:
 
 \begin{minted}{go}
 s := []string{"first", "second", "third"}
 head := s[0]
 tail := s[1:]
-last := s[len(s)]
+last := s[len(s)-1]
 \end{minted}
 
 Adding elements or joining slices is achieved with `append':
@@ -179,7 +159,7 @@ variadic arguments.
 
 More complex operations like removing elements, inserting elements in the middle or finding
 elements in a slice require helper functions, which have also been documented in Go's
-Slice Tricks\cite{slice-tricks}.
+Slice Tricks\autocite{slice-tricks}.
 
 \subsubsection{What is missing from Slices}
 
@@ -187,7 +167,7 @@ This quick glance at slices should clarify that, though the runtime characterist
 can differ, from a usage standpoint, what is possible with lists is also possible with slices.
 
 However, what is missing from Go's slices are a lot of the classical list `helper' functions. In a typical program written in a functional
-language, lists take a central role. This results in a number of helper functions\cite{haskell-list-funcs}
+language, lists take a central role. This results in a number of helper functions\autocite{haskell-list-funcs}
 that currently do not exist in Go and would need to be implemented by the programmer.
 With no support for polymorphism, the programmer would need to implement a function for every slice-type
 that is used. The type
@@ -198,15 +178,15 @@ which means that a possible `map' function would have to be
 written once to support slices of integers, once to support slices of strings, and a combination of these two:
 
 \begin{minted}{go}
-func mapIntToString(f func(int) string, []int) []string {}
-func mapIntToInt(f func(int) int, []int) []int {}
-func mapStringToInt(f func(string) int, []string) []int {}
-func mapStringToString(f func(string) string, []string) []string {}
+func mapIntToInt(f func(int) int, []int) []int
+func mapIntToString(f func(int) string, []int) []string
+func mapStringToInt(f func(string) int, []string) []int
+func mapStringToString(f func(string) string, []string) []string
 \end{minted}
 
 With 7 base types (eliding the different `int' types like `int8', `uint16`, `int16', etc.), this would
 mean $7^{2} = 49$ map functions just to cover these base types. Counting the different numeric
-types into that equation (totally 19 distinct types\cite{go-basetypes}), would grow that number to $19^{2} = 361$ functions.
+types into that equation (totally 19 distinct types\autocite{go-basetypes}), would grow that number to $19^{2} = 361$ functions.
 
 Though this code could be generated, it leaves out custom user-defined types, which would still
 need to be generated separately.
@@ -214,8 +194,82 @@ need to be generated separately.
 To mitigate this point, the most common list-operations (in Go slice-operations) will be added to
 the compiler, so that the programmer can use these functions on every slice-type.
 
-\subsection{Existing Work}
+\section{Existing Work}
 
-\subsection{Issues with functional programming in Go}
+With Go's support of some functional aspects, patterns and best practices have emerged that relate
+to functional programming.
+For example, in the \textit{net/http} package of the standard library, the function
+\begin{minted}{go}
+    func HandleFunc(pattern string, handler func(ResponseWriter, *Request))
+\end{minted}
+is used to register functions for http server handling:
+
+\begin{minted}{go}
+    func myHandler(w http.ResponseWriter, r *http.Request) {
+        // Handle the given HTTP request
+    }
+
+    func main() {
+        // register myHandler in the default ServeMux
+        http.HandleFunc("/", myHandler)
+        http.ListenAndServe(":8080", nil)
+    }
+\end{minted}
+\autocite{go-http-doc}
+
+Using functions as function parameters or return types is a commonly used feature in Go, not just
+within the standard library.
+
+A software design pattern that has gained popularity is `functional options'. The pattern has been
+outlined in Dave Cheney's blog post `Functional options for friendly APIs'
+and is a great example on how to use the support for multiple paradigms:
+
+\begin{quote}
+    In summary
+    \begin{itemize}
+        \item Functional options let you write APIs that can grow over time.
+        \item They enable the default use case to be the simplest.
+        \item They provide meaningful configuration parameters.
+        \item Finally they give you access to the entire power of the language to initialize complex values.
+    \end{itemize}
+\end{quote}\autocite{functional-options}
+
+A purely functional approach to go has so far been discouraged by the core Go team, which is understandable for
+a multi-paradigm programming language.
+However, multiple developers have already researched and tested Go's ability to do functional programming.
+
+\subsubsection{Functional Go?}
+
+In his talk `Functional Go'\autocite{func-go-talk}, Francesc Campoy Flores analysed some commonly used functional
+language features in Haskell and how they can be ported with Go. Ignoring speed and stackoverflows due to non-existent
+tail call optimisation\autocite{go-tco}, the main issue was with the type system and the missing polymorphism.
+
+\subsubsection{go-functional}
+
+In July 2017, Aaron Schlesinger, a Go programmer for Micosoft Azure, gave a talk on functional programming wit Go.
+He released a repository\autocite{go-functional} that contains `core utilities for functional Programming in Go'.
+The project is currently unmaintained, but showcases functional programming concepts like currying, functors and
+monoids in Go.
+In the `README' file of the repository, he also states that:
+\begin{quote}
+    Note that the types herein are hard-coded for specific types, but you could use code generation to produce these FP constructs for any type you please!
+\end{quote}
 
 \section{Work to be done} % TODO: rename...
+
+To conclude, the work that has to be done for this thesis is:
+
+\begin{itemize}
+    \item Define which `standard' list functions are most commonly used in functional programming
+    \item Implement some of them into the compiler
+    \begin{itemize}
+        \item at least one of these functions needs to have complete type-checking
+        \item demonstrate some usage examples for these functions
+    \end{itemize}
+    \item Research `rules' for pure functional programming
+    \begin{itemize}
+        \item for example, this could be exact definitions of immutability and purity
+    \end{itemize}
+    \item Add these rules to a checker. This could be an already available tool like `go vet', or a newly
+    developed, purpose-built utility
+\end{itemize}
