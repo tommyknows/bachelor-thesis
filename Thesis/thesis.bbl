@@ -1,71 +1,448 @@
-\begin{thebibliography}{10}
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.1 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
 
-\bibitem{python-popularity}
-{David Robinson}, ``{The incredible growth of Python}.''
-  \url{https://stackoverflow.blog/2017/09/06/incredible-growth-python/?_ga=2.199625454.1908037254.1532442133-221121599.1532442133}.
 
-\bibitem{rust-loved}
-``{Stack Overflow Developer Survey 2019},'' tech. rep., Stack Overflow, 2019.
+\refsection{0}
+  \datalist[entry]{none/global//global/global}
+    \entry{python-popularity}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=22af45363d79de129d8abdb1fa90b12b}{%
+           family={{David Robinson}},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{22af45363d79de129d8abdb1fa90b12b}
+      \strng{fullhash}{22af45363d79de129d8abdb1fa90b12b}
+      \strng{bibnamehash}{22af45363d79de129d8abdb1fa90b12b}
+      \strng{authorbibnamehash}{22af45363d79de129d8abdb1fa90b12b}
+      \strng{authornamehash}{22af45363d79de129d8abdb1fa90b12b}
+      \strng{authorfullhash}{22af45363d79de129d8abdb1fa90b12b}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{The incredible growth of Python}}
+      \field{urlday}{29}
+      \field{urlmonth}{2}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://stackoverflow.blog/2017/09/06/incredible-growth-python/?_ga=2.199625454.1908037254.1532442133-221121599.1532442133
+      \endverb
+      \verb{url}
+      \verb https://stackoverflow.blog/2017/09/06/incredible-growth-python/?_ga=2.199625454.1908037254.1532442133-221121599.1532442133
+      \endverb
+    \endentry
+    \entry{rust-loved}{report}{}
+      \list{institution}{1}{%
+        {Stack Overflow}%
+      }
+      \field{sortinit}{2}
+      \field{sortinithash}{ed39bb39cf854d5250e95b1c1f94f4ed}
+      \field{labeltitlesource}{title}
+      \field{title}{{Stack Overflow Developer Survey 2019}}
+      \field{type}{techreport}
+      \field{year}{2019}
+      \verb{urlraw}
+      \verb https://insights.stackoverflow.com/survey/2019#most-loved-dreaded-and-wanted
+      \endverb
+      \verb{url}
+      \verb https://insights.stackoverflow.com/survey/2019#most-loved-dreaded-and-wanted
+      \endverb
+    \endentry
+    \entry{rust-functional}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=7f3ec95e51869c43193e496ee488973f}{%
+           family={{Rust Core Team}},
+           familyi={R\bibinitperiod}}}%
+      }
+      \strng{namehash}{7f3ec95e51869c43193e496ee488973f}
+      \strng{fullhash}{7f3ec95e51869c43193e496ee488973f}
+      \strng{bibnamehash}{7f3ec95e51869c43193e496ee488973f}
+      \strng{authorbibnamehash}{7f3ec95e51869c43193e496ee488973f}
+      \strng{authornamehash}{7f3ec95e51869c43193e496ee488973f}
+      \strng{authorfullhash}{7f3ec95e51869c43193e496ee488973f}
+      \field{sortinit}{3}
+      \field{sortinithash}{a37a8ef248a93c322189792c34fc68c9}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{Functional Language Features}}
+      \verb{urlraw}
+      \verb https://doc.rust-lang.org/book/ch13-00-functional-features.html
+      \endverb
+      \verb{url}
+      \verb https://doc.rust-lang.org/book/ch13-00-functional-features.html
+      \endverb
+    \endentry
+    \entry{functional-controversy}{article}{}
+      \name{author}{1}{}{%
+        {{hash=44d6f9e96ada2ceea9929691b1171914}{%
+           family={SABRY},
+           familyi={S\bibinitperiod},
+           given={AMR},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{44d6f9e96ada2ceea9929691b1171914}
+      \strng{fullhash}{44d6f9e96ada2ceea9929691b1171914}
+      \strng{bibnamehash}{44d6f9e96ada2ceea9929691b1171914}
+      \strng{authorbibnamehash}{44d6f9e96ada2ceea9929691b1171914}
+      \strng{authornamehash}{44d6f9e96ada2ceea9929691b1171914}
+      \strng{authorfullhash}{44d6f9e96ada2ceea9929691b1171914}
+      \field{sortinit}{4}
+      \field{sortinithash}{e071e0bcb44634fab398d68ad04e69f4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Functional Programming}
+      \field{number}{1}
+      \field{title}{{What is a purely functional language?}}
+      \field{volume}{8}
+      \field{year}{1998}
+      \field{pages}{1\bibrangedash 22}
+      \range{pages}{22}
+      \verb{doi}
+      \verb 10.1017/S0956796897002943
+      \endverb
+    \endentry
+    \entry{comparison-functional-languages}{misc}{}
+      \field{sortinit}{5}
+      \field{sortinithash}{5dd416adbafacc8226114bc0202d5fdd}
+      \field{labeltitlesource}{title}
+      \field{title}{{Comparison of functional progrramming languages}}
+      \field{urlday}{4}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://en.wikipedia.org/wiki/Comparison_of_functional_programming_languages
+      \endverb
+      \verb{url}
+      \verb https://en.wikipedia.org/wiki/Comparison_of_functional_programming_languages
+      \endverb
+    \endentry
+    \entry{haskell-hard-one}{misc}{}
+      \field{sortinit}{6}
+      \field{sortinithash}{7851c86048328b027313775d8fbd2131}
+      \field{labeltitlesource}{title}
+      \field{title}{{Why is Haskell so hard to learn?}}
+      \field{urlday}{4}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.quora.com/Why-is-Haskell-so-hard-to-learn
+      \endverb
+      \verb{url}
+      \verb https://www.quora.com/Why-is-Haskell-so-hard-to-learn
+      \endverb
+    \endentry
+    \entry{haskell-hard-two}{misc}{}
+      \field{sortinit}{7}
+      \field{sortinithash}{f615fb9c6fba11c6f962fb3fd599810e}
+      \field{labeltitlesource}{title}
+      \field{title}{{A lazy evaluation}}
+      \field{urlday}{4}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb http://connolly.io/posts/lazy-evaluation/
+      \endverb
+      \verb{url}
+      \verb http://connolly.io/posts/lazy-evaluation/
+      \endverb
+    \endentry
+    \entry{haskell-hard-three}{misc}{}
+      \field{sortinit}{8}
+      \field{sortinithash}{1b24cab5087933ef0826a7cd3b99e994}
+      \field{labeltitlesource}{title}
+      \field{title}{{Haskell's steep learning curve}}
+      \field{urlday}{4}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.quora.com/How-much-of-Haskells-steep-learning-curve-is-related-to-the-number-of-terms-one-has-to-memorize?share=1
+      \endverb
+      \verb{url}
+      \verb https://www.quora.com/How-much-of-Haskells-steep-learning-curve-is-related-to-the-number-of-terms-one-has-to-memorize?share=1
+      \endverb
+    \endentry
+    \entry{haskell-hard-four}{misc}{}
+      \field{sortinit}{9}
+      \field{sortinithash}{54047ffb55bdefa0694bbd554c1b11a0}
+      \field{labeltitlesource}{title}
+      \field{title}{{The Haskell learning curve}}
+      \field{urlday}{4}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://wiki.haskell.org/Humor/LearningCurve
+      \endverb
+      \verb{url}
+      \verb https://wiki.haskell.org/Humor/LearningCurve
+      \endverb
+    \endentry
+    \entry{haskell-quicksort}{misc}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labeltitlesource}{title}
+      \field{title}{{Introduction - Haskell Wiki}}
+      \field{urlday}{29}
+      \field{urlmonth}{2}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://wiki.haskell.org/Introduction
+      \endverb
+      \verb{url}
+      \verb https://wiki.haskell.org/Introduction
+      \endverb
+    \endentry
+    \entry{golang-publish}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=e67ceb6405173f004f2336f03fde5ed5}{%
+           family={{Jason Kincaid}},
+           familyi={J\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {TechCrunch}%
+      }
+      \strng{namehash}{e67ceb6405173f004f2336f03fde5ed5}
+      \strng{fullhash}{e67ceb6405173f004f2336f03fde5ed5}
+      \strng{bibnamehash}{e67ceb6405173f004f2336f03fde5ed5}
+      \strng{authorbibnamehash}{e67ceb6405173f004f2336f03fde5ed5}
+      \strng{authornamehash}{e67ceb6405173f004f2336f03fde5ed5}
+      \strng{authorfullhash}{e67ceb6405173f004f2336f03fde5ed5}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{month}{11}
+      \field{title}{{Google's Go: A New Programming Language That's Python Meets C++}}
+      \field{urlday}{29}
+      \field{urlmonth}{2}
+      \field{urlyear}{2020}
+      \field{year}{2009}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://techcrunch.com/2009/11/10/google-go-language/
+      \endverb
+      \verb{url}
+      \verb https://techcrunch.com/2009/11/10/google-go-language/
+      \endverb
+    \endentry
+    \entry{golang-slices}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=80db3dfbe51c1b2af5a34bfb4b8f1b7f}{%
+           family={{Andrew Gerrand}},
+           familyi={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{80db3dfbe51c1b2af5a34bfb4b8f1b7f}
+      \strng{fullhash}{80db3dfbe51c1b2af5a34bfb4b8f1b7f}
+      \strng{bibnamehash}{80db3dfbe51c1b2af5a34bfb4b8f1b7f}
+      \strng{authorbibnamehash}{80db3dfbe51c1b2af5a34bfb4b8f1b7f}
+      \strng{authornamehash}{80db3dfbe51c1b2af5a34bfb4b8f1b7f}
+      \strng{authorfullhash}{80db3dfbe51c1b2af5a34bfb4b8f1b7f}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{month}{1}
+      \field{title}{{Go Slices: usage and internals}}
+      \field{urlday}{29}
+      \field{urlmonth}{2}
+      \field{urlyear}{2020}
+      \field{year}{2011}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://blog.golang.org/go-slices-usage-and-internals
+      \endverb
+      \verb{url}
+      \verb https://blog.golang.org/go-slices-usage-and-internals
+      \endverb
+    \endentry
+    \entry{slice-tricks}{misc}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labeltitlesource}{title}
+      \field{title}{{SliceTricks}}
+      \field{urlday}{4}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://github.com/golang/go/wiki/SliceTricks
+      \endverb
+      \verb{url}
+      \verb https://github.com/golang/go/wiki/SliceTricks
+      \endverb
+    \endentry
+    \entry{haskell-list-funcs}{misc}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labeltitlesource}{title}
+      \field{title}{{How to work on lists}}
+      \field{urlday}{4}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://wiki.haskell.org/How_to_work_on_lists
+      \endverb
+      \verb{url}
+      \verb https://wiki.haskell.org/How_to_work_on_lists
+      \endverb
+    \endentry
+    \entry{go-basetypes}{misc}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labeltitlesource}{title}
+      \field{month}{1}
+      \field{title}{{The Go Programming Language Specification}}
+      \field{urlday}{2}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{year}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://golang.org/ref/spec#Boolean_types
+      \endverb
+      \verb{url}
+      \verb https://golang.org/ref/spec#Boolean_types
+      \endverb
+    \endentry
+    \entry{go-http-doc}{misc}{}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labeltitlesource}{title}
+      \field{title}{{http package - go.dev}}
+      \field{urlday}{6}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://pkg.go.dev/net/http?tab=doc#HandleFunc
+      \endverb
+      \verb{url}
+      \verb https://pkg.go.dev/net/http?tab=doc#HandleFunc
+      \endverb
+    \endentry
+    \entry{functional-options}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=37e14439ca0f6bfb74accda0c0389cf9}{%
+           family={{Dave Cheney}},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{37e14439ca0f6bfb74accda0c0389cf9}
+      \strng{fullhash}{37e14439ca0f6bfb74accda0c0389cf9}
+      \strng{bibnamehash}{37e14439ca0f6bfb74accda0c0389cf9}
+      \strng{authorbibnamehash}{37e14439ca0f6bfb74accda0c0389cf9}
+      \strng{authornamehash}{37e14439ca0f6bfb74accda0c0389cf9}
+      \strng{authorfullhash}{37e14439ca0f6bfb74accda0c0389cf9}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{Functional options for friendly APIs}}
+      \field{urlday}{6}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
+      \endverb
+      \verb{url}
+      \verb https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
+      \endverb
+    \endentry
+    \entry{func-go-talk}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=2991dd008ca63c8250215b63b2ec0025}{%
+           family={{Francesc Campoy Flores}},
+           familyi={F\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {Youtube}%
+      }
+      \strng{namehash}{2991dd008ca63c8250215b63b2ec0025}
+      \strng{fullhash}{2991dd008ca63c8250215b63b2ec0025}
+      \strng{bibnamehash}{2991dd008ca63c8250215b63b2ec0025}
+      \strng{authorbibnamehash}{2991dd008ca63c8250215b63b2ec0025}
+      \strng{authornamehash}{2991dd008ca63c8250215b63b2ec0025}
+      \strng{authorfullhash}{2991dd008ca63c8250215b63b2ec0025}
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{{Functional Go?}}
+      \field{year}{2015}
+      \field{dateera}{ce}
+      \verb{urlraw}
+      \verb https://www.youtube.com/watch?v=ouyHp2nJl0I
+      \endverb
+      \verb{url}
+      \verb https://www.youtube.com/watch?v=ouyHp2nJl0I
+      \endverb
+    \endentry
+    \entry{go-tco}{misc}{}
+      \list{organization}{1}{%
+        {Github}%
+      }
+      \field{sortinit}{1}
+      \field{sortinithash}{50c6687d7fc80f50136d75228e3c59ba}
+      \field{labeltitlesource}{title}
+      \field{title}{{proposal: Go 2: add become statement to support tail calls}}
+      \field{urlday}{6}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{year}{2017}
+      \field{dateera}{ce}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://github.com/golang/go/issues/22624
+      \endverb
+      \verb{url}
+      \verb https://github.com/golang/go/issues/22624
+      \endverb
+    \endentry
+    \entry{go-functional}{misc}{}
+      \list{organization}{1}{%
+        {Github}%
+      }
+      \field{sortinit}{2}
+      \field{sortinithash}{ed39bb39cf854d5250e95b1c1f94f4ed}
+      \field{labeltitlesource}{title}
+      \field{title}{{go-functional/core}}
+      \field{urlday}{6}
+      \field{urlmonth}{3}
+      \field{urlyear}{2020}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://github.com/go-functional/core
+      \endverb
+      \verb{url}
+      \verb https://github.com/go-functional/core
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
 
-\bibitem{rust-functional}
-{Rust Core Team}, ``{Functional Language Features}.''
-  \url{https://doc.rust-lang.org/book/ch13-00-functional-features.html}.
-
-\bibitem{functional-controversy}
-A.~SABRY, ``{What is a purely functional language?},'' {\em Journal of
-  Functional Programming}, vol.~8, no.~1, p.~1–22, 1998.
-
-\bibitem{comparison-functional-languages}
-``{Comparison of functional progrramming languages}.''
-  \url{https://en.wikipedia.org/wiki/Comparison_of_functional_programming_languages}.
-\newblock Accessed: 2020-03-04.
-
-\bibitem{haskell-hard-one}
-``{Why is Haskell so hard to learn?}.''
-  \url{https://www.quora.com/Why-is-Haskell-so-hard-to-learn}.
-\newblock Accessed: 2020-03-04.
-
-\bibitem{haskell-hard-two}
-``{A lazy evaluation}.'' \url{http://connolly.io/posts/lazy-evaluation/}.
-\newblock Accessed: 2020-03-04.
-
-\bibitem{haskell-hard-three}
-``{Haskell's steep learning curve}.''
-  \url{https://www.quora.com/How-much-of-Haskells-steep-learning-curve-is-related-to-the-number-of-terms-one-has-to-memorize?share=1}.
-\newblock Accessed: 2020-03-04.
-
-\bibitem{haskell-hard-four}
-``{The Haskell learning curve}.''
-  \url{https://wiki.haskell.org/Humor/LearningCurve}.
-\newblock Accessed: 2020-03-04.
-
-\bibitem{haskell-quicksort}
-``{Introduction - Haskell Wiki}.'' \url{https://wiki.haskell.org/Introduction}.
-\newblock Accessed: 2020-02-29.
-
-\bibitem{golang-publish}
-{Jason Kincaid}, ``{Google's Go: A New Programming Language That's Python Meets
-  C++}.'' \url{https://techcrunch.com/2009/11/10/google-go-language/}, Nov. 10
-  2009.
-\newblock Accessed: 2020-02-29.
-
-\bibitem{golang-slices}
-{Andrew Gerrand}, ``{Go Slices: usage and internals}.''
-  \url{https://blog.golang.org/go-slices-usage-and-internals}, Jan. 5 2011.
-\newblock Accessed: 2020-02-29.
-
-\bibitem{slice-tricks}
-``{SliceTricks}.'' \url{https://github.com/golang/go/wiki/SliceTricks}.
-\newblock Accessed: 2020-03-04.
-
-\bibitem{haskell-list-funcs}
-``{How to work on lists}.''
-  \url{https://wiki.haskell.org/How_to_work_on_lists}.
-\newblock Accessed: 2020-03-04.
-
-\bibitem{go-basetypes}
-``{The Go Programming Language Specification}.''
-  \url{https://golang.org/ref/spec#Boolean_types}, Jan. 14 2020.
-\newblock Accessed: 2020-03-02.
-
-\end{thebibliography}
