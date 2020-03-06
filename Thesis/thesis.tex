@@ -57,6 +57,8 @@
     backend=biber,
     style=ieee,
 ]{biblatex}
+%\usepackage{csquotes}
+\AtBeginEnvironment{quote}{\itshape}
 %\bibliography{thesis}
 \addbibresource{thesis.bib}
 
@@ -104,9 +106,10 @@
 \label{ch:introduction} % chktex 24
 \input{chapters/20_introduction.tex}
 
-\IfLanguageName{nswissgerman}{\chapter{Verwandte Arbeit}}{\chapter{Related Work}}
-\label{ch:related-work} % chktex 24
-\input{chapters/30_related_work.tex}
+% DISABLE RELATED WORK AS I PUT THAT INTO THE INTRO
+%\IfLanguageName{nswissgerman}{\chapter{Verwandte Arbeit}}{\chapter{Related Work}}
+%\label{ch:related-work} % chktex 24
+%\input{chapters/30_related_work.tex}
 
 \IfLanguageName{nswissgerman}{\chapter{Methoden}}{\chapter{Methodology}}
 \label{ch:methodology} % chktex 24
