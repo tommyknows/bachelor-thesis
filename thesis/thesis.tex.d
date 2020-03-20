@@ -1,14 +1,16 @@
 #===Dependents, and related info, for thesis.tex:
 thesis.pdf :\
-    ./thesis.tex\
     /dev/null\
     /usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc\
+    /usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc\
     /usr/local/texlive/2019/texmf-dist/fonts/map/fontname/texfonts.map\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecbx1095.tfm\
-    /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/eccc1095.tfm\
+    /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecbx2488.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecit1095.tfm\
+    /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecrm0600.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecrm1000.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecrm1095.tfm\
+    /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecrm2488.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecsl1095.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecss1095.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecss1200.tfm\
@@ -18,7 +20,13 @@ thesis.pdf :\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecsx1440.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecsx2074.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ecti1095.tfm\
+    /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ectt0800.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/ectt1095.tfm\
+    /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/tcit1095.tfm\
+    /usr/local/texlive/2019/texmf-dist/fonts/tfm/jknappen/ec/tctt1095.tfm\
+    /usr/local/texlive/2019/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm\
+    /usr/local/texlive/2019/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm\
+    /usr/local/texlive/2019/texmf-dist/fonts/tfm/public/cm/cmex10.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm\
@@ -38,10 +46,14 @@ thesis.pdf :\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/public/cm/cmtt12.tfm\
     /usr/local/texlive/2019/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm\
+    /usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb\
+    /usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb\
     /usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb\
     /usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb\
+    /usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb\
+    /usr/local/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb\
     /usr/local/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb\
-    /usr/local/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfcc1095.pfb\
+    /usr/local/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb\
     /usr/local/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfit1095.pfb\
     /usr/local/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb\
     /usr/local/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfsl1095.pfb\
@@ -134,13 +146,18 @@ thesis.pdf :\
     /usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgfutil-common-lists.tex\
     /usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.tex\
     /usr/local/texlive/2019/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def\
+    /usr/local/texlive/2019/texmf-dist/tex/generic/tracklang/tracklang.tex\
     /usr/local/texlive/2019/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty\
     /usr/local/texlive/2019/texmf-dist/tex/generic/xkeyval/xkeyval.tex\
     /usr/local/texlive/2019/texmf-dist/tex/generic/xkeyval/xkvutils.tex\
     /usr/local/texlive/2019/texmf-dist/tex/generic/xstring/xstring.sty\
     /usr/local/texlive/2019/texmf-dist/tex/generic/xstring/xstring.tex\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/amsmath/amsbsy.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/amsmath/amsgen.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/amsmath/amsmath.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/amsmath/amsopn.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/amsmath/amstext.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/appendix/appendix.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/atveryend/atveryend.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/auxhook/auxhook.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty\
@@ -149,6 +166,7 @@ thesis.pdf :\
     /usr/local/texlive/2019/texmf-dist/tex/latex/base/t1cmss.fd\
     /usr/local/texlive/2019/texmf-dist/tex/latex/base/t1cmtt.fd\
     /usr/local/texlive/2019/texmf-dist/tex/latex/base/textcomp.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/base/ts1cmtt.fd\
     /usr/local/texlive/2019/texmf-dist/tex/latex/biblatex-ieee/ieee.bbx\
     /usr/local/texlive/2019/texmf-dist/tex/latex/biblatex-ieee/ieee.cbx\
     /usr/local/texlive/2019/texmf-dist/tex/latex/biblatex/bbx/numeric-comp.bbx\
@@ -169,13 +187,36 @@ thesis.pdf :\
     /usr/local/texlive/2019/texmf-dist/tex/latex/csquotes/csquotes.cfg\
     /usr/local/texlive/2019/texmf-dist/tex/latex/csquotes/csquotes.def\
     /usr/local/texlive/2019/texmf-dist/tex/latex/csquotes/csquotes.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/datatool/datatool-base.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/datatool/datatool-fp.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/environ/environ.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/eso-pic/eso-pic.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/etoolbox/etoolbox.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/fancyvrb/fancyvrb.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/float/float.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/defpattern.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp-addons.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp-basic.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp-eqn.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp-eval.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp-exp.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp-pas.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp-random.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp-snap.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp-trigo.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp-upn.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/fp/fp.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/framed/framed.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/fvextra/fvextra.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/glossaries-english/glossaries-english.ldf\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/glossaries/base/glossaries-compatible-307.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/glossaries/base/glossaries.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/glossaries/styles/glossary-hypernav.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/glossaries/styles/glossary-list.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/glossaries/styles/glossary-long.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/glossaries/styles/glossary-super.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/glossaries/styles/glossary-tree.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/graphics-cfg/color.cfg\
     /usr/local/texlive/2019/texmf-dist/tex/latex/graphics-cfg/graphics.cfg\
     /usr/local/texlive/2019/texmf-dist/tex/latex/graphics-def/pdftex.def\
@@ -184,7 +225,6 @@ thesis.pdf :\
     /usr/local/texlive/2019/texmf-dist/tex/latex/graphics/keyval.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/graphics/lscape.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/graphics/trig.sty\
-    /usr/local/texlive/2019/texmf-dist/tex/latex/grfext/grfext.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/hycolor/hycolor.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/hyperref/hpdftex.def\
     /usr/local/texlive/2019/texmf-dist/tex/latex/hyperref/hyperref.sty\
@@ -211,6 +251,7 @@ thesis.pdf :\
     /usr/local/texlive/2019/texmf-dist/tex/latex/lineno/lineno.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/logreq/logreq.def\
     /usr/local/texlive/2019/texmf-dist/tex/latex/logreq/logreq.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/mfirstuc/mfirstuc.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/microtype/microtype-pdftex.def\
     /usr/local/texlive/2019/texmf-dist/tex/latex/microtype/microtype.cfg\
     /usr/local/texlive/2019/texmf-dist/tex/latex/microtype/microtype.sty\
@@ -235,28 +276,49 @@ thesis.pdf :\
     /usr/local/texlive/2019/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/siunitx/siunitx-abbreviations.cfg\
     /usr/local/texlive/2019/texmf-dist/tex/latex/siunitx/siunitx.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/substr/substr.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/supertabular/supertabular.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/tcolorbox/tcblistingscore.code.tex\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/tcolorbox/tcbminted.code.tex\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/tcolorbox/tcbprocessing.code.tex\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/tcolorbox/tcbskins.code.tex\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/tcolorbox/tcbskinsjigsaw.code.tex\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/textcase/textcase.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/todonotes/todonotes.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/tools/array.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/tools/calc.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/tools/longtable.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/tools/shellesc.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/tools/tabularx.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/tools/verbatim.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/tracklang/tracklang.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/translator/translator-basic-dictionary-English.dict\
     /usr/local/texlive/2019/texmf-dist/tex/latex/translator/translator.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/trimspaces/trimspaces.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/upquote/upquote.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/url/url.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/xcolor/xcolor.sty\
+    /usr/local/texlive/2019/texmf-dist/tex/latex/xfor/xfor.sty\
     /usr/local/texlive/2019/texmf-dist/tex/latex/xkeyval/xkeyval.sty\
     /usr/local/texlive/2019/texmf-dist/web2c/texmf.cnf\
     /usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map\
     /usr/local/texlive/2019/texmf-var/web2c/pdftex/pdflatex.fmt\
     /usr/local/texlive/2019/texmf.cnf\
     _minted-thesis/1AB406858319D3EE3CC5FC123665C2B2956060C96AF2630525E020FC99E051D0.pygtex\
+    _minted-thesis/1EA934CD11AF7680CAB4CEFE844DBB0E956060C96AF2630525E020FC99E051D0.pygtex\
+    _minted-thesis/2944C5DD599D16771B4DFEAF5AD74C41956060C96AF2630525E020FC99E051D0.pygtex\
     _minted-thesis/350AC414B6B908A897D1E87B8EDA14DF956060C96AF2630525E020FC99E051D0.pygtex\
     _minted-thesis/41BF6C4155DFE82FA3F1A6E01229E9E4956060C96AF2630525E020FC99E051D0.pygtex\
+    _minted-thesis/4DE1A50D0CFB3C0C500EFBC09115C03B956060C96AF2630525E020FC99E051D0.pygtex\
+    _minted-thesis/4F82F7E79679B186099FA8758F64039E956060C96AF2630525E020FC99E051D0.pygtex\
     _minted-thesis/51DE2C4BBD6455768B1F6380356F2FB4956060C96AF2630525E020FC99E051D0.pygtex\
+    _minted-thesis/69B6E7B5F3EA40CED72840D951A9BF6E12EDB5914A9A1A8CB83141F4D3BD3039.pygtex\
     _minted-thesis/81888E792FE98B4939E7F8B958418514956060C96AF2630525E020FC99E051D0.pygtex\
-    _minted-thesis/90B6395477E59950374AE935421B0A77956060C96AF2630525E020FC99E051D0.pygtex\
+    _minted-thesis/86B8174A4B0661EFFEC26D6632EE88C4956060C96AF2630525E020FC99E051D0.pygtex\
+    _minted-thesis/968AB96848C4C6E9554432220FA124C5956060C96AF2630525E020FC99E051D0.pygtex\
+    _minted-thesis/ABB75F4079FAA48E69392B64583407CE956060C96AF2630525E020FC99E051D0.pygtex\
+    _minted-thesis/B561FD35BA70323FA5074D830D88073D956060C96AF2630525E020FC99E051D0.pygtex\
     _minted-thesis/D68BA9B7340E0983CB04B0E95E8876CB956060C96AF2630525E020FC99E051D0.pygtex\
     _minted-thesis/DCEF853D523DCBA5B13DDBDD336A2E1F956060C96AF2630525E020FC99E051D0.pygtex\
     _minted-thesis/EB0C93C460FAC5CCA0FD789D17C52DAA3413CC2F5540B4042FF9A173F452412E.pygtex\
@@ -266,14 +328,14 @@ thesis.pdf :\
     chapters/02_abstract.tex\
     chapters/10_preface.tex\
     chapters/20_introduction.tex\
-    chapters/30_related_work.tex\
     chapters/40_methodology.tex\
     chapters/50_application.tex\
     chapters/60_results.tex\
     chapters/70_discussion.tex\
     includes/Declaration_of_Originality_SoE_BA_en.pdf\
     logos/zhaw/en-zhaw-init-pantone2945.pdf\
-    thesis.bib\
+    thesis.gls\
+    thesis.glsdefs\
     thesis.tex\
     zhawthesis.cls
 #===End dependents for thesis.tex:

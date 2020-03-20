@@ -1,0 +1,373 @@
+% -*- mode: latex; coding: utf-8; TeX-master: ../thesis -*-
+% !TEX TS-program = pdflatexmk
+% !TEX encoding = UTF-8 Unicode
+% !TEX root = ../thesis.tex
+
+\todo[inline]{%
+  \quad -- {
+    (Beschreibt die Grundüberlegungen der realisierten Lösung
+    (Konstruktion/Entwurf) und die Realisierung als Simulation, als Prototyp
+    oder als Software-Komponente)
+  } \\
+  \quad -- {
+    (Definiert Messgrössen, beschreibt Mess- oder Versuchsaufbau,
+    beschreibt und dokumentiert Durchführung der Messungen/Versuche)
+  } \\
+  \quad -- (Experimente) \\
+  \quad -- (Lösungsweg) \\
+  \quad -- (Modell) \\
+  \quad -- (Tests und Validierung) \\
+  \quad -- (Theoretische Herleitung der Lösung)
+}
+
+\section{Slice Helper Functions}
+
+\subsection{Choosing the functions}
+
+The first task is to implement some helper functions for slices, as they are present for lists in Haskell.
+To decide on which functions will be implemented, popular Haskell repositories on Github have been analysed. The
+popularity of repositories was decided to be based on their number of stars. Out of all Haskell projects
+on Github, the most popular are\cite{github-popular-haskell}:
+
+\begin{itemize}
+    \item Shellcheck (koalaman/shellcheck\cite{github-shellcheck}): A static analysis tool for shell scripts
+    \item Pandoc (jgm/pandoc\cite{github-pandoc}): A universal markup converter
+    \item Postgrest (PostgREST/postgrest\cite{github-postgrest}): REST API for any Postgres database
+    \item Semantic (github/semantic\cite{github-semantic}): Parsing, analyzing, and comparing source code across many languages
+    \item Purescript (purescript/purescript\cite{github-purescript}): A strongly-typed language that compiles to JavaScript
+    \item Compiler (elm/compiler\cite{github-elmcompiler}): Compiler for Elm, a functional language for reliable webapps
+    \item Haxl (facebook/haxl\cite{github-haxl}): A Haskell library that simplifies access to remote data, such as databases or web-based services
+\end{itemize}
+
+In these repositories, the number of occurrences of popular list functions have been counted. Some caveats with
+the analysis:
+
+\begin{itemize}
+    \item The analysis did not differentiate between different kinds of functions. For example, `fold' includes
+    occurrences of `foldl', `foldr', `foldl\'' and `foldMap'.
+    \item The analysis has been done with a simple `grep'. This means it is likely to contain mismatches, for example
+    in code comments.
+    \item The analysis should only be an \textit{indicator} of what functions are used most.
+\end{itemize}
+
+Running the analysis on the 7 repositories listed above, searching for a number of pre-selected list functions, indicates
+that the most used functions are `:' (prepend), `map' and `fold', as shown in table~\ref{tab:occurrences-list-funcs}.
+
+\begin{table}[htb]
+\centering
+\caption{Occurrences of list functions\ref{appendix:function-occurrences}}\label{tab:occurrences-list-funcs}
+\begin{tabular}{ll}
+\toprule
+`:' (prepend) & 2912 \\
+\midrule
+map & 1241 \\
+\midrule
+fold & 610 \\
+\midrule
+filter & 262 \\
+\midrule
+reverse & 154 \\
+\midrule
+take & 104 \\
+\midrule
+drop & 81 \\
+\midrule
+maximum & 53 \\
+\midrule
+sum & 44 \\
+\midrule
+zip & 38 \\
+\midrule
+product & 15 \\
+\midrule
+minimum & 10 \\
+\midrule
+reduce & 8
+\end{tabular}
+\end{table}
+
+Based on this information, it has been decided to implement the prepend, map and fold functions into the
+Go compiler.
+% TODO
+The source code can be found at `work/go' from the root of this git repository\cite{git-repo}, the work
+is done upon Go version 1.14, commit ID `20a838ab94178c55bc4dc23ddc332fce8545a493'.
+All files referenced in this chapter are based from the root of the go repository, unless noted otherwise.
+
+\subsection{Implementing Prepend}
+
+\subsubsection{Adding the GoDoc}
+In Go, documentation is usually generated directly from comments within the source code\cite{godoc}. This also applies to
+builtin functions in the compiler, which have a function stub to document their behaviour\cite{godoc-builtin},
+but no implementation, as that is done in the compiler\cite{builtin-impl}.
+
+The `append' function, for example, is declared as
+\begin{gocode}
+func append(slice []Type, elems ...Type) []Type
+\end{gocode}
+
+So the signature of the prepend function is
+\begin{gocode}
+func prepend(elem Type, slice []Type) []Type
+\end{gocode}
+
+The file containing the documentation is in `\textit{src/builtin/builtin.go}'.
+This is already everything that is needed to add the documentation for `prepend'.
+
+\subsubsection{Adding prepend to the public packages}
+
+The second step is to add `prepend' to the `\textit{src/go/types}' package.
+\begin{quote}
+    Package types declares the data types and implements the algorithms for
+    type-checking of Go packages
+\end{quote}\cite{godoc-types}
+
+Though it will not have a direct impact on the compiler, adding the `prepend' function
+to the \textit{types} package allows external tools like `gopls' (Go's official language server)\cite{gopls} to type-check `.go' files and support the programmer
+at writing code.
+
+\subsubsection{Registering the function as a builtin}
+
+To allow type-checking `prepend', the function has to be registered as a builtin.
+This is done in `\textit{src/go/types/universe.go}':
+
+\begin{gocode}
+const (
+	// universe scope
+	_Append builtinId = iota
+	_Prepend
+	_Cap
+    // ...omitted
+)
+
+var predeclaredFuncs = [...]struct {
+	name     string
+	nargs    int
+	variadic bool
+	kind     exprKind
+}{
+	_Append:  {"append", 1, true, expression},
+	_Prepend: {"prepend", 2, false, expression},
+	_Cap:     {"cap", 1, false, expression},
+    // ...omitted
+}
+\end{gocode}
+
+Prepend takes two arguments and is not a variadic function. The expression kind can either be a `conversion',
+`expression' or a `statement'. `prepend' is an expression, like append, as it returns a value.
+
+
+The type-checking that is implemented here is not related, in any way, to compiling the source code to machine code, which will do its own type-checking. It is only used for external tools.
+To add the type-checking to `prepend', a test has to be added too (a separate
+test ensures that all builtins are type-checked).
+
+\begin{gocode}
+var builtinCalls = []struct {
+	name, src, sig string
+}{
+	// ...omitted
+	{"prepend", `var s []int; _ = prepend(0, s)`, `func(int, []int) []int`},
+	{"prepend", `type T int; var s []T; var n T; _ = prepend(n, s)`, `func(p.T, []p.T) []p.T`},
+	{"prepend", `var s []int; _ = (prepend)(0, s)`, `func(int, []int) []int`},
+    // ...omitted
+}
+\end{gocode}
+
+The type-checking itself is straightforward. The implementation starts by checking that the second
+argument is a slice, and then extracts the type and checks that the first argument is of the same type.
+
+% TODO: line length?
+\textit{src/go/types/builtins.go}
+\inputminted[
+    linenos,
+    numberfirstline,
+    stepnumber=5,
+    firstline=135,
+    lastline=172,
+    breaklines,
+    breakanywhere,
+    tabsize=4,
+    gobble=1,
+    bgcolor=bg,
+]{go}{../work/go/src/go/types/builtins.go}
+\begin{gocode}
+func (check *Checker) builtin(x *operand, call *ast.CallExpr, id builtinId) (_ bool) {
+	// ...omitted
+	switch id {
+	case _Prepend:
+		// prepend(x T, s S) S, where T is the element type
+		// of S.
+		// spec: prepend is like append, but adds to the
+		// beginning instead of the end of the slice. The
+		// values x are passed to a parameter of type T where
+		// T is the element type of S and the respective
+		// parameter passing rules apply."
+
+		// the second argument is the slice, so we start by
+		// getting that type.
+		arg(x, 1)
+		S := x.typ
+		var T Type
+		if s, _ := S.Underlying().(*Slice); s != nil {
+			T = s.elem
+		} else {
+			check.invalidArg(x.pos(), "%s is not a slice", x)
+			return
+		}
+
+		// save the already evaulated argument
+		arg1 := *x
+		// reset to the first argument
+		arg(x, 0)
+
+		// check general case by creating custom signature
+		sig := makeSig(S, T, S)
+		check.arguments(x, call, sig, func(x *operand, i int) {
+			// only evaluate arguments that have not been
+			// evaluated before
+			if i == 1 {
+				*x = arg1
+				return
+			}
+			arg(x, i)
+		}, nargs)
+
+		x.mode = value
+		x.typ = S
+		if check.Types != nil {
+			check.recordBuiltinType(call.Fun, sig)
+		}
+	}
+	// ...omitted
+}
+\end{gocode}
+
+This concludes the type-checking for external tools and makes `gopls' return errors
+if the wrong types are used. For example, when trying to prepend an integer to
+a string slice.
+
+\begin{gocode}
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println(prepend(3, []string{"hello", "world"}))
+}
+\end{gocode}
+
+Gopls then reports the type-checking error:
+\begin{bashcode}
+$ gopls check main.go
+/tmp/playground/main.go:6:22-23: cannot convert 3 (untyped int constant) to string
+\end{bashcode}
+
+\subsubsection{Implementing the function in the compiler}
+
+The compiler is implemented at \textit{src/cmd/compile/internal/gc},
+so all mentioned files are located within this directory.
+
+\newglossaryentry{ast}{name=AST, description={Abstract Syntax Tree}}
+\newglossaryentry{dag}{name=DAG, description={Directed Acyclic Graph}}
+
+First, prepend needs to be registered as a builtin to parse `prepend' into
+the\gls{ast} (technically, the syntax tree is a syntax \gls{dag}\cite{ast-node-dag},
+but this is an implementation detail):
+
+
+\textit{universe.go}
+\begin{gocode}
+// ...omitted
+var builtinFuncs = [...]struct {
+	name string
+	op   Op
+}{
+	{"append", OAPPEND},
+	{"prepend", OPREPEND},
+	// ...omitted
+}
+\end{gocode}
+
+`OPREPEND' is an operation that has to be defined in \textit{syntax.go}:
+
+\begin{gocode}
+// Node ops.
+const (
+	OXXX Op = iota
+	// ...omitted
+	OAPPEND       // append(List); after walk, Left may contain elem type descriptor
+	OPREPEND      // prepend(Left, Right)
+	OBYTES2STR    // Type(Left) (Type is string, Left is a []byte)
+	// ...omitted
+)
+\end{gocode}
+
+This also shows that an `OPREPEND' node expects its arguments to be in `node.Left' and `node.Right', and not, like `OAPPEND', in `node.List'. This is achieved in
+\textit{typecheck.go}. Before typechecking, a node's arguments are always
+defined in `node.List`. In the implementation for `OPREPEND', the arguments are typechecked and parsed
+into `node.Left' and `node.Right' by
+
+\begin{gocode}
+// typecheck the arguments, expand function arguments etc.
+typecheckargs(n)
+// twoarg ensures there's exactly two arguments and adds
+// them to n.Left and n.Right
+if !twoarg(n) ...
+\end{gocode}
+
+After `node.Left' and `node.Right' are populated, `node.Right'\'s type is checked to be
+a slice, and `node.Left' is of the same element type as the slice.
+The full typecheck is added as case within \textit{typecheck.go}:
+
+\inputminted[
+    linenos,
+    numberfirstline,
+    stepnumber=5,
+    firstline=1579,
+    lastline=1613,
+    breaklines,
+    breakanywhere,
+    tabsize=2,
+    gobble=1,
+    bgcolor=bg,
+]{go}{../work/go/src/cmd/compile/internal/gc/typecheck.go}
+
+With this, type-checking `prepend' in the \gls{ast} is implemented.
+The next step in the Go compiler is escape analysis. This is similar
+to the `OAPPEND' node, though `OPREPEND' always has only two arguments:
+
+\textit{escape.go}
+\inputminted[
+    linenos,
+    numberfirstline,
+    stepnumber=5,
+    firstline=814,
+    lastline=820,
+    breaklines,
+    breakanywhere,
+    tabsize=2,
+    gobble=2,
+    bgcolor=bg,
+]{go}{../work/go/src/cmd/compile/internal/gc/escape.go}
+
+The next step within the compiler are \gls{ast} transformations to
+lower the \gls{ast} to a more easily compilable form. The first call
+is made to `order'. `order' reorders expressions and enforces the
+evaluation order. For `prepend', this is done by adding another `case'
+expression within \mintinline{go}|func (o *Order) expr(n, lhs *Node) *Node|:
+
+\textit{order.go}
+\inputminted[
+    linenos,
+    numberfirstline,
+    stepnumber=5,
+    firstline=1182,
+    lastline=1188,
+    breaklines,
+    breakanywhere,
+    tabsize=2,
+    gobble=1,
+    bgcolor=bg,
+]{go}{../work/go/src/cmd/compile/internal/gc/order.go}
+
+
+\section{Functional Check}

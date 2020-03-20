@@ -1,0 +1,60 @@
+\ifglsentryexists{ast}{}%
+{%
+\gls@defglossaryentry{ast}%
+{%
+name={AST},%
+sort={AST},%
+type={main},%
+first={AST},%
+firstplural={ASTs},%
+text={AST},%
+plural={ASTs},%
+description={Abstract Syntax Tree},%
+descriptionplural={Abstract Syntax Tree},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{dag}{}%
+{%
+\gls@defglossaryentry{dag}%
+{%
+name={DAG},%
+sort={DAG},%
+type={main},%
+first={DAG},%
+firstplural={DAGs},%
+text={DAG},%
+plural={DAGs},%
+description={Directed Acyclic Graph},%
+descriptionplural={Directed Acyclic Graph},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%

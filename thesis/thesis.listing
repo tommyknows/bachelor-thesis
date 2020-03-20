@@ -1,0 +1,2 @@
+$ gopls check main.go
+/tmp/playground/main.go:6:22-23: cannot convert 3 (untyped int constant) to string

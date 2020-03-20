@@ -53,10 +53,21 @@
 % - Add packages used by your thesis here:
 
 \usepackage{minted}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+\newminted{go}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
+\newminted{bash}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
+\newminted{haskell}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
+\newmintedfile{go}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
+
+
+
 \usepackage[
     backend=biber,
     style=ieee,
 ]{biblatex}
+\usepackage[toc,page]{appendix}
+\usepackage{glossaries}
+\makeglossaries
 %\usepackage{csquotes}
 \AtBeginEnvironment{quote}{\itshape}
 %\bibliography{thesis}
@@ -147,12 +158,23 @@
 % \let\clearpage\relax
 % \vspace{-4em}
 \listoftables
+\printglossaries
 % \endgroup
 \cleardoublepage % chktex 1
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\appendix
+%\appendix
+\begin{appendices}
+
+\section{Analysis of function occurrences in Haskell code}\label{appendix:function-occurrences}
+The results of the analysis have been aquired by running the following command
+from the root of the git repository\cite{git-repo}:
+\begin{minted}{shell}
+./work/common-list-functions/count-function.sh ": " "map " "fold" "filter "
+"reverse " "take " "drop " "maximum" "sum " "zip " "product " "minimum "
+"reduce "
+\end{minted}
 
 % - Add your appendix here:
 
@@ -175,5 +197,7 @@
   \qquad -- (Datenträger mit weiteren Daten (z. B. Software-Komponenten) inkl. Verzeichnis der auf diesem Datenträger abgelegten Dateien) \\ % chktex 8
   \qquad -- (Softwarecode) % chktex 8
 }
+
+\end{appendices}
 
 \end{document}

@@ -2203,6 +2203,22 @@
     <bcf:citekey order="18">func-go-talk</bcf:citekey>
     <bcf:citekey order="19">go-tco</bcf:citekey>
     <bcf:citekey order="20">go-functional</bcf:citekey>
+    <bcf:citekey order="21">github-popular-haskell</bcf:citekey>
+    <bcf:citekey order="22">github-shellcheck</bcf:citekey>
+    <bcf:citekey order="23">github-pandoc</bcf:citekey>
+    <bcf:citekey order="24">github-postgrest</bcf:citekey>
+    <bcf:citekey order="25">github-semantic</bcf:citekey>
+    <bcf:citekey order="26">github-purescript</bcf:citekey>
+    <bcf:citekey order="27">github-elmcompiler</bcf:citekey>
+    <bcf:citekey order="28">github-haxl</bcf:citekey>
+    <bcf:citekey order="29">git-repo</bcf:citekey>
+    <bcf:citekey order="30">godoc</bcf:citekey>
+    <bcf:citekey order="31">godoc-builtin</bcf:citekey>
+    <bcf:citekey order="32">builtin-impl</bcf:citekey>
+    <bcf:citekey order="33">godoc-types</bcf:citekey>
+    <bcf:citekey order="34">gopls</bcf:citekey>
+    <bcf:citekey order="35">ast-node-dag</bcf:citekey>
+    <bcf:citekey order="36">git-repo</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">

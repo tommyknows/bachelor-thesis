@@ -22,9 +22,16 @@ introduction:
       - FuncCheck (Rules TBD)
 related_work:
   - ???
+-------- DONE --------
 methodology:
-  - list implementation:
+  - list functions implementation:
       - plan, benchmarks, constraints & limitations, goal
+      - which functions:
+        - map (name? fmap?)
+        - prepend (similar to append, but way more expensive :-) )
+        - filter
+        - reduce
+        - zip
   - funccheck:
       - research "rules" for FP
       - compare them

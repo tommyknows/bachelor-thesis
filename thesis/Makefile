@@ -14,6 +14,13 @@ pdf: $(MAIN_TEX:.tex=.pdf)
 zhawthesis.cls: zhawthesis.dtx
 	'$(PDFLATEX)' zhawthesis.dtx
 
+# Rule to compile glossary
+thesis.gls:
+	makeglossaries thesis
+skins.sty:
+
+
+
 # Dependencies of thesis TeX
 -include $(MAIN_TEX).d
 
