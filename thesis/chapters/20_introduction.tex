@@ -32,14 +32,14 @@ Not only do they need to learn a new language with an unusual syntax (compared t
 also need to change their way of thinking and reasoning about problems.
 For example, the renowned quicksort-implementation from the Haskell Introduction Page\autocite{haskell-quicksort}:
 
-\begin{minted}{haskell}
+\begin{haskellcode}
 quicksort :: Ord a => [a] -> [a]
 quicksort []     = []
 quicksort (p:xs) = (quicksort lesser) ++ [p] ++ (quicksort greater)
     where
         lesser  = filter (< p) xs
         greater = filter (>= p) xs
-\end{minted}
+\end{haskellcode}
 
 While this is only a very short and clean piece of code, these 6 lines already pose many challenges to non-experienced Haskellers;
 
@@ -113,20 +113,20 @@ compared to lists.
 
 Slices can be visualised as a `struct' over an array:
 
-\begin{minted}{go}
-    // NOTE: this type does not really exist, it
-    // is just to visualise how they are implemented.
-    type Slice struct {
-        // the underlying "backing store" array
-        array *[]T
-        // the length of the slice / view on the
-        //array
-        len   int
-        // the capacity of the array from the
-        // starting index of the slice
-        cap   int
-    }
-\end{minted}
+\begin{gocode}
+// NOTE: this type does not really exist, it
+// is just to visualise how they are implemented.
+type Slice struct {
+    // the underlying "backing store" array
+    array *[]T
+    // the length of the slice / view on the
+    //array
+    len   int
+    // the capacity of the array from the
+    // starting index of the slice
+    cap   int
+}
+\end{gocode}
 
 With the `append' function, elements can be added to a slice. Should the underlying array not have enough
 capacity left to store the new elements, a new array will be created and the data from the old array will
@@ -136,7 +136,7 @@ be copied into the new one. This happens transparently to the user.
 
 `head', `tail' and `last' operations can be done with index expressions:
 
-\begin{minted}{go}
+\begin{gocode}
 // []<T> initialises a slice, while [n]<T> initialises an
 // array, which is of fixed length n. One can also use `...'
 // instead of a natural number, to let the compiler count
@@ -145,11 +145,11 @@ s := []string{"first", "second", "third"}
 head := s[0]
 tail := s[1:]
 last := s[len(s)-1]
-\end{minted}
+\end{gocode}
 
 Adding elements or joining slices is achieved with `append':
 
-\begin{minted}{go}
+\begin{gocode}
 s := []string{"first", "second"}
 s = append(s, "third", "fourth")
 t := []string{"fifth", "seventh"}
@@ -157,7 +157,7 @@ s = append(s, t...)
 // to prepend an element, one has to create a
 // slice out of that element
 s = append([]string{"zeroth"}, s...)
-\end{minted}
+\end{gocode}
 
 Append is a variadic function, meaning it takes \textit{n} elements. If the slice is of type \textit{[]<T>},
 the appended elements have to be of type \textit{<T>}.
@@ -178,19 +178,16 @@ However, what is missing from Go's slices are a lot of the classical list `helpe
 language, lists take a central role. This results in a number of helper functions\autocite{haskell-list-funcs}
 that currently do not exist in Go and would need to be implemented by the programmer.
 With no support for polymorphism, the programmer would need to implement a function for every slice-type
-that is used. The type
-\mint{go}|[]int|
-(read: a slice of integers) differs from
-\mint{go}|[]string|
+that is used. The type \mintinline{go}|[]int| (read: a slice of integers) differs from \mintinline{go}|[]string|
 which means that a possible `map' function would have to be
 written once to support slices of integers, once to support slices of strings, and a combination of these two:
 
-\begin{minted}{go}
+\begin{gocode}
 func mapIntToInt(f func(int) int, []int) []int
 func mapIntToString(f func(int) string, []int) []string
 func mapStringToInt(f func(string) int, []string) []int
 func mapStringToString(f func(string) string, []string) []string
-\end{minted}
+\end{gocode}
 
 With 7 base types (eliding the different `int' types like `int8', `uint16`, `int16', etc.), this would
 mean $7^{2} = 49$ map functions just to cover these base types. Counting the different numeric
@@ -207,22 +204,22 @@ the compiler, so that the programmer can use these functions on every slice-type
 With Go's support of some functional aspects, patterns and best practices have emerged that relate
 to functional programming.
 For example, in the \textit{net/http} package of the standard library, the function
-\begin{minted}{go}
-    func HandleFunc(pattern string, handler func(ResponseWriter, *Request))
-\end{minted}
+\begin{gocode}
+func HandleFunc(pattern string, handler func(ResponseWriter, *Request))
+\end{gocode}
 is used to register functions for http server handling:
 
-\begin{minted}{go}
-    func myHandler(w http.ResponseWriter, r *http.Request) {
-        // Handle the given HTTP request
-    }
+\begin{gocode}
+func myHandler(w http.ResponseWriter, r *http.Request) {
+    // Handle the given HTTP request
+}
 
-    func main() {
-        // register myHandler in the default ServeMux
-        http.HandleFunc("/", myHandler)
-        http.ListenAndServe(":8080", nil)
-    }
-\end{minted}
+func main() {
+    // register myHandler in the default ServeMux
+    http.HandleFunc("/", myHandler)
+    http.ListenAndServe(":8080", nil)
+}
+\end{gocode}
 \autocite{go-http-doc}
 
 Using functions as function parameters or return types is a commonly used feature in Go, not just
@@ -234,46 +231,7 @@ and is a great example on how to use the support for multiple paradigms.
 
 To give a quick example of how functional options look like and are used:
 
-\begin{minted}{go}
-package webserver
-
-type Server struct {
-    Timeout time.Duration
-    Port int
-    ListenAddress string
-}
-
-type Option func(*Server)
-
-func Timeout(d time.Duration) Option {
-    return func(s *Server) {
-        s.Timeout = d
-    }
-}
-func Port(p int) Option {
-    return func(s *Server) {
-        s.Port = p
-    }
-}
-
-func New(opts ...Option) *Server {
-    // initialise the server with the default values
-    s := &Server{
-        Timeout: 500*time.Millisecond,
-        Port: 0, // uses a random port on the host
-        ListenAddres: "http://localhost",
-    }
-    // apply all options
-    for _, opt := range opts {
-        opt(s)
-    }
-    return s
-}
-
-// usage examples from outside the package:
-s := webserver.New() // uses all the default options
-s := webserver.New(webserver.Timeout(time.Second), webserver.Port(8080))
-\end{minted}
+\gofile{../work/functional-options/main.go}
 
 Dave Cheney's summary on functional options is thus:
 \begin{quote}
