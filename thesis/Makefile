@@ -20,7 +20,6 @@ thesis.gls:
 skins.sty:
 
 
-
 # Dependencies of thesis TeX
 -include $(MAIN_TEX).d
 
@@ -45,6 +44,7 @@ clean:
 	$(RM) zhawthesis.aux zhawthesis.glo zhawthesis.hd zhawthesis.idx zhawthesis.log zhawthesis.out
 	$(RM) *.synctex.gz *.bbl *.ilg
 	$(RM) '$(MAIN_TEX).d'
+	$(RM) *.ist
 
 .PHONY: clean dvi pdf view watch
 

@@ -1,2 +1,15 @@
 .DS_Store
-Thesis/_minted-thesis
+thesis/_minted-thesis
+thesis/thesis.aux
+thesis/thesis.bbl
+thesis/thesis.bcf
+thesis/thesis.blg
+thesis/thesis.fdb_latexmk
+thesis/thesis.fls
+thesis/thesis.lof
+thesis/thesis.log
+thesis/thesis.lot
+thesis/thesis.out
+thesis/thesis.tex.d
+thesis/thesis.toc
+thesis/thesis.ist
