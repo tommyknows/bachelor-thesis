@@ -1,0 +1,165 @@
+% -*- mode: latex; coding: utf-8; TeX-master: ../thesis -*-
+% !TEX TS-program = pdflatexmk
+% !TEX encoding = UTF-8 Unicode
+% !TEX root = ../thesis.tex
+
+\todo[inline]{%
+  \quad -- {
+    (Beschreibt die Grundüberlegungen der realisierten Lösung
+    (Konstruktion/Entwurf) und die Realisierung als Simulation, als Prototyp
+    oder als Software-Komponente)
+  } \\
+  \quad -- {
+    (Definiert Messgrössen, beschreibt Mess- oder Versuchsaufbau,
+    beschreibt und dokumentiert Durchführung der Messungen/Versuche)
+  } \\
+  \quad -- (Experimente) \\
+  \quad -- (Lösungsweg) \\
+  \quad -- (Modell) \\
+  \quad -- (Tests und Validierung) \\
+  \quad -- (Theoretische Herleitung der Lösung)
+}
+
+\section{Slice Helper Functions}
+
+\subsection{Choosing the functions}
+
+The first task is to implement some helper functions for slices, as they are present for lists in Haskell.
+To decide on which functions will be implemented, popular Haskell repositories on Github have been analysed. The
+popularity of repositories was decided to be based on their number of stars. Out of all Haskell projects
+on Github, the most popular are\cite{github-popular-haskell}:
+
+\begin{itemize}
+    \item Shellcheck (koalaman/shellcheck\cite{github-shellcheck}): A static analysis tool for shell scripts
+    \item Pandoc (jgm/pandoc\cite{github-pandoc}): A universal markup converter
+    \item Postgrest (PostgREST/postgrest\cite{github-postgrest}): REST API for any Postgres database
+    \item Semantic (github/semantic\cite{github-semantic}): Parsing, analyzing, and comparing source code across many languages
+    \item Purescript (purescript/purescript\cite{github-purescript}): A strongly-typed language that compiles to JavaScript
+    \item Compiler (elm/compiler\cite{github-elmcompiler}): Compiler for Elm, a functional language for reliable webapps
+    \item Haxl (facebook/haxl\cite{github-haxl}): A Haskell library that simplifies access to remote data, such as databases or web-based services
+\end{itemize}
+
+In these repositories, the number of occurrences of popular list functions have been counted. Some caveats with
+the analysis:
+
+\begin{itemize}
+    \item The analysis did not differentiate between different kinds of functions. For example, `fold' includes
+    occurrences of `foldl', `foldr', `foldl\'' and `foldMap'.
+    \item The analysis has been done with a simple `grep'. This means it is likely to contain mismatches, for example
+    in code comments.
+    \item The analysis should only be an \textit{indicator} of what functions are used most.
+\end{itemize}
+
+Running the analysis on the 7 repositories listed above, searching for a number of pre-selected list functions, indicates
+that the most used functions are `:' (prepend), `map' and `fold', as shown in table~\ref{tab:occurrences-list-funcs}.
+
+\begin{table}[htb]
+\centering
+\caption{Occurrences of list functions\ref{appendix:function-occurrences}}\label{tab:occurrences-list-funcs}
+\begin{tabular}{ll}
+\toprule
+`:' (prepend) & 2912 \\
+\midrule
+map & 1241 \\
+\midrule
+fold & 610 \\
+\midrule
+filter & 262 \\
+\midrule
+reverse & 154 \\
+\midrule
+take & 104 \\
+\midrule
+drop & 81 \\
+\midrule
+maximum & 53 \\
+\midrule
+sum & 44 \\
+\midrule
+zip & 38 \\
+\midrule
+product & 15 \\
+\midrule
+minimum & 10 \\
+\midrule
+reduce & 8
+\end{tabular}
+\end{table}
+
+Based on this information, it has been decided to implement the prepend, map and fold functions into the
+Go compiler.
+% TODO
+The source code can be found at `work/go' from the root of this git repository\cite{git-repo}, the work
+is done upon Go version 1.14, commit ID `20a838ab94178c55bc4dc23ddc332fce8545a493'.
+All files referenced in this chapter are based from the root of the go repository, unless noted otherwise.
+
+\subsection{Required Steps}
+\newglossaryentry{ast}{name=AST,description={Abstract Syntax Tree, an abstract representation of source code as a tree}}
+\newglossaryentry{ssa}{name=SSA,description={Single Static Assignment, an intermediate representation between the AST and the compiled binary that simplifies and improves compiler optimisations}}
+
+Adding a builtin function to the Go language requires a few more steps than just adding support
+within the compiler. While it would technically be enough to support the translation between
+Go code and the compiled binary, there would be no visibility for a developer that there is a
+function that could be used.
+For a complete implementation, the following steps are necessary:
+\begin{itemize}
+    \item Adding the GoDoc\cite{godoc} that describes the function and it's usage
+    \item Adding typechecking support in external packages for tools like Gopls\cite{gopls}
+    \item Adding the implementation within the internal\footnote{
+            ``An import of
+            a path containing the element “internal” is disallowed if the importing code is
+            outside the tree rooted at the parent of the “internal” directory.''\cite{internal-packages}
+        }
+        package of the compiler
+        \begin{itemize}
+            \item Adding the \gls{ast} node type
+            \item Adding typechecking for that node type
+            \item Adding the AST traversal for that node type, translating it
+                to AST nodes that the compiler already knows and can translate
+                to builtin runtime-calls or \gls{ssa}
+        \end{itemize}
+\end{itemize}
+
+\subsection{Prepend}
+
+Being the most commonly used function in Haskell code, Go needs an easier to use implementation for prepend
+than the currently existing \mintinline{go}|append([]<T>{elem}, src...)|.
+For this reason, prepend will be added to the compiler, similarly to append.
+In regular Go code, a more efficient implementation compared to the example is:
+\begin{code}
+\captionof{listing}{Prepend implementation in Go code}
+\label{code:prepend-raw-go}
+\begin{gocode}
+func prepend(elem <T>, slice []<T>) {
+    dest := make([]<T>, 1, len(slice)+1)
+    dest[0] = elem
+    return append(dest, slice...)
+}
+\end{gocode}
+\end{code}
+
+The call to \mintinline{go}|make(...)| creates a slice with the length of 1 and the capacity
+to hold all elements of the source slice, plus one. By allocating the slice with the full
+length, another slice allocation within the call to \mintinline{go}|append(...)| is saved.
+The element to prepend is added as the first element of the slice, and append will then
+copy the `src' slice into `dest'.
+
+This means that in the AST, the implementation should translate to:
+\begin{code}
+    \captionof{listing}{Prepend implementation in AST traversal}
+\begin{gocode}
+//   init {
+//     dest := make([]<T>, 1, len(src)+1)
+//     dest[0] = x
+//     append(dest, src...)
+//   }
+//   dest
+\end{gocode}
+\end{code}
+
+The typechecking for prepend is fairly simple. As seen in the pure Go implementation\ref{code:prepend-raw-go},
+prepend accepts an element with type \mintinline{go}|T| and a slice with the element type \mintinline{go}|T|,
+and will return a slice of element type \mintinline{go}|T|. The AST node's type, once translated,
+will thus be \mintinline{go}|[]T|.
+
+\section{Functional Check}

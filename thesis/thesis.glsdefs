@@ -28,6 +28,36 @@ parent={},%
 %
 }%
 }%
+\ifglsentryexists{ssa}{}%
+{%
+\gls@defglossaryentry{ssa}%
+{%
+name={SSA},%
+sort={SSA},%
+type={main},%
+first={SSA},%
+firstplural={SSAs},%
+text={SSA},%
+plural={SSAs},%
+description={Single Static Assignment, an intermediate representation between the AST and the compiled binary that simplifies and improves compiler optimisations},%
+descriptionplural={Single Static Assignment, an intermediate representation between the AST and the compiled binary that simplifies and improves compiler optimisations},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
 \ifglsentryexists{dag}{}%
 {%
 \gls@defglossaryentry{dag}%
