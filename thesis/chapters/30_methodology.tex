@@ -39,26 +39,22 @@ on Github, the most popular are\cite{github-popular-haskell}:
     \item Haxl (facebook/haxl\cite{github-haxl}): A Haskell library that simplifies access to remote data, such as databases or web-based services
 \end{itemize}
 
-In these repositories, the number of occurrences of popular list functions have been counted. Some caveats with
-the analysis:
+In these repositories, the number of occurrences of popular list functions have been counted. The analysis does not
+differentiate between different kind of functions. For example, `fold' includes all occurrences of `foldr', `foldl' and `foldl\''.
+Also, the analysis has not been done with any kind of AST-parsing. Rather, a simple `grep' has been used to find matches. This means
+that it is likely to contain some mismatches, for example in code comments. All in all, this analysis should only be
+an indicator of what functions are used most.
 
-\begin{itemize}
-    \item The analysis did not differentiate between different kinds of functions. For example, `fold' includes
-    occurrences of `foldl', `foldr', `foldl\'' and `foldMap'.
-    \item The analysis has been done with a simple `grep'. This means it is likely to contain mismatches, for example
-    in code comments.
-    \item The analysis should only be an \textit{indicator} of what functions are used most.
-\end{itemize}
-
+ % TODO: replace 'prepend' with cons, where applicable (talking about Haskell)
 Running the analysis on the 7 repositories listed above, searching for a number of pre-selected list functions, indicates
-that the most used functions are `:' (prepend), `map' and `fold', as shown in table~\ref{tab:occurrences-list-funcs}.
+that the most used functions are `:' (cons), `map' and `fold', as shown in table~\ref{tab:occurrences-list-funcs}.
 
 \begin{table}[htb]
 \centering
 \caption{Occurrences of list functions\ref{appendix:function-occurrences}}\label{tab:occurrences-list-funcs}
 \begin{tabular}{ll}
 \toprule
-`:' (prepend) & 2912 \\
+`:' (cons) & 2912 \\
 \midrule
 map & 1241 \\
 \midrule
@@ -86,12 +82,11 @@ reduce & 8
 \end{tabular}
 \end{table}
 
-Based on this information, it has been decided to implement the prepend, map and fold functions into the
-Go compiler.
-% TODO
-The source code can be found at `work/go' from the root of this git repository\cite{git-repo}, the work
-is done upon Go version 1.14, commit ID `20a838ab94178c55bc4dc23ddc332fce8545a493'.
-All files referenced in this chapter are based from the root of the go repository, unless noted otherwise.
+Based on this information, it has been decided to implement the cons, map and fold functions into the
+Go compiler\footnote{The implementation can be found at `work/go' from the root of this git repository\cite{git-repo}. The work
+is based upon Go version 1.14, commit ID `20a838ab94178c55bc4dc23ddc332fce8545a493'.
+% TODO: remove this files-ref?
+All files referenced in this chapter are based from the root of the go repository, unless noted otherwise.}
 
 \subsection{Required Steps}
 \newglossaryentry{ast}{name=AST,description={Abstract Syntax Tree, an abstract representation of source code as a tree}}
@@ -104,7 +99,7 @@ function that could be used.
 For a complete implementation, the following steps are necessary:
 \begin{itemize}
     \item Adding the GoDoc\cite{godoc} that describes the function and it's usage
-    \item Adding typechecking support in external packages for tools like Gopls\cite{gopls}
+    \item Adding type-checking support in external packages for tools like Gopls\cite{gopls}
     \item Adding the implementation within the internal\footnote{
             ``An import of
             a path containing the element “internal” is disallowed if the importing code is
@@ -113,21 +108,23 @@ For a complete implementation, the following steps are necessary:
         package of the compiler
         \begin{itemize}
             \item Adding the \gls{ast} node type
-            \item Adding typechecking for that node type
+            \item Adding type-checking for that node type
             \item Adding the AST traversal for that node type, translating it
                 to AST nodes that the compiler already knows and can translate
                 to builtin runtime-calls or \gls{ssa}
         \end{itemize}
 \end{itemize}
 
-\subsection{Prepend}
+\subsection{Cons}
 
-Being the most commonly used function in Haskell code, Go needs an easier to use implementation for prepend
-than the currently existing \mintinline{go}|append([]<T>{elem}, src...)|.
-For this reason, prepend will be added to the compiler, similarly to append.
+Being the most commonly used function in Haskell code, Go needs an easier to use implementation for the cons operator
+% TODO: wording
+than the currently existing \mintinline{go}|append([]<T>{elem}, src...)|. Keeping the naming scheme of go, the cons
+function will be named `prepend', cohering with `append'.
+
 In regular Go code, a more efficient implementation compared to the example is:
 \begin{code}
-\captionof{listing}{Prepend implementation in Go code}
+\captionof{listing}{Prepend implementation in pseudo-Go code}
 \label{code:prepend-raw-go}
 \begin{gocode}
 func prepend(elem <T>, slice []<T>) {
@@ -157,9 +154,111 @@ This means that in the AST, the implementation should translate to:
 \end{gocode}
 \end{code}
 
-The typechecking for prepend is fairly simple. As seen in the pure Go implementation\ref{code:prepend-raw-go},
+The type-checking for prepend is fairly simple. As seen in the Go implementation\ref{code:prepend-raw-go},
 prepend accepts an element with type \mintinline{go}|T| and a slice with the element type \mintinline{go}|T|,
 and will return a slice of element type \mintinline{go}|T|. The AST node's type, once translated,
 will thus be \mintinline{go}|[]T|.
+
+\subsection{Fmap}
+
+Map is the second most-commonly used function in Haskell code. As `map' is already a registered keyword
+within go's parser, the `map' function will be called `fmap' instead. This also improves readability
+and makes it easier to distinguish the `map' type from the `map' function.
+
+A naive implementation of `fmap', and it's improved version, is shown
+in \ref{code:fmap-raw-go}
+
+\begin{code}
+    \captionof{listing}{Fmap implementation in pseudo-go code}
+    \label{code:fmap-raw-go}
+    \begin{gocode}
+func fmapNaive(fn func(Type) Type1, src []Type) (dest []Type1) {
+    for _, elem := range src {
+        dest = append(dest, fn(elem))
+    }
+    return dest
+}
+
+func fmapImproved(fn func(Type) Type1, src []Type) []Type1 {
+    dest := make([]Type1, len(src))
+    for i, elem := range src {
+        dest[i] = fn(elem)
+    }
+    return dest
+}
+    \end{gocode}
+\end{code}
+
+Again, by using \mintinline{go}|make| to allocate the slice with it's full length at the beginning
+of the function, the calls to \mintinline{go}|append| and thus calls to grow the
+slice at runtime can be saved.
+
+Similarily to prepend, the AST walk should translate the call to fmap to:
+\begin{code}
+    \captionof{listing}{Fmap AST translation}
+    \begin{gocode}
+//   init {
+//     dest := make([]out, len(src))
+//     for i, e := range src {
+//       dest[i] = f(e)
+//     }
+//   }
+//   dest
+    \end{gocode}
+\end{code}
+
+Type-checking fmap should ensure that the given function's argument type is the same
+as the given slice's element type. Fmap returns a slice with the element type of
+the given function return type.
+
+\subsection{Fold}
+
+The third and last function that is implemented is fold.
+In Haskell, there are three distinct implementations of fold, `foldr', `foldl' and `foldl\''.
+`foldr' allows, amongst other things, to transform infinite lists. `foldl' and `foldl\''
+differ regarding their strictness properties. `foldl\'' effectively reserves the given list,
+which means it returns the same result as `foldr' only if the given list is finite and the
+function commutative. It does however have better memory space properties than `foldr'.
+
+In Go, there are no infinite lists and no lazy evaluation. This means that a distinction
+between the different fold types in Go is not necessary, and the implementation will
+be based on the right fold, as:
+
+\begin{quote}
+    `foldr' is not only the right fold, it is also most commonly the right fold to use,
+\end{quote}\cite{fold-types}
+
+A pseudo-go implementation of `fold' looks like this:
+\begin{code}
+    \captionof{listing}{Fold implementation in pseudo-go code}
+    \begin{gocode}
+func fold(f func(Type, Type1) Type1, acc Type1, src []Type) Type1 {
+    for i := len(src) - 1; i >= 0; i-- {
+        acc = f(src[i], acc)
+    }
+    return acc
+}
+    \end{gocode}
+\end{code}
+
+This walks the given slice backwards, calling the function and updating the acculumator with
+the new value.
+
+The AST walk translates fold to:
+\begin{code}
+    \captionof{listing}{Fold AST translation}
+    \begin{gocode}
+//   init {
+//     for i := len(s) - 1; i >= 0; i-- {
+//       acc = f(s[i], acc)
+//     }
+//   }
+//   acc
+    \end{gocode}
+\end{code}
+
+The type-check for fold will need to ensure that the given function's first argument type corresponds
+to the slice's element type, that the second argument is the same as the function's return type and
+that the accumulator is of the same type as well.
 
 \section{Functional Check}

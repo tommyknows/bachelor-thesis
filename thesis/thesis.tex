@@ -68,7 +68,7 @@
     \IfFileExists{code.lineno}
       {\CatchFileEdef{\linenumber}{./code.lineno}{\endlinechar=-1 }}
       {\def\linenumber{0}}
-    \edef\flags{firstnumber=\linenumber}
+    \edef\flags{firstnumber=\linenumber,#1}
     \expandafter\gofile\expandafter[\flags]{./code.snippet}
 }
 
