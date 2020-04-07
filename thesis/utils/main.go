@@ -46,19 +46,20 @@ func main() {
 	scanner := bufio.NewScanner(file)
 
 	// find start
-	lineno := gotoStart(scanner, *start)
-	// write line number
-	_, _ = lineDest.WriteString(strconv.Itoa(lineno))
-	// write source cod
-	_, _ = codeDest.WriteString(strings.ReplaceAll(scanner.Text(), *start, "// ...") + "\n")
+	for lineno := gotoStart(scanner, *start); lineno != -1; lineno = gotoStart(scanner, *start) {
+		// write line number
+		_, _ = lineDest.WriteString(strconv.Itoa(lineno))
+		// write source cod
+		_, _ = codeDest.WriteString(strings.ReplaceAll(scanner.Text(), *start, "// ...") + "\n")
 
-	// scan until end and write
-	for scanner.Scan() {
-		if strings.TrimSpace(scanner.Text()) == *end {
-			_, _ = codeDest.WriteString(strings.ReplaceAll(scanner.Text(), *end, "// ...") + "\n")
-			break
+		// scan until end and write
+		for scanner.Scan() {
+			if strings.TrimSpace(scanner.Text()) == *end {
+				_, _ = codeDest.WriteString(strings.ReplaceAll(scanner.Text(), *end, "// ...") + "\n")
+				break
+			}
+			_, _ = codeDest.WriteString(scanner.Text() + "\n")
 		}
-		_, _ = codeDest.WriteString(scanner.Text() + "\n")
 	}
 
 	if err := scanner.Err(); err != nil {
