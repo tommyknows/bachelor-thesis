@@ -52,21 +52,35 @@
 % Custom packages
 % - Add packages used by your thesis here:
 
-\usepackage{minted}
+\usepackage[newfloat]{minted}
+\usepackage{listings}
+\newenvironment{code}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=Source Code}
 \definecolor{bg}{rgb}{0.95,0.95,0.95}
 \newminted{go}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{bash}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{haskell}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
-\newmintedfile{go}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
+\newmintedfile{go}{breaklines,breakanywhere,tabsize=2,bgcolor=bg,linenos,stepnumber=5,numberfirstline}
 
+
+\newcommand{\gofilerange}[4][]{%
+    \immediate\write18{./utils/delim -file="#2" -start="#3" -end="#4"}
+    \IfFileExists{code.lineno}
+      {\CatchFileEdef{\linenumber}{./code.lineno}{\endlinechar=-1 }}
+      {\def\linenumber{0}}
+    \edef\flags{firstnumber=\linenumber,#1}
+    \expandafter\gofile\expandafter[\flags]{./code.snippet}
+}
 
 
 \usepackage[
     backend=biber,
     style=ieee,
 ]{biblatex}
+\usepackage{caption}
 \usepackage[toc,page]{appendix}
 \usepackage{glossaries}
+%\usepackage{listings}
 \makeglossaries
 %\usepackage{csquotes}
 \AtBeginEnvironment{quote}{\itshape}
@@ -124,7 +138,11 @@
 
 \IfLanguageName{nswissgerman}{\chapter{Methoden}}{\chapter{Methodology}}
 \label{ch:methodology} % chktex 24
-\input{chapters/40_methodology.tex}
+\input{chapters/30_methodology.tex}
+
+\chapter{Implementation}
+\label{ch:implementation} % chktex 24
+\input{chapters/40_implementation.tex}
 
 \chapter{Application}
 \label{ch:application} % chktex 24
@@ -147,6 +165,9 @@
 \printbibliography
 % \endgroup
 
+\renewcommand{\lstlistlistingname}{List of source codes}
+
+\lstlistoflistings
 
 % \begingroup
 % \let\clearpage\relax

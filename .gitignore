@@ -13,3 +13,6 @@ thesis/thesis.out
 thesis/thesis.tex.d
 thesis/thesis.toc
 thesis/thesis.ist
+thesis/code.*
+*.swp
+*.bak
