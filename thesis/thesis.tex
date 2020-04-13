@@ -28,12 +28,12 @@
 \newcommand\twodigits[1]{\ifnum#1<10 0#1\else #1\fi}
 \date{\twodigits{\the\day}.\twodigits{\number\month}.\the\year}
 
-\major{Informatik}  % Studiengang
+\major{Computer Science}  % Studiengang
 \zhawsemester{Spring 2020}
 \zhawinstitute{init}
 \zhawlogocolour{pantone2945}  % pantone2945, cmyk, sw
-\mainsupervisor{Prof. G. Burkert}
-\subsupervisor{Prof. K. Rege}
+\mainsupervisor{Dr. G. Burkert}
+\subsupervisor{Dr. K. Rege}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Base packages used by the template (any commonly used packages)
@@ -52,6 +52,7 @@
 % Custom packages
 % - Add packages used by your thesis here:
 
+\usepackage{hyperref}
 \usepackage[newfloat]{minted}
 \usepackage{listings}
 \newenvironment{code}{\captionsetup{type=listing}}{}
@@ -192,8 +193,66 @@
 The results of the analysis have been aquired by running the following command
 from the root of the git repository\cite{git-repo}:
 \begin{bashcode}
-./work/common-list-functions/count-function.sh ": " "map " "fold" "filter " "reverse " "take " "drop " "maximum" "sum " "zip " "product " "minimum " "reduce "
+./work/common-list-functions/count-function.sh "map " " : " "fold" "filter " "reverse " "take " "drop " "maximum" "sum " "zip " "product " "minimum " "reduce "
 \end{bashcode}
+
+\section{Workaround for the missing foldl' implementation in Go}\label{appendix:foldl-go}
+\begin{code}
+    \captionof{listing}{Working around the missing foldl implementation in Go}
+    \label{code:foldl-go}
+    \begin{gocode}
+package main
+
+import "fmt"
+
+func main() {
+        zero, one, two, three := 0, 1, 2, 3
+        list := []*int{&one, &two, nil, &three, &zero}
+
+        // this will work, as the values will be evaluated
+        // "lazily" - the nested functions will never
+        // be executed, thus it will never panic.
+        fmt.Printf("%v\n", myFold(mulLazy, 1, list))
+        // This will panic.
+        fmt.Printf("%v\n", foldl(mul, 1, list))
+}
+
+func mul(x int, y *int) int {
+        if *y == 0 {
+                return 0
+        }
+        return x * *y
+}
+
+func mulLazy(x func() int, y *int) func() int {
+        return func() int {
+                if *y == 0 {
+                        return 0
+                }
+                return x() * *y
+        }
+}
+
+func myFold(f func(func() int, *int) func() int, acc int, list []*int) int {
+        a := func() int { return acc }
+        a = foldl(f, a, list)
+        return a()
+}
+    \end{gocode}
+    \begin{bashcode}
+$> fgo run .
+0
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x1 addr=0x0 pc=0x109e945]
+
+goroutine 1 [running]:
+main.what(0x2, 0x0, 0x2)
+        /tmp/map/main.go:16 +0x5
+main.main()
+        /tmp/map/main.go:12 +0x187
+exit status 2
+    \end{bashcode}
+\end{code}
 
 % - Add your appendix here:
 
