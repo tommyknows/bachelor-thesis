@@ -1,3 +1,33 @@
+\ifglsentryexists{dag}{}%
+{%
+\gls@defglossaryentry{dag}%
+{%
+name={DAG},%
+sort={DAG},%
+type={main},%
+first={DAG},%
+firstplural={DAGs},%
+text={DAG},%
+plural={DAGs},%
+description={Directed Acyclic Graph},%
+descriptionplural={Directed Acyclic Graph},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
 \ifglsentryexists{ast}{}%
 {%
 \gls@defglossaryentry{ast}%
@@ -9,8 +39,8 @@ first={AST},%
 firstplural={ASTs},%
 text={AST},%
 plural={ASTs},%
-description={Abstract Syntax Tree},%
-descriptionplural={Abstract Syntax Tree},%
+description={Abstract Syntax Tree, an abstract representation of source code as a tree},%
+descriptionplural={Abstract Syntax Tree, an abstract representation of source code as a tree},%
 symbol={\relax },%
 symbolplural={\relax },%
 user1={},%
@@ -71,36 +101,6 @@ text={Gopls},%
 plural={Goplss},%
 description={Gopls is go's official language server implementation\cite {gopls}},%
 descriptionplural={Gopls is go's official language server implementation\cite {gopls}},%
-symbol={\relax },%
-symbolplural={\relax },%
-user1={},%
-user2={},%
-user3={},%
-user4={},%
-user5={},%
-user6={},%
-long={},%
-longplural={},%
-short={},%
-shortplural={},%
-counter={page},%
-parent={},%
-%
-}%
-}%
-\ifglsentryexists{dag}{}%
-{%
-\gls@defglossaryentry{dag}%
-{%
-name={DAG},%
-sort={DAG},%
-type={main},%
-first={DAG},%
-firstplural={DAGs},%
-text={DAG},%
-plural={DAGs},%
-description={Directed Acyclic Graph},%
-descriptionplural={Directed Acyclic Graph},%
 symbol={\relax },%
 symbolplural={\relax },%
 user1={},%
