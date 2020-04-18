@@ -4,9 +4,11 @@
 % !TEX root = ../thesis.tex
 
 \section{Learning Functional Programming}
-% TODO: rewrite first sentence. Also, Rust being 'more popular' is dangerous, too.
-% Less vague expressions, "seems to be", "and many more"
-% Java 8 added a lot of functional features, C# too
+\todo[inline]{
+    rewrite first sentence. Also, Rust being 'more popular' is dangerous, too.
+    Less vague expressions, "seems to be", "and many more".
+    Java 8 added a lot of functional features, C\# too.
+}
 When Javascript and Python started to take off around 2010\autocite{python-popularity},
 they also brought rise to a lot of concepts borrowed from functional programming.
 Since then, many new multi-paradigm
@@ -59,11 +61,12 @@ While this is only a very short and clean piece of code, these 6 lines already p
 Though some of these points are also available to programmers in imperative or object-oriented languages, the cumulative difference
 is not to underestimate and adds to Haskell's steep learning curve.
 
-% TODO: talk about production-ready code and programmers?
+ %TODO: talk about production-ready code and programmers?
 
 \section{Goals}
 
-% TODO: unclear first sentence, not specific enough.
+\todo[inline]{unclear first sentence, not specific enough}
+
 The goal is to solve the issue of the first steps in functional programming.
 Learning a new paradigm and syntax at the same time can be daunting and discouraging for novices.
 By using a modern, multi-paradigm language with a clear
@@ -72,7 +75,7 @@ first, and then change to a language like Haskell to fully get into functional p
 
 To ease the learning curve of functional programming, this thesis will consist of two parts:
 
-% TODO: should not be a list. rewrite to keep the flow
+\todo[inline]{should not be a list, for the flow}
 \begin{itemize}
     \item Make a multi-paradigm language support functional programming as much as needed.
         The criteria for this language are:
@@ -100,6 +103,7 @@ grasp the concepts and trace the inner workings of functional programming.
 There are, however, a few downsides of using Go:
 
 % TODO: should not be a list.
+\todo[inline]{shouldn't be a list either}
 \begin{itemize}
     \item No polymorphism. Go 2 will likely have support for polymorphism, but at the time of writing,
         there is no implementation available.
@@ -236,10 +240,8 @@ A software design pattern that has gained popularity is `functional options'. Th
 outlined in Dave Cheney's blog post `Functional options for friendly APIs'
 and is a great example on how to use the support for multiple paradigms.
 
-% TODO: move example to appendix and link it here instead.
-To give a quick example of how functional options look like and are used:
-
-\gofile{../work/functional-options/main.go}
+A quick example on how functional options are implemented and used can be found in the
+appendix~\ref{appendix:funcopts}
 
 Dave Cheney's summary on functional options is thus:
 \begin{quote}
@@ -270,7 +272,7 @@ The project is currently unmaintained, but showcases functional programming conc
 monoids in Go.
 In the `README' file of the repository, he also states that:
 \begin{quote}
-    Note that the types herein are hard-coded for specific types, but you could 
+    Note that the types herein are hard-coded for specific types, but you could
     use code generation to produce these FP constructs for any type you please!
     \autocite{go-functional-readme}
 \end{quote}
