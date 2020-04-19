@@ -88,6 +88,36 @@ parent={},%
 %
 }%
 }%
+\ifglsentryexists{copy-by-value}{}%
+{%
+\gls@defglossaryentry{copy-by-value}%
+{%
+name={copy by value},%
+sort={copy by value},%
+type={main},%
+first={copy by value},%
+firstplural={copy by values},%
+text={copy by value},%
+plural={copy by values},%
+description={Copy by value refers to the argument-passing style where the supplied argumens are copied. To pass references in Go, the developer needs to use pointers instead},%
+descriptionplural={Copy by value refers to the argument-passing style where the supplied argumens are copied. To pass references in Go, the developer needs to use pointers instead},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
 \ifglsentryexists{gopls}{}%
 {%
 \gls@defglossaryentry{gopls}%

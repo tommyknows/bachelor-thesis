@@ -267,4 +267,33 @@ The AST walk translates fold to:
     \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fold-header}{end-fold-header}
 \end{code}
 
+\subsubsection{filter}
+
+Being a slice-manipulating function, filter also needs to traverse the whole
+slice in a for-loop. However, compared to the other newly built-in functions,
+the size for the target slice is unknown until all items have been traversed,
+which is why filter does not allow for the same optimisations as the other
+functions.
+
+\begin{code}
+    \captionof{listing}{filter implementation in Go}
+    \begin{gocode}
+func filter(f func(Type) bool, s []Type) []Type {
+    var dst []Type
+    for i := range s {
+            if f(s) {
+                dst = append(dst, s[i])
+            }
+    }
+}
+    \end{gocode}
+\end{code}
+
+And the same algorithm, but translated to AST statements:
+
+\begin{code}
+    \captionof{listing}{filter AST translation\autocite{filter-walk-implementation}}
+    \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-filter-header}{end-filter-header}
+\end{code}
+
 \section{Functional Check}
