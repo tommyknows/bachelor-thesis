@@ -75,19 +75,19 @@ reduce & 8
     some kind of implementation for an `iterable', it is out of scope for this paper.
 }
 
-Based on this information, it has been decided to implement the map, cons and
-fold functions into the Go compiler.
+Based on this information, it has been decided to implement the map, cons, fold
+and filter functions into the Go compiler.
 
 \subsection{The Go Compiler}
 
 The Go programming language is defined by its specification\autocite{go-spec}, and not
 it's implementation. As of Go 1.14, there are two major implementations of that
-specification; Google's self-hosting compiler toolchain
-\footnote{This is what most often is referred to as `the Go compiler'.}
+specification; Google's self-hosting compiler toolchain\footnote{This is what most
+    often is referred to as `the Go compiler'.}
 `gc', which is written in Go, and `gccgo', a frontend for GCC, writen in C++.
 
-When talking about the Go compiler, what's mostly referred to is `gc'. \footnote{`gc' stands
-for `Go Compiler', and not `Garbage Collection' (`GC').}
+When talking about the Go compiler, what's mostly referred to is `gc'\footnote{`gc' stands
+for `Go Compiler', and not `Garbage Collection' (`GC').}.
 
 A famous, although not completely correct story tells about Go being designed
 while a C++ program was compiling\autocite{less-is-more}.
@@ -208,7 +208,7 @@ One option would be that `append' would take and return empty interfaces
 (\mintinline{go}|interface{}|). However, `the empty interface says
 nothing'\autocite{empty-interface}. The declaration of `append' would be:
 \begin{gocode}
-    func append(slice []interface{}, elem ...interface{}) {}interface
+  func append(slice []interface{}, elem ...interface{}) {}interface
 \end{gocode}
 
 This function header does not say anything about it's types, which would
@@ -216,8 +216,8 @@ mean that they would need to be checked at runtime and handled gracefully. It
 would also require the caller to do a type assertion after every call:
 
 \begin{gocode}
-    s := []string{"hello"}
-    s = append(s, "world").([]string)
+  s := []string{"hello"}
+  s = append(s, "world").([]string)
 \end{gocode}
 
 It also does not specify that the slice's element type would need to be equal to
@@ -256,7 +256,8 @@ map (and fmap) is one of the most useful higher-order functions:
     items in a list passed as the second argument\autocite{haskell-map}.
 \end{quote}
 
-Some usage examples of map can be found at \ref{code:haskell-map}.
+Some usage examples of map can be found at~\ref{code:haskell-map}.
+
 \begin{code}
     \captionof{listing}{Example usage for map and fmap}
     \label{code:haskell-map}
@@ -285,7 +286,8 @@ would be \mintinline{go}|func map(f func(Type1) Type2, []Type1) []Type2|. For
 this to work, the function has to be implemented as a builtin into the compiler.
 
 As there is already a `map' token in the Go compiler (for the map data type),
-the function will be called `fmap'. However, it only works on slices. This is due
+the function will be called `fmap'. However, compared to Haskell's `fmap',
+Go's `fmap' only works on slices. This is due
 to the absence of an `iterator'-like concept. The `range' clause, used with
 `for' loops, only works on slices and maps - both are builtin data types. It does
 not work on custom data structures, which would make the implementation a far
@@ -303,20 +305,16 @@ behave as shown.
 package main
 
 import (
-        "fmt"
-        "strconv"
+  "fmt"
+  "strconv"
 )
 
 func main() {
-        fmt.Printf("%#v", fmap(strconv.Itoa, []int{1, 2, 3}))
+  fmt.Printf("%#v", fmap(strconv.Itoa, []int{1, 2, 3})) // []string{"1", "2", "3"}
 }
 \end{gocode}
 \footnote{Printf's first argument, the verb `\%\#v', can be used to print the type
 (`\#') and the value (`v') of a variable\autocite{fmt-godoc}.}
-\begin{bashcode}
-$> fgo run .
-[]string{"1", "2", "3"}
-\end{bashcode}
 \end{code}
 
 \subsection{Cons}
@@ -360,18 +358,14 @@ Using prepend is very similar to append, an example can be found at~\ref{code:pr
 package main
 
 import (
-        "fmt"
-        "strconv"
+  "fmt"
+  "strconv"
 )
 
 func main() {
-        fmt.Printf("%#v", prepend(0, []int{1, 2, 3}))
+    fmt.Printf("%#v", prepend(0, []int{1, 2, 3})) // []int{0, 1, 2, 3}
 }
 \end{gocode}
-\begin{bashcode}
-$> fgo run .
-[]int{0, 1, 2, 3}
-\end{bashcode}
 \end{code}
 
 \subsection{Fold}\label{sec:fold}
@@ -487,15 +481,229 @@ package main
 import "fmt"
 
 func main() {
-        fmt.Printf("%v\n", foldr(func(x, y int) int { return x - y }, 100, []int{10, 20, 30}))
-        fmt.Printf("%v\n", foldl(func(x, y int) int { return x - y }, 100, []int{10, 20, 30}))
+  sub := func(x, y int) int { return x - y }
+  fmt.Printf("%v\n", foldr(sub, 100, []int{10, 20, 30})) // -80
+  fmt.Printf("%v\n", foldl(sub, 100, []int{10, 20, 30})) // 40
 }
 \end{gocode}
-\begin{bashcode}
-$> fgo run .
--80
-40
-\end{bashcode}
+\end{code}
+
+\subsection{Filter}
+
+The filter function is the conceptually simplest higher-order function.
+It takes a list and filters out all elements that are not matching
+a given predicate.
+This predicate usually is a function that takes said element and returns
+a boolean if it should be kept or filtered.
+
+A simple example:
+
+\begin{code}
+    \captionof{listing}{Example usage of filter in Go}
+    \label{code:filter-go}
+    \begin{gocode}
+package main
+
+import "fmt"
+
+func main() {
+  smallerThan5 := func(x int) bool {
+    return x < 5
+  }
+
+  fmt.Println(filter(smallerThan5, []int{1, 8, 5, 4, 7, 3})) // [1, 4, 3]
+}
+\end{gocode}
 \end{code}
 
 \section{Functional Check}
+
+To learn functional programming without a purely functional language, the
+developer needs to know which statements are functional and which
+would not exist or be possible in a purely functional language.
+For this reason, a `functional checker' should be created. It should work
+in a similar fashion to linters like `shellcheck', `go vet' or `gosimple'\footnote{
+    A list of Go linters can be found in golangci-lint\autocite{golangci-lint}.
+}, with different `rules' that are reported upon. The name for this tool
+will be `funcheck' because functional programming should be fun. % TODO: seriously?
+
+A set of rules should be compiled to identify common `non-functional' constructs
+which should then be reported upon.
+
+The first step is to define a set of rules.
+
+\subsection{Functional Purity}
+
+The goal of funcheck is to report on everything that is not purely
+functional. However, there is no agreed upon definition\autocite{functional-controversy}.
+In the context of this thesis, the following definition will be used:
+
+\begin{quote}
+    A style of building the structure and elements of computer programs that
+    treats all computation as the evaluation of mathematical functions. Purely
+    functional programming may also be defined by forbidding changing-state and
+    mutable data.
+
+    Purely functional programming consists in ensuring that functions, inside
+    the functional paradigm, will only depend on their arguments, regardless of
+    any global or local state.\autocite{functional-purity-wiki}
+\end{quote}
+
+This definition roughly brakes down into two parts; immutability and function
+purity. These parts and how they translate to Go will be discussed in the
+following chapters.
+
+\subsection{Forbidding mutability and changing state}\label{sec:mutability}
+
+\newglossaryentry{copy-by-value}{name=copy by value, description={Copy by value
+        refers to the argument-passing style where the supplied argumens are
+        copied. To pass references in Go, the developer needs to use pointers
+instead}}
+
+Immutability refers to objects --- variables --- that are unchangable. This means
+that their state cannot be modified after it's creation and first assignment.
+
+Many programming languages provide features for setting variables as immutable.
+
+In Rust for example, variables are immutable by default. To explicitely declare
+a mutable variable, the `mut' keyword has to be used: \mintinline{rust}|let mut x = 5;|.
+
+Java, in contrast, uses the \mintinline{java}|final| keyword:
+\begin{quote}
+    A final variable can only be initialized once\autocite{final-java}
+\end{quote}
+`Only be initialized once' means that it cannot be reassigned later, effectively
+making that variable immutable.
+A caveat with Java's \mintinline{java}|final| keyword is that the immutability
+is only tied to the reference of that object, not
+it's contents (one may still change a field of an immutable object).
+
+C and C++ have two features to achieve immutability, the \mintinline{c}|#define|
+preprocessor and the \mintinline{c}|const| keyword.
+The \mintinline{c}|#define| directive does not declare variables, but rather
+works in a similar way to string replacement at compile time. These directives
+can also be expressions. For example, this is a valid define statement:
+\begin{ccode}
+#define AGE (20/2)
+\end{ccode}
+
+However, because \mintinline{c}|#define| is just text substitution, these
+identifiers are untyped.
+
+The \mintinline{c}|const| qualifier specifies that a variable's value
+will not be changed, making it immutable. This is effectively the equivalent
+to Java's \mintinline{java}|final|.
+
+Go has the \mintinline{go}|const| keyword too, and similar to C, constants can only be
+characters, strings, booleans or numeric values\footnote{In contrast to C, Go does
+have a boolean type}. A complex type --- struct, interface, function --- cannot be constant.
+
+This means that the programmer cannot write
+\mintinline{go}|const x = MyStruct{A: a, B: b}| to make a struct immutable,
+as a struct is a complex type. Therefore, the solution to making variables
+immutable is to explicitely not allow any mutations in a program\footnote{
+    Although this may not be a very strict definition of immutability and doesn't
+    allow for compiler optimisations or similar, it is enough in the context of
+learning functional programming and learning that variables cannot be modified.}.
+While this incorporates a lot of different aspects, the simplest solution
+to that is to disallow the assignment operator \mintinline{go}|=|, and only
+allow it in combination with a declaration (\mintinline{go}|:=|).
+
+This solution also has the side-effect that it makes it impossible to mutate
+existing, complex data structures like maps and slices\footnote{By not
+    allowing assignments, elements can not be updated by
+\mintinline{go}|s[0] = "zero"| / \mintinline{go}|m["key"] = "value"|.}.
+
+There are additional operators that work in a similar way to the assignment
+operator, for example \mintinline{go}|++|, \mintinline{go}|--| and
+\mintinline{go}|x += y|. These are all `hidden' assignments and will need to
+be reported upon.
+
+Go being a \gls{copy-by-value} language, mutating existing variables
+    accross functions works by passing pointers to these variables instead\footnote{
+        An example for this can be found at~\ref{appendix:mutation}.}.
+When removing the regular assignment operators, the usage of pointers becomes
+second nature. Technically, they could be used everywhere now, as it is not
+possible to mutate anything either way. It is left to the developer to decide,
+but it is not necessary to use pointers anymore. Functional languages, in contrast,
+do not provide the option to address variables, since this is merely an optimisation
+that is left to the compiler.
+
+A feature not discussed so far is shadowing. Shadowing a variable in a different
+scope is still possible by redeclaring it. As expected, even with the above
+mentioned limitations, the rules for shadowing variables do not change. This
+can be seen in Appendix~\ref{appendix:shadowing}.
+
+\subsection{Pure functions}
+
+A pure function is a function where the return value is only dependent on
+the arguments. With the same arguments, the function should always return
+the same values. The evaluation of the function is also not allowed to have
+any `side effects', meaning that it should not mutate non-local variables or
+references\footnote{This also includes `local static' variables, but Go does
+not have a way to make variables `static'.}.
+
+As discussed in the last Chapter~\ref{sec:mutability}, if re-assignments
+are not allowed, mutating global variables is not possible. The same logic
+can be followed with variables passed by reference (pointers).
+
+If global state cannot be changed, it also cannot have a dynamic influence
+over a function's return values.
+
+As such, forbidding re-assignments is an extremely simple solution to
+ensure functional purity.
+
+\subsubsection{A Note about IO}
+The only thing that is left is interacting with the outside world; network,
+files, user input and sensors, to name a few. Haskell's IO Package ensures
+that these technically impure functions work the way one would expect.
+There are a few issues with IO in a pure function context. For example,
+the following function to write a string to a specified file:
+
+\begin{haskellcode}
+    writeFile :: String -> String
+\end{haskellcode}
+
+If the programmers calls this function
+\mintinline{haskell}|writeFile "hello.txt" "Hello World"|, there are
+no return values anymore, As such, the compiler would simply omit the call
+to this `writeFile' function completely. The rationale behind this is that
+it expects all functions to be pure, and as such, a function with no return
+value will not do anything meaningful and can be omitted.
+
+Similarly, for getting user input:
+\begin{haskellcode}
+    getChar :: Char
+\end{haskellcode}
+
+If this function is called multiple times, the compiler may reorder the
+execution of these calls, again, because it expects the functions to be
+pure, so the execution order should not matter:
+\begin{haskellcode}
+    get2Chars = [getChar, getChar]
+\end{haskellcode}
+
+However, in this example, execution order is extremely important. To
+solve this problem, Haskell introduced the IO monad, in which they
+wrap all functions with a `RealWorld' argument. So the
+\mintinline{haskell}|getChar| example from before gets rewritten as
+
+\begin{haskellcode}
+    getChar :: RealWorld -> (Char, RealWorld)
+\end{haskellcode}
+
+This can be read as `take the current RealWorld, do something with it,
+and return a Char and a (possibly changed) RealWorld'\autocite{haskell-io}.
+
+With this solution, the compiler cannot reorder or omit IO actions, ensuring
+the correct execution of the program.
+
+The IO Monad is a sophisticated solution to a problem that exists because of
+compiler optimisations. These can only be guaranteed to be correct because
+the compiler knows (or rather expects) that all functions are pure.
+
+In Go, the compiler does not and can not make this assumption. There also
+is no `pure' keyword to mark a function as such. For that reason, the
+compiler cannot optimise as aggressivly, and the whole IO problem does
+not exist\footnote{Although when nesting calls, one may need to be careful about
+execution order.}.

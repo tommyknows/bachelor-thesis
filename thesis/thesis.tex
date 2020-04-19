@@ -61,6 +61,7 @@
 \newminted{go}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{bash}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{haskell}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
+\newminted{c}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newmintedfile{go}{breaklines,breakanywhere,tabsize=2,bgcolor=bg,linenos,stepnumber=5,numberfirstline}
 
 
@@ -192,7 +193,7 @@
 \section{Example for Functional Options}\label{appendix:funcopts}
 \begin{code}
     \captionof{listing}{Functional Options for a simple Webserver}
-    \gofile{../work/functional-options/main.go}
+    \gofile{../work/examples/functional-options/main.go}
 \end{code}
 
 \section{Analysis of function occurrences in Haskell code}\label{appendix:function-occurrences}
@@ -202,49 +203,24 @@ from the root of the git repository\cite{git-repo}:
 ./work/common-list-functions/count-function.sh "map " " : " "fold" "filter " "reverse " "take " "drop " "maximum" "sum " "zip " "product " "minimum " "reduce "
 \end{bashcode}
 
+
+\section{Mutating variables in Go}\label{appendix:mutation}
+\begin{code}
+    \captionof{listing}{Example on how to mutate complex types in Go}
+    \gofile{../work/examples/mutate/main.go}
+\end{code}
+
+\section{Shadowing variables in Go}\label{appendix:shadowing}
+\begin{code}
+    \captionof{listing}{Example on how shadowing works on block scopes}
+    \gofile{../work/examples/shadowing/main.go}
+\end{code}
+
 \section{Workaround for the missing foldl' implementation in Go}\label{appendix:foldl-go}
 \begin{code}
     \captionof{listing}{Working around the missing foldl implementation in Go}
     \label{code:foldl-go}
-    \begin{gocode}
-package main
-
-import "fmt"
-
-func main() {
-        zero, one, two, three := 0, 1, 2, 3
-        list := []*int{&one, &two, nil, &three, &zero}
-
-        // this will work, as the values will be evaluated
-        // "lazily" - the nested functions will never
-        // be executed, thus it will never panic.
-        fmt.Printf("%v\n", myFold(mulLazy, 1, list))
-        // This will panic.
-        fmt.Printf("%v\n", foldl(mul, 1, list))
-}
-
-func mul(x int, y *int) int {
-        if *y == 0 {
-                return 0
-        }
-        return x * *y
-}
-
-func mulLazy(x func() int, y *int) func() int {
-        return func() int {
-                if *y == 0 {
-                        return 0
-                }
-                return x() * *y
-        }
-}
-
-func myFold(f func(func() int, *int) func() int, acc int, list []*int) int {
-        a := func() int { return acc }
-        a = foldl(f, a, list)
-        return a()
-}
-    \end{gocode}
+    \gofile{../work/examples/foldl-workaround/main.go}
     \begin{bashcode}
 $> fgo run .
 0

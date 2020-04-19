@@ -23,3 +23,6 @@
 	path = work/go
 	url = ssh://git@ssh.git.ramonr.ch/ramon/go.git
 	branch = bachelor-thesis
+[submodule "work/tools"]
+	path = work/tools
+	url = https://github.com/golang/tools.git
