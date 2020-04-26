@@ -1,108 +1,106 @@
-% -*- mode: latex; coding: utf-8; TeX-master: ../thesis -*-
-% !TEX TS-program = pdflatexmk
-% !TEX encoding = UTF-8 Unicode
-% !TEX root = ../thesis.tex
+\section{Implementing the new built-in functions}
 
-\section{Slice Helper Functions}
-The new builtin functions prepend, fmap and fold have to be registered and implemented
-in different places within go's source code.
+\subsection{Required Steps}
 
-The go source code that is relevant for this thesis can be classified into two different
-types. One group is the `public' implementation of these builtins, and one is the `private'
-implementation.
+Adding a builtin function to the Go language requires a few more steps than just
+adding support within the compiler. While it would technically be enough to
+support the translation between Go code and the compiled binary, there would be
+no visibility for a developer that there is a function that could be used.
+For a complete implementation, the following steps are necessary:
+\begin{itemize}
+    \item Adding the GoDoc\autocite{godoc} that describes the function and it's usage
+    \item Adding type-checking support in external packages for tools like
+    Gopls\autocite{gopls}
+    \item Adding the implementation within the internal\footnote{
+            ``An import of
+            a path containing the element “internal” is disallowed if the
+            importing code is outside the tree rooted at the parent of the
+            `internal' directory.''\autocite{internal-packages}
+        }
+        package of the compiler
+        \begin{itemize}
+            \item Adding the \gls{ast} node type
+            \item Adding type-checking for that node type
+            \item Adding the AST traversal for that node type, translating it
+                to AST nodes that the compiler already knows and can translate
+                to builtin runtime-calls or \gls{ssa}
+        \end{itemize}
+\end{itemize}
+
+The go source code that is relevant for this thesis can be classified into three different
+types. One is the godoc - the documentation for the new built-in functions. The
+other two are the `public' and the `private' implementation of these builtins.
 
 % TODO: this could need a rewrite
-The `private' implementation is everything that is located within the \textit{src/cmd/compile/internal}
-package\cite{internal-packages}. It can only be used by the package in \textit{src/cmd/compile}, which
-contains the implentation of the compiler itself. When calling \mintinline{shell}|go build .|, the
-compiler is invoked indirectly. To directly invoke the compiler, \mintinline{shell}|go tool compile|
-can be used. The compile tool gets compiled from the main package located in \textit{src/cmd/compile/main.go},
-which in turn uses the internal package.
+The `private' implementation is everything that is located within the
+\textit{src/cmd/compile/internal} package\autocite{internal-packages}. It can only
+be used by the package in \textit{src/cmd/compile}, which contains the
+implementation of the compiler itself. When calling \mintinline{shell}|go build .|,
+the compiler is invoked indirectly. To directly invoke the compiler,
+\mintinline{shell}|go tool compile| can be used. The compile tool gets compiled
+from the main package located in \textit{src/cmd/compile}, which in turn
+uses the internal package.
 
-\newglossaryentry{gopls}{name=Gopls,description={Gopls is go's official language server implementation\cite{gopls}}}
+\newglossaryentry{gopls}{name=Gopls,description={Gopls is go's official language
+server implementation\autocite{gopls}}}
 
-Everything that is not in \textit{src/cmd/compile} is referred to as the `public' part of the compiler in this thesis.
-The `public' parts are used by external tools, for example \gls{gopls}, for type-checking, source code
-validation and analysis.
+Everything that is not in \textit{src/cmd/compile} is referred to as the `public'
+part of the compiler in this thesis. The `public' parts are used by external
+tools, for example \gls{gopls}, for type-checking, source code validation and
+analysis.
 
-\subsection{Implementing Prepend}
+\subsection{Adding the GoDoc}
+In Go, documentation is generated directly from comments within the source code
+\autocite{godoc}. This also applies to builtin functions in the compiler, which
+have a function stub to document their behaviour\autocite{godoc-builtin}, but
+no implementation, as that is done in the compiler\autocite{builtin-impl}.
 
-\subsubsection{Adding the GoDoc}
-In Go, documentation is generated directly from comments within the source code\cite{godoc}. This also applies to
-builtin functions in the compiler, which have a function stub to document their behaviour\cite{godoc-builtin},
-but no implementation, as that is done in the compiler\cite{builtin-impl}.
+The documentation for builtins should be as short and precise as possible.
+The usage of `Type' and `Type1' has been decided based on other builtins
+like `append' and 'delete'.
+The function headers are derived from their Haskell counterparts, adjusted
+to the Go nomenclature.
 
-The prepend function header is modelled after the append declaration:
 \begin{code}
-    \captionof{listing}{Godoc for builtin functions (\textit{src/builtin/builtin.go})}
-\begin{gocode}
-func append(slice []Type, elems ...Type) []Type
-func prepend(elem Type, slice []Type) []Type
-\end{gocode}
+    \captionof{listing}{Godoc for the new built-in functions}
+    \gofilerange{../work/go/src/builtin/builtin.go}{begin-newbuiltins}{end-newbuiltins}
 \end{code}
 
-The file containing the documentation is `\textit{src/builtin/builtin.go}'.
-Adding a comment above the `prepend' function header concludes the documentation
-part of the implementation.
+\subsection{Public packages}
 
-\subsubsection{Adding prepend to the public packages}
-
-The second step is to add prepend to the `\textit{src/go/types}' package.
 \begin{quote}
-    Package types declares the data types and implements the algorithms for
-    type-checking of Go packages
-\end{quote}\cite{godoc-types}
+Note that the `go/*` family of packages, such as `go/parser` and `go/types`,
+have no relation to the compiler. Since the compiler was initially written in C,
+the `go/*` packages were developed to enable writing tools working with Go code,
+such as `gofmt` and `vet`.\autocite{compiler-readme}
+\end{quote}
 
-Though it will not have a direct impact on the compiler, adding the prepend function
-to the \textit{types} package allows external tools like \gls{gopls}
-to type-check `.go' files and support the programmer
-at writing code.
+To enable tooling support for the new built-in functions, they have to be
+registered in the `go/*' packages. The only package that is affected by new
+builtins is `go/types'.
 
-To allow type-checking prepend, the function has to be registered as a builtin.
-This is done in `\textit{src/go/types/universe.go}':
-
-\begin{code}
-    \captionof{listing}{public type-checking for prepend builtin (\textit{src/go/types/universe.go})}
-    \gofilerange{../work/go/src/go/types/universe.go}{start}{end}
-\end{code}
-
-\textit{universe.go} also contains a section for \mintinline{go}|predeclaredFuncs|, which
-define the number of arguments, type and name for builtin functions:
+In the `types' package, the builtins have to be registered as such and as
+`predeclared' functions:
 
 \begin{code}
-    \captionof{listing}{list of predeclared functions (\textit{src/go/types/universe.go})}
-    \gofilerange{../work/go/src/go/types/universe.go}{predecstart}{predecend}
+    \captionof{listing}{Registering new built-in functions}
+    \gofilerange{../work/go/src/go/types/universe.go}{start-builtin}{end-builtin}
+    \gofilerange{../work/go/src/go/types/universe.go}{start-predeclared}{end-predeclared}
 \end{code}
 
-Prepend takes two arguments and is not a variadic function. The expression kind can either be a `conversion',
-`expression' or a `statement'.
-As it returns a value, prepend is an expression, similar to append.
-
-The existing unit tests within the `types' package ensure that every builtin
-function also has at least one test. This makes it mandatory to add a test
-for `prepend' too:
-
-\begin{code}
-    \captionof{listing}{builtin functions tests (\textit{src/go/types/builtins\_test.go})}
-    \gofilerange[gobble=1]{../work/go/src/go/types/builtins_test.go}{start-prepend}{end-prepend}
-\end{code}
-
-The type-checking itself is straightforward. The implementation starts by checking that the second
-argument is a slice, and then extracts the slice's element type and checks that the first argument
-is of the same type.
-
-\begin{code}
-    \captionof{listing}{type checking prepend (\textit{src/go/types/builtins.go})}
-    \gofilerange[gobble=1]{../work/go/src/go/types/builtins.go}{start-prepend-typecheck}{end-prepend-typecheck}
-\end{code}
+This registration defines the type of the built-in - they are all expressions,
+as they return a value - and the number of arguments.
+After that, the type-checking and its associated tests can be implemented.
+% TODO: reference the implementation
 
 This concludes the type-checking for external tools and makes `gopls' return errors
-if the wrong types are used\footnote{
-For this to work, `gopls' has to be compiled against the modified version of the
-go source. This means pointing the go toolchain to the correct directory by setting
+Once type-checking the new built-in functions is implemented, `gopls' can be
+compiled against the new public packages.\footnote{
+This means pointing the go toolchain to the correct directory by setting
 the value of `GOROOT' with \mintinline{shell}|go env -w GOROOT=<path>|.
-}. For example, when trying to prepend an integer to
-a string slice:
+}
+It will then return errors if the wrong types are used. For example, when trying
+to prepend an integer to a string slice:
 
 \begin{gocode}
 package main
@@ -114,105 +112,188 @@ func main() {
 }
 \end{gocode}
 
-Gopls then reports the type-checking error:
+Gopls will report a type-checking error:
 \begin{bashcode}
 $ gopls check main.go
 /tmp/playground/main.go:6:22-23: cannot convert 3 (untyped int constant) to string
 \end{bashcode}
 
-\subsubsection{Adding prepend to the private compiler package}
+\subsection{Private packages}
 
-The compiler is implemented at \textit{src/cmd/compile/internal/gc}\footnote{`gc'
-within the path stands for `go compiler', and not `garbage collection'.},
-so all mentioned files are located within this directory.
+In the private packages - the actual compiler - the expressions have to be
+type-checked, ordered and transformed.
 
-\newglossaryentry{dag}{name=DAG, description={Directed Acyclic Graph}}
+The type-checking process is similar to the one executed for external tools.
+It should also check the node's child nodes, meaning an operations
+arguments, body and init statements. Furthermore, during the type-checking
+process, the built-in function's return types are set and node types
+may be converted, if possible and necessary.
+An operation may expect it's arguments to be in \mintinline{go}|node.Left|
+and \mintinline{go}|node.Right|, which means type-checking will also need
+to move the argument nodes from their default location in
+\mintinline{go}|node.List| to \mintinline{go}|node.Left| and
+\mintinline{go}|node.Right|.
 
-First, prepend needs to be registered as a builtin to parse prepend into
-the \gls{ast} (technically, the syntax tree is a syntax \gls{dag}\cite{ast-node-dag},
-but this is an implementation detail):
+Ordering ensures the evaluation order and re-orders expressions. All of
+the new built-in functions will be evaluated left-to-right and there are now
+special cases to handle.
+
+Transforming means changing the AST nodes from the built-in operation to
+nodes that the compiler knows how to translate to SSA. The actual algorithm
+that these functions use cannot be implemented in normal Go code, they have to be
+translated directly to AST nodes and statements.
+
+There are more steps to compiling Go code, for example escape-checking,
+SSA conversion and a lot of optimisations. These are not necessary to
+implement and do not have a direct relation to the new built-ins, which
+is why these steps are elided in this paper.
+
+The actual algorithms and part of the implementations for the builtin
+functions are covered in the following chapters.
+\footnote{
+    The full implementations can be viewed by diff-ing the git repository
+    between the references `bachelor-thesis' and `go1.14'\autocite{ba-go1-14-thesis-diff}.
+}
+
+\subsubsection{fmap}
+
+To make the implementation in the AST easier, the algorithm will first be
+developed in Go, and then translated. Implementing fmap in Go is relatively
+simple:
 
 \begin{code}
-    \captionof{listing}{registering prepend in the compiler (\textit{universe.go})}
-    \gofilerange{../work/go/src/cmd/compile/internal/gc/universe.go}{start-builtins}{end-builtins}
-\end{code}
-
-`OPREPEND' is an operation that has to be defined in \textit{syntax.go}:
-
-\begin{code}
-    \captionof{listing}{OPREPEND node definition}
-    \gofilerange{../work/go/src/cmd/compile/internal/gc/syntax.go}{start-builtins-one}{end-builtins-one}
-    \gofilerange{../work/go/src/cmd/compile/internal/gc/syntax.go}{start-builtins-two}{end-builtins-two}
-\end{code}
-
-This also shows that an `OPREPEND' node expects its arguments to be in `node.Left'
-and `node.Right', and not, like `OAPPEND', in `node.List'. This is achieved in
-\textit{typecheck.go}. Before typechecking, a function's arguments are always
-defined in `node.List`. In the implementation for `OPREPEND', the arguments are typechecked and parsed
-into `node.Left' and `node.Right' by the statements:
-
-\begin{gocode}
-// typecheck the arguments, expand function arguments etc.
-typecheckargs(n)
-// twoarg ensures there's exactly two arguments and adds
-// them to n.Left and n.Right
-if !twoarg(n) {
-    // ...
+    \captionof{listing}{Fmap implementation in Go}
+    \label{code:fmap-go}
+    \begin{gocode}
+func fmap(fn func(Type) Type1, src []Type) (dest []Type1) {
+    for _, elem := range src {
+        dest = append(dest, fn(elem))
+    }
+    return dest
 }
 \end{gocode}
-
-After `node.Left' and `node.Right' are populated, `node.Right'\'s type is checked to be
-a slice, and `node.Left' is of the same type as the slice elements.
-The full typecheck is added as case within \textit{typecheck.go}:
-\begin{code}
-    \captionof{listing}{typechecking prepend (\textit{typecheck.go})}
-    \gofilerange[gobble=1]{../work/go/src/cmd/compile/internal/gc/typecheck.go}{start-prepend-typecheck}{end-prepend-typecheck}
 \end{code}
 
-% TODO: rege: explain escape analysis and holes
-With this, type-checking prepend in the AST is implemented.
-The next step in the Go compiler is escape analysis. This is similar
-to the `OAPPEND' node, though `OPREPEND' always has only two arguments:
+However, there is room for improvement within that function. Instead
+of calling \mintinline{go}|append| at every iteration of the loop, the slice can
+be allocated with \mintinline{go}|make| at the beginning of the function. Thus,
+calls to grow the slice at runtime can be saved.
 
 \begin{code}
-    \captionof{listing}{escape analysis for prepend (\textit{escape.go})}
-    \gofilerange[gobble=2]{../work/go/src/cmd/compile/internal/gc/escape.go}{start-prepend}{end-prepend}
+    \captionof{listing}{Improved implementation of fmap}
+    \label{code:fmap-go-improved}
+    \begin{gocode}
+func fmap(fn func(Type) Type1, src []Type) []Type1 {
+    dest := make([]Type1, len(src))
+    for i, elem := range src {
+        dest[i] = fn(elem)
+    }
+    return dest
+}
+    \end{gocode}
 \end{code}
 
-The next phase within the compiler are AST transformations to
-lower the AST to a more easily compilable form. The first call
-is made to `order'. `order' reorders expressions and enforces the
-evaluation order. For prepend, this is done by adding another `case'
-expression within \mintinline{go}|func (o *Order) expr(n, lhs *Node) *Node|.
-Again, this can be implemented similarly to append:
+This algorithm can be translated to the following AST node:
 
 \begin{code}
-    \captionof{listing}{ordering the prepend arguments (\textit{order.go})}
-    \gofilerange[gobble=1]{../work/go/src/cmd/compile/internal/gc/order.go}{start-prepend}{end-prepend}
+    \captionof{listing}{fmap AST translation\autocite{fmap-walk-implementation}}
+    \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fmap-header}{end-fmap-header}
 \end{code}
 
-The compiler now calls `walk' to do more AST transformations, for example replacing
-nodes like `OAPPEND' with the actual implementation of the algorithm, in AST form.
-This is where the logic for `OPREPEND' needs to be added too.
-To recapitulate, the general algorithm for `prepend' is:
-\begin{gocode}
-dest := make([]<T>, 1, len(src)+1)
-dest[0] = elem
-return append(dest, src...)
-\end{gocode}
+\subsubsection{prepend}
+
+The general algorithm for `prepend' is:
+\begin{code}
+    \captionof{listing}{prepend implementation in Go}
+    \begin{gocode}
+func prepend(elem Type, slice []Type) []Type {
+    dest := make([]Type, 1, len(src)+1)
+    dest[0] = elem
+    return append(dest, slice...)
+}
+    \end{gocode}
+\end{code}
+
+The call to \mintinline{go}|make(...)| creates a slice with the length of 1 and the capacity
+to hold all elements of the source slice, plus one. By allocating the slice with the full
+length, another slice allocation within the call to \mintinline{go}|append(...)| is saved.
+The element to prepend is added as the first element of the slice, and append will then
+copy the `src' slice into `dest'.
 
 The implementation within `walkprepend' reflects these lines of Go code, but
 as AST nodes:
 
 \begin{code}
-    \captionof{listing}{implementation of prepend within the AST (\textit{walk.go})}
-    \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-prepend}{end-prepend}
+    \captionof{listing}{prepend AST translation\autocite{prepend-walk-implementation}}
+    \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-prepend-header}{end-prepend-header}
 \end{code}
 
-This `walkprepend' function is called from `walkexpr'. Within `walkepr', it is called
-only if the parent node is of the operation `OAS' or `OASOP', as prepend is an expression that always
-returns a value, meaning it must be assigned back.
+\subsubsection{foldr and foldl}
 
-This concludes the implementation of prepend. Some changes may have been omitted
-and can be found by comparing the
-changes between the git tag `go1.14'\cite{ba-go-1-14} and `ba-added-prepend'\cite{ba-added-prepend}.
+As outlined in Chapter~\ref{sec:fold}, there will be two fold functions;
+foldr and foldl. foldr behaves exactly like its Haskell counterpart,
+while foldl behaves like foldl' in Haskell.
+
+While the fold algorithms are most obvious when using recursion, due to
+performance considerations, an imperative implementation has been chosen:
+
+\begin{code}
+    \captionof{listing}{fold implementation in Go}
+    \begin{gocode}
+func foldr(fn func(Type, Type1) Type1, acc Type1, slice []Type) Type1 {
+    for i := len(s) - 1; i >= 0; i-- {
+        acc = fn(s[i], acc)
+    }
+    return acc
+}
+
+func foldl(fn func(Type1, Type) Type1, acc Type1, slice []Type) Type1 {
+    for i := 0; i < len(s); i++ {
+        acc = f(acc, s[i])
+    }
+    return acc
+}
+\end{gocode}
+\end{code}
+
+The code further clarifies the differences between the two different folds;
+the slice is processed in reverse order for foldr (as it would be if this
+algorithm would have been implemented with recursion), and the order of
+arguments to the fold function is switched.
+
+The AST walk translates fold to:
+\begin{code}
+    \captionof{listing}{fold AST translation\autocite{fold-walk-implementation}}
+    \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fold-header}{end-fold-header}
+\end{code}
+
+\subsubsection{filter}
+
+Being a slice-manipulating function, filter also needs to traverse the whole
+slice in a for-loop. However, compared to the other newly built-in functions,
+the size for the target slice is unknown until all items have been traversed,
+which is why filter does not allow for the same optimisations as the other
+functions.
+
+\begin{code}
+    \captionof{listing}{filter implementation in Go}
+    \begin{gocode}
+func filter(f func(Type) bool, s []Type) []Type {
+    var dst []Type
+    for i := range s {
+            if f(s) {
+                dst = append(dst, s[i])
+            }
+    }
+}
+    \end{gocode}
+\end{code}
+
+And the same algorithm, but translated to AST statements:
+
+\begin{code}
+    \captionof{listing}{filter AST translation\autocite{filter-walk-implementation}}
+    \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-filter-header}{end-filter-header}
+\end{code}
+
+\section{Functional Check}

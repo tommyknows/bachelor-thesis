@@ -1,6 +1,7 @@
-\glossaryentry{AST?\glossentry{ast}|setentrycounter[]{page}\glsnumberformat}{14}
+\glossaryentry{AST?\glossentry{ast}|setentrycounter[]{page}\glsnumberformat}{13}
+\glossaryentry{DAG?\glossentry{dag}|setentrycounter[]{page}\glsnumberformat}{13}
 \glossaryentry{SSA?\glossentry{ssa}|setentrycounter[]{page}\glsnumberformat}{14}
-\glossaryentry{Gopls?\glossentry{gopls}|setentrycounter[]{page}\glsnumberformat}{19}
-\glossaryentry{Gopls?\glossentry{gopls}|setentrycounter[]{page}\glsnumberformat}{20}
-\glossaryentry{AST?\glossentry{ast}|setentrycounter[]{page}\glsnumberformat}{23}
-\glossaryentry{DAG?\glossentry{dag}|setentrycounter[]{page}\glsnumberformat}{23}
+\glossaryentry{copy by value?\glossentry{copy-by-value}|setentrycounter[]{page}\glsnumberformat}{24}
+\glossaryentry{AST?\glossentry{ast}|setentrycounter[]{page}\glsnumberformat}{27}
+\glossaryentry{SSA?\glossentry{ssa}|setentrycounter[]{page}\glsnumberformat}{27}
+\glossaryentry{Gopls?\glossentry{gopls}|setentrycounter[]{page}\glsnumberformat}{28}
