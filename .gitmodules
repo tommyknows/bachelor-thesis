@@ -21,7 +21,7 @@
 	url = https://github.com/facebook/Haxl.git
 [submodule "work/go"]
 	path = work/go
-	url = ssh://git@ssh.git.ramonr.ch/ramon/go.git
+	url = https://github.com/tommyknows/go.git
 	branch = bachelor-thesis
 [submodule "work/tools"]
 	path = work/tools
