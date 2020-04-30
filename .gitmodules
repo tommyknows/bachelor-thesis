@@ -26,3 +26,6 @@
 [submodule "work/tools"]
 	path = work/tools
 	url = https://github.com/golang/tools.git
+[submodule "work/funcheck"]
+	path = work/funcheck
+	url = https://github.com/tommyknows/funcheck.git
