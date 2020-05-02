@@ -22,6 +22,7 @@ func main() {
 
 	flag.Parse()
 
+	// this could be parameterised at some point
 	*start = "// " + *start
 	*end = "// " + *end
 
