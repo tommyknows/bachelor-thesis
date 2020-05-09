@@ -118,6 +118,36 @@ parent={},%
 %
 }%
 }%
+\ifglsentryexists{ebnf}{}%
+{%
+\gls@defglossaryentry{ebnf}%
+{%
+name={Extended Backus-Naur Form},%
+sort={Extended Backus-Naur Form},%
+type={main},%
+first={Extended Backus-Naur Form},%
+firstplural={Extended Backus-Naur Forms},%
+text={Extended Backus-Naur Form},%
+plural={Extended Backus-Naur Forms},%
+description={An extended version of the `Backus-Naur Form, a notation technique to describe programming language syntax},%
+descriptionplural={An extended version of the `Backus-Naur Form, a notation technique to describe programming language syntax},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
 \ifglsentryexists{gopls}{}%
 {%
 \gls@defglossaryentry{gopls}%
@@ -129,8 +159,8 @@ first={Gopls},%
 firstplural={Goplss},%
 text={Gopls},%
 plural={Goplss},%
-description={Gopls is go's official language server implementation\cite {gopls}},%
-descriptionplural={Gopls is go's official language server implementation\cite {gopls}},%
+description={Gopls is go's official language server implementation\autocite {gopls}},%
+descriptionplural={Gopls is go's official language server implementation\autocite {gopls}},%
 symbol={\relax },%
 symbolplural={\relax },%
 user1={},%

@@ -1,299 +1,308 @@
 \section{Implementing the new built-in functions}
 
-\subsection{Required Steps}
-
-Adding a builtin function to the Go language requires a few more steps than just
-adding support within the compiler. While it would technically be enough to
-support the translation between Go code and the compiled binary, there would be
-no visibility for a developer that there is a function that could be used.
-For a complete implementation, the following steps are necessary:
-\begin{itemize}
-    \item Adding the GoDoc\autocite{godoc} that describes the function and it's usage
-    \item Adding type-checking support in external packages for tools like
-    Gopls\autocite{gopls}
-    \item Adding the implementation within the internal\footnote{
-            ``An import of
-            a path containing the element “internal” is disallowed if the
-            importing code is outside the tree rooted at the parent of the
-            `internal' directory.''\autocite{internal-packages}
-        }
-        package of the compiler
-        \begin{itemize}
-            \item Adding the \gls{ast} node type
-            \item Adding type-checking for that node type
-            \item Adding the AST traversal for that node type, translating it
-                to AST nodes that the compiler already knows and can translate
-                to builtin runtime-calls or \gls{ssa}
-        \end{itemize}
-\end{itemize}
-
-The go source code that is relevant for this thesis can be classified into three different
-types. One is the godoc - the documentation for the new built-in functions. The
-other two are the `public' and the `private' implementation of these builtins.
-
-% TODO: this could need a rewrite
-The `private' implementation is everything that is located within the
-\textit{src/cmd/compile/internal} package\autocite{internal-packages}. It can only
-be used by the package in \textit{src/cmd/compile}, which contains the
-implementation of the compiler itself. When calling \mintinline{shell}|go build .|,
-the compiler is invoked indirectly. To directly invoke the compiler,
-\mintinline{shell}|go tool compile| can be used. The compile tool gets compiled
-from the main package located in \textit{src/cmd/compile}, which in turn
-uses the internal package.
-
-\newglossaryentry{gopls}{name=Gopls,description={Gopls is go's official language
-server implementation\autocite{gopls}}}
-
-Everything that is not in \textit{src/cmd/compile} is referred to as the `public'
-part of the compiler in this thesis. The `public' parts are used by external
-tools, for example \gls{gopls}, for type-checking, source code validation and
-analysis.
-
-\subsection{Adding the GoDoc}
-In Go, documentation is generated directly from comments within the source code
-\autocite{godoc}. This also applies to builtin functions in the compiler, which
-have a function stub to document their behaviour\autocite{godoc-builtin}, but
-no implementation, as that is done in the compiler\autocite{builtin-impl}.
-
-The documentation for builtins should be as short and precise as possible.
-The usage of `Type' and `Type1' has been decided based on other builtins
-like `append' and 'delete'.
-The function headers are derived from their Haskell counterparts, adjusted
-to the Go nomenclature.
-
-\begin{code}
-    \captionof{listing}{Godoc for the new built-in functions}
-    \gofilerange{../work/go/src/builtin/builtin.go}{begin-newbuiltins}{end-newbuiltins}
-\end{code}
-
-\subsection{Public packages}
-
-\begin{quote}
-Note that the `go/*` family of packages, such as `go/parser` and `go/types`,
-have no relation to the compiler. Since the compiler was initially written in C,
-the `go/*` packages were developed to enable writing tools working with Go code,
-such as `gofmt` and `vet`.\autocite{compiler-readme}
-\end{quote}
-
-To enable tooling support for the new built-in functions, they have to be
-registered in the `go/*' packages. The only package that is affected by new
-builtins is `go/types'.
-
-In the `types' package, the builtins have to be registered as such and as
-`predeclared' functions:
-
-\begin{code}
-    \captionof{listing}{Registering new built-in functions}
-    \gofilerange{../work/go/src/go/types/universe.go}{start-builtin}{end-builtin}
-    \gofilerange{../work/go/src/go/types/universe.go}{start-predeclared}{end-predeclared}
-\end{code}
-
-This registration defines the type of the built-in - they are all expressions,
-as they return a value - and the number of arguments.
-After that, the type-checking and its associated tests can be implemented.
-% TODO: reference the implementation
-
-This concludes the type-checking for external tools and makes `gopls' return errors
-Once type-checking the new built-in functions is implemented, `gopls' can be
-compiled against the new public packages.\footnote{
-This means pointing the go toolchain to the correct directory by setting
-the value of `GOROOT' with \mintinline{shell}|go env -w GOROOT=<path>|.
-}
-It will then return errors if the wrong types are used. For example, when trying
-to prepend an integer to a string slice:
-
-\begin{gocode}
-package main
-
-import "fmt"
-
-func main() {
-    fmt.Println(prepend(3, []string{"hello", "world"}))
-}
-\end{gocode}
-
-Gopls will report a type-checking error:
-\begin{bashcode}
-$ gopls check main.go
-/tmp/playground/main.go:6:22-23: cannot convert 3 (untyped int constant) to string
-\end{bashcode}
-
-\subsection{Private packages}
-
-In the private packages - the actual compiler - the expressions have to be
-type-checked, ordered and transformed.
-
-The type-checking process is similar to the one executed for external tools.
-It should also check the node's child nodes, meaning an operations
-arguments, body and init statements. Furthermore, during the type-checking
-process, the built-in function's return types are set and node types
-may be converted, if possible and necessary.
-An operation may expect it's arguments to be in \mintinline{go}|node.Left|
-and \mintinline{go}|node.Right|, which means type-checking will also need
-to move the argument nodes from their default location in
-\mintinline{go}|node.List| to \mintinline{go}|node.Left| and
-\mintinline{go}|node.Right|.
-
-Ordering ensures the evaluation order and re-orders expressions. All of
-the new built-in functions will be evaluated left-to-right and there are now
-special cases to handle.
-
-Transforming means changing the AST nodes from the built-in operation to
-nodes that the compiler knows how to translate to SSA. The actual algorithm
-that these functions use cannot be implemented in normal Go code, they have to be
-translated directly to AST nodes and statements.
-
-There are more steps to compiling Go code, for example escape-checking,
-SSA conversion and a lot of optimisations. These are not necessary to
-implement and do not have a direct relation to the new built-ins, which
-is why these steps are elided in this paper.
-
-The actual algorithms and part of the implementations for the builtin
-functions are covered in the following chapters.
-\footnote{
-    The full implementations can be viewed by diff-ing the git repository
-    between the references `bachelor-thesis' and `go1.14'\autocite{ba-go1-14-thesis-diff}.
-}
-
-\subsubsection{fmap}
-
-To make the implementation in the AST easier, the algorithm will first be
-developed in Go, and then translated. Implementing fmap in Go is relatively
-simple:
-
-\begin{code}
-    \captionof{listing}{Fmap implementation in Go}
-    \label{code:fmap-go}
-    \begin{gocode}
-func fmap(fn func(Type) Type1, src []Type) (dest []Type1) {
-    for _, elem := range src {
-        dest = append(dest, fn(elem))
-    }
-    return dest
-}
-\end{gocode}
-\end{code}
-
-However, there is room for improvement within that function. Instead
-of calling \mintinline{go}|append| at every iteration of the loop, the slice can
-be allocated with \mintinline{go}|make| at the beginning of the function. Thus,
-calls to grow the slice at runtime can be saved.
-
-\begin{code}
-    \captionof{listing}{Improved implementation of fmap}
-    \label{code:fmap-go-improved}
-    \begin{gocode}
-func fmap(fn func(Type) Type1, src []Type) []Type1 {
-    dest := make([]Type1, len(src))
-    for i, elem := range src {
-        dest[i] = fn(elem)
-    }
-    return dest
-}
-    \end{gocode}
-\end{code}
-
-This algorithm can be translated to the following AST node:
-
-\begin{code}
-    \captionof{listing}{fmap AST translation\autocite{fmap-walk-implementation}}
-    \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fmap-header}{end-fmap-header}
-\end{code}
-
-\subsubsection{prepend}
-
-The general algorithm for `prepend' is:
-\begin{code}
-    \captionof{listing}{prepend implementation in Go}
-    \begin{gocode}
-func prepend(elem Type, slice []Type) []Type {
-    dest := make([]Type, 1, len(src)+1)
-    dest[0] = elem
-    return append(dest, slice...)
-}
-    \end{gocode}
-\end{code}
-
-The call to \mintinline{go}|make(...)| creates a slice with the length of 1 and the capacity
-to hold all elements of the source slice, plus one. By allocating the slice with the full
-length, another slice allocation within the call to \mintinline{go}|append(...)| is saved.
-The element to prepend is added as the first element of the slice, and append will then
-copy the `src' slice into `dest'.
-
-The implementation within `walkprepend' reflects these lines of Go code, but
-as AST nodes:
-
-\begin{code}
-    \captionof{listing}{prepend AST translation\autocite{prepend-walk-implementation}}
-    \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-prepend-header}{end-prepend-header}
-\end{code}
-
-\subsubsection{foldr and foldl}
-
-As outlined in Chapter~\ref{sec:fold}, there will be two fold functions;
-foldr and foldl. foldr behaves exactly like its Haskell counterpart,
-while foldl behaves like foldl' in Haskell.
-
-While the fold algorithms are most obvious when using recursion, due to
-performance considerations, an imperative implementation has been chosen:
-
-\begin{code}
-    \captionof{listing}{fold implementation in Go}
-    \begin{gocode}
-func foldr(fn func(Type, Type1) Type1, acc Type1, slice []Type) Type1 {
-    for i := len(s) - 1; i >= 0; i-- {
-        acc = fn(s[i], acc)
-    }
-    return acc
-}
-
-func foldl(fn func(Type1, Type) Type1, acc Type1, slice []Type) Type1 {
-    for i := 0; i < len(s); i++ {
-        acc = f(acc, s[i])
-    }
-    return acc
-}
-\end{gocode}
-\end{code}
-
-The code further clarifies the differences between the two different folds;
-the slice is processed in reverse order for foldr (as it would be if this
-algorithm would have been implemented with recursion), and the order of
-arguments to the fold function is switched.
-
-The AST walk translates fold to:
-\begin{code}
-    \captionof{listing}{fold AST translation\autocite{fold-walk-implementation}}
-    \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fold-header}{end-fold-header}
-\end{code}
-
-\subsubsection{filter}
-
-Being a slice-manipulating function, filter also needs to traverse the whole
-slice in a for-loop. However, compared to the other newly built-in functions,
-the size for the target slice is unknown until all items have been traversed,
-which is why filter does not allow for the same optimisations as the other
-functions.
-
-\begin{code}
-    \captionof{listing}{filter implementation in Go}
-    \begin{gocode}
-func filter(f func(Type) bool, s []Type) []Type {
-    var dst []Type
-    for i := range s {
-            if f(s) {
-                dst = append(dst, s[i])
-            }
-    }
-}
-    \end{gocode}
-\end{code}
-
-And the same algorithm, but translated to AST statements:
-
-\begin{code}
-    \captionof{listing}{filter AST translation\autocite{filter-walk-implementation}}
-    \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-filter-header}{end-filter-header}
-\end{code}
+\input{chapters/41_builtins.tex}
 
 \section{Functional Check}
+
+\input{chapters/42_funcheck.tex}
+
+%\subsection{Required Steps}
+
+%Adding a builtin function to the Go language requires a few more steps than just
+%adding support within the compiler. While it would technically be enough to
+%support the translation between Go code and the compiled binary, there would be
+%no visibility for a developer that there is a function that could be used.
+%For a complete implementation, the following steps are necessary:
+%\begin{itemize}
+    %\item Adding the GoDoc\autocite{godoc} that describes the function and it's usage
+    %\item Adding type-checking support in external packages for tools like
+    %Gopls\autocite{gopls}
+    %\item Adding the implementation within the internal\footnote{
+            %``An import of
+            %a path containing the element “internal” is disallowed if the
+            %importing code is outside the tree rooted at the parent of the
+            %`internal' directory.''\autocite{internal-packages}
+        %}
+        %package of the compiler
+        %\begin{itemize}
+            %\item Adding the \gls{ast} node type
+            %\item Adding type-checking for that node type
+            %\item Adding the AST traversal for that node type, translating it
+                %to AST nodes that the compiler already knows and can translate
+                %to builtin runtime-calls or \gls{ssa}
+        %\end{itemize}
+%\end{itemize}
+
+%The go source code that is relevant for this thesis can be classified into three different
+%types. One is the godoc - the documentation for the new built-in functions. The
+%other two are the `public' and the `private' implementation of these builtins.
+
+%% TODO: this could need a rewrite
+%The `private' implementation is everything that is located within the
+%\textit{src/cmd/compile/internal} package\autocite{internal-packages}. It can only
+%be used by the package in \textit{src/cmd/compile}, which contains the
+%implementation of the compiler itself. When calling \mintinline{shell}|go build .|,
+%the compiler is invoked indirectly. To directly invoke the compiler,
+%\mintinline{shell}|go tool compile| can be used. The compile tool gets compiled
+%from the main package located in \textit{src/cmd/compile}, which in turn
+%uses the internal package.
+
+%\newglossaryentry{gopls}{name=Gopls,description={Gopls is go's official language
+%server implementation\autocite{gopls}}}
+
+%Everything that is not in \textit{src/cmd/compile} is referred to as the `public'
+%part of the compiler in this thesis. The `public' parts are used by external
+%tools, for example \gls{gopls}, for type-checking, source code validation and
+%analysis.
+
+%\subsection{Adding the GoDoc}
+%In Go, documentation is generated directly from comments within the source code
+%\autocite{godoc}. This also applies to builtin functions in the compiler, which
+%have a function stub to document their behaviour\autocite{godoc-builtin}, but
+%no implementation, as that is done in the compiler\autocite{builtin-impl}.
+
+%The documentation for builtins should be as short and precise as possible.
+%The usage of `Type' and `Type1' has been decided based on other builtins
+%like `append' and 'delete'.
+%The function headers are derived from their Haskell counterparts, adjusted
+%to the Go nomenclature.
+
+%\begin{code}
+    %\captionof{listing}{Godoc for the new built-in functions}
+    %\gofilerange{../work/go/src/builtin/builtin.go}{begin-newbuiltins}{end-newbuiltins}
+%\end{code}
+
+%\subsection{Public packages}
+
+%\begin{quote}
+%Note that the `go/*` family of packages, such as `go/parser` and `go/types`,
+%have no relation to the compiler. Since the compiler was initially written in C,
+%the `go/*` packages were developed to enable writing tools working with Go code,
+%such as `gofmt` and `vet`.\autocite{compiler-readme}
+%\end{quote}
+
+%To enable tooling support for the new built-in functions, they have to be
+%registered in the `go/*' packages. The only package that is affected by new
+%builtins is `go/types'.
+
+%In the `types' package, the builtins have to be registered as such and as
+%`predeclared' functions:
+
+%\begin{code}
+    %\captionof{listing}{Registering new built-in functions}
+    %\gofilerange{../work/go/src/go/types/universe.go}{start-builtin}{end-builtin}
+    %\gofilerange{../work/go/src/go/types/universe.go}{start-predeclared}{end-predeclared}
+%\end{code}
+
+%This registration defines the type of the built-in - they are all expressions,
+%as they return a value - and the number of arguments.
+%After that, the type-checking and its associated tests can be implemented.
+%% TODO: reference the implementation
+
+%This concludes the type-checking for external tools and makes `gopls' return errors
+%Once type-checking the new built-in functions is implemented, `gopls' can be
+%compiled against the new public packages.\footnote{
+%This means pointing the go toolchain to the correct directory by setting
+%the value of `GOROOT' with \mintinline{shell}|go env -w GOROOT=<path>|.
+%}
+%It will then return errors if the wrong types are used. For example, when trying
+%to prepend an integer to a string slice:
+
+%\begin{gocode}
+%package main
+
+%import "fmt"
+
+%func main() {
+    %fmt.Println(prepend(3, []string{"hello", "world"}))
+%}
+%\end{gocode}
+
+%Gopls will report a type-checking error:
+%\begin{bashcode}
+%$ gopls check main.go
+%/tmp/playground/main.go:6:22-23: cannot convert 3 (untyped int constant) to string
+%\end{bashcode}
+
+%\subsection{Private packages}
+
+%In the private packages - the actual compiler - the expressions have to be
+%type-checked, ordered and transformed.
+
+%The type-checking process is similar to the one executed for external tools.
+%It should also check the node's child nodes, meaning an operations
+%arguments, body and init statements. Furthermore, during the type-checking
+%process, the built-in function's return types are set and node types
+%may be converted, if possible and necessary.
+%An operation may expect it's arguments to be in \mintinline{go}|node.Left|
+%and \mintinline{go}|node.Right|, which means type-checking will also need
+%to move the argument nodes from their default location in
+%\mintinline{go}|node.List| to \mintinline{go}|node.Left| and
+%\mintinline{go}|node.Right|.
+
+%Ordering ensures the evaluation order and re-orders expressions. All of
+%the new built-in functions will be evaluated left-to-right and there are now
+%special cases to handle.
+
+%Transforming means changing the AST nodes from the built-in operation to
+%nodes that the compiler knows how to translate to SSA. The actual algorithm
+%that these functions use cannot be implemented in normal Go code, they have to be
+%translated directly to AST nodes and statements.
+
+%There are more steps to compiling Go code, for example escape-checking,
+%SSA conversion and a lot of optimisations. These are not necessary to
+%implement and do not have a direct relation to the new built-ins, which
+%is why these steps are elided in this paper.
+
+%The actual algorithms and part of the implementations for the builtin
+%functions are covered in the following chapters.
+%\footnote{
+    %The full implementations can be viewed by diff-ing the git repository
+    %between the references `bachelor-thesis' and `go1.14'\autocite{ba-go1-14-thesis-diff}.
+%}
+
+%\subsubsection{fmap}
+
+%To make the implementation in the AST easier, the algorithm will first be
+%developed in Go, and then translated. Implementing fmap in Go is relatively
+%simple:
+
+%\begin{code}
+    %\captionof{listing}{Fmap implementation in Go}
+    %\label{code:fmap-go}
+    %\begin{gocode}
+%func fmap(fn func(Type) Type1, src []Type) (dest []Type1) {
+    %for _, elem := range src {
+        %dest = append(dest, fn(elem))
+    %}
+    %return dest
+%}
+%\end{gocode}
+%\end{code}
+
+%However, there is room for improvement within that function. Instead
+%of calling \mintinline{go}|append| at every iteration of the loop, the slice can
+%be allocated with \mintinline{go}|make| at the beginning of the function. Thus,
+%calls to grow the slice at runtime can be saved.
+
+%\begin{code}
+    %\captionof{listing}{Improved implementation of fmap}
+    %\label{code:fmap-go-improved}
+    %\begin{gocode}
+%func fmap(fn func(Type) Type1, src []Type) []Type1 {
+    %dest := make([]Type1, len(src))
+    %for i, elem := range src {
+        %dest[i] = fn(elem)
+    %}
+    %return dest
+%}
+    %\end{gocode}
+%\end{code}
+
+%This algorithm can be translated to the following AST node:
+
+%\begin{code}
+    %\captionof{listing}{fmap AST translation\autocite{fmap-walk-implementation}}
+    %\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fmap-header}{end-fmap-header}
+%\end{code}
+
+%\subsubsection{prepend}
+
+%The general algorithm for `prepend' is:
+%\begin{code}
+    %\captionof{listing}{prepend implementation in Go}
+    %\begin{gocode}
+%func prepend(elem Type, slice []Type) []Type {
+    %dest := make([]Type, 1, len(src)+1)
+    %dest[0] = elem
+    %return append(dest, slice...)
+%}
+    %\end{gocode}
+%\end{code}
+
+%The call to \mintinline{go}|make(...)| creates a slice with the length of 1 and the capacity
+%to hold all elements of the source slice, plus one. By allocating the slice with the full
+%length, another slice allocation within the call to \mintinline{go}|append(...)| is saved.
+%The element to prepend is added as the first element of the slice, and append will then
+%copy the `src' slice into `dest'.
+
+%The implementation within `walkprepend' reflects these lines of Go code, but
+%as AST nodes:
+
+%\begin{code}
+    %\captionof{listing}{prepend AST translation\autocite{prepend-walk-implementation}}
+    %\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-prepend-header}{end-prepend-header}
+%\end{code}
+
+%\subsubsection{foldr and foldl}
+
+%As outlined in Chapter~\ref{sec:fold}, there will be two fold functions;
+%foldr and foldl. foldr behaves exactly like its Haskell counterpart,
+%while foldl behaves like foldl' in Haskell.
+
+%While the fold algorithms are most obvious when using recursion, due to
+%performance considerations, an imperative implementation has been chosen:
+
+%\begin{code}
+    %\captionof{listing}{fold implementation in Go}
+    %\begin{gocode}
+%func foldr(fn func(Type, Type1) Type1, acc Type1, slice []Type) Type1 {
+    %for i := len(s) - 1; i >= 0; i-- {
+        %acc = fn(s[i], acc)
+    %}
+    %return acc
+%}
+
+%func foldl(fn func(Type1, Type) Type1, acc Type1, slice []Type) Type1 {
+    %for i := 0; i < len(s); i++ {
+        %acc = f(acc, s[i])
+    %}
+    %return acc
+%}
+%\end{gocode}
+%\end{code}
+
+%The code further clarifies the differences between the two different folds;
+%the slice is processed in reverse order for foldr (as it would be if this
+%algorithm would have been implemented with recursion), and the order of
+%arguments to the fold function is switched.
+
+%The AST walk translates fold to:
+%\begin{code}
+    %\captionof{listing}{fold AST translation\autocite{fold-walk-implementation}}
+    %\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fold-header}{end-fold-header}
+%\end{code}
+
+%\subsubsection{filter}
+
+%Being a slice-manipulating function, filter also needs to traverse the whole
+%slice in a for-loop. However, compared to the other newly built-in functions,
+%the size for the target slice is unknown until all items have been traversed,
+%which is why filter does not allow for the same optimisations as the other
+%functions.
+
+%\begin{code}
+    %\captionof{listing}{filter implementation in Go}
+    %\begin{gocode}
+%func filter(f func(Type) bool, s []Type) []Type {
+    %var dst []Type
+    %for i := range s {
+            %if f(s) {
+                %dst = append(dst, s[i])
+            %}
+    %}
+%}
+    %\end{gocode}
+%\end{code}
+
+%And the same algorithm, but translated to AST statements:
+
+%\begin{code}
+    %\captionof{listing}{filter AST translation\autocite{filter-walk-implementation}}
+    %\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-filter-header}{end-filter-header}
+%\end{code}
+
+%\section{Functional Check}
+
+
+%Chapter~\ref{sec:fold}

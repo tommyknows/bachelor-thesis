@@ -1,0 +1,157 @@
+As discussed in Chapter~\ref{sec:funcheck-theory}, a linter needs to be written
+to detect reassignments within a Go program.
+
+To get a grasp about the issues this linter is trying to solve, we will % TODO
+first write down some examples, cases that should be matched against.
+
+\subsection{Examples}
+
+The simplest cases are standalone reassignments and assignment operators:
+\begin{gocode}
+x := 5
+x = 6 // forbidden
+// or
+var y = 5
+y = 6   // forbidden
+y += 6  // forbidden
+y <<= 2 // forbidden
+y++     // forbidden
+\end{gocode}
+Where the statement \mintinline{go}|x = 6| and \mintinline{go}|y = 6| should be reported.
+
+Adding block scoping to this, shadowing the old variable needs to be allowed:
+\begin{gocode}
+x := 5
+{
+	x = 6  // forbidden, changing the old value
+	x := 6 // allowed, as this shadows the old variable
+}
+\end{gocode}
+What should be illegal is to declare the variable first and then assign a
+value to it:
+\begin{gocode}
+var x int
+x = 6 // forbidden
+\end{gocode}
+The exception here are functions, as they need to be declared first in order
+to recursively call them:
+\begin{gocode}
+var f func()
+f = func() {
+	f()
+}
+\end{gocode}
+Furthermore, the linter also needs to be able to handle multiple variables
+at once:
+\begin{gocode}
+var f func()
+x, f, y := 1, func() { f() }, 2
+\end{gocode}
+
+All the aforementioned examples and more can be found in the testcases for funcheck\autocite{funcheck-examples}.
+
+\subsection{Building a linter}
+
+The Go ecosystem already provides an official library for building code analysis tools,
+the `analysis' package from the Go Tools repository\autocite{go-analysis}. With this package,
+implementing a static code analyizer is being reduced to writing the actual AST node analysis.
+
+To define an analysis, a variable of type \mintinline{go}|analysis.Analyzer| has to be declared:
+
+\begin{gocode}
+var Analyzer = &analysis.Analyzer{
+	Name: "assigncheck",
+	Doc:  "reports re-assignments",
+	Run:  func(*analysis.Pass) (interface{}, error)
+}
+\end{gocode}
+
+The necessary steps are now adding the `Run' function and registering the analyser
+in the \mintinline{go}|main()| function.
+
+The `Run' function takes a `Pass' type. The Pass provides information about the package
+that is being analysed and some helper-functions to report diagnostics.
+
+With `analysis.Pass.Files` and the help of the `go/ast` package, traversing the syntax
+tree of every file in a package is done % TODO:
+
+\begin{gocode}
+for _, file := range pass.Files {
+	ast.Inspect(file, func(n ast.Node) bool {
+		// node analysing here
+	})
+}
+\end{gocode}
+
+To implement funcheck as described, we need to %TODO
+take care of three different AST node types. The first and easiest one is
+\mintinline{go}|*ast.IncDecStmt|. An `IncDecStmt' node is a \mintinline{go}|x++|
+or \mintinline{go}|x--| expression and should always be reported.
+
+\begin{gocode}
+switch as := n.(type) {
+case *ast.IncDecStmt:
+	pass.Reportf(as.Pos(), "inline re-assignment of %s", as.X)
+}
+\end{gocode}
+
+The other two types are \mintinline{go}|*ast.DeclStmt| and \mintinline{go}|*ast.AssignStmt|.
+They are not as simple to handle, which is why they are covered in their own chapters.
+
+\subsubsection{Detecting reassignments}
+
+To recapitulate, the goal of this step is to detect all assignments except blank identifiers
+(discarded values cannot be mutated) and function literals, if the function is declared in the
+last statement\footnote{This rule is to simplify the logic of the checker and make it easier
+    for developers to read the code. It means that no code may be between \mintinline{go}|var f func|
+and \mintinline{go}|f = func() { ... }|.}.
+
+\subsubsection{Handling function declarations}
+%\subsection{Examples to report}
+
+%The main idea behind the assignment checker (`assigncheck') is fairly
+%simple and can be demonstrated in just a few lines of code:
+
+%\begin{code}
+    %\captionof{listing}{Basic reported example}
+    %\begin{gocode}
+%package main
+
+%import "fmt"
+
+%func main() {
+	%x := 5
+	%fmt.Println(x)
+	%x = 6
+	%fmt.Println(x)
+%}
+    %\end{gocode}
+%\end{code}
+
+%This example shows Go's two different assignment operators, the
+%In this example, \mintinline{go}|x := 5| uses the short variable declaration
+%syntax, which `is shorthand for a regular variable declaration with initializer
+%expressions but no types'\autocite{short-hand-decl}; \mintinline{go}|var x = 5|.
+%This implies that the type of the variable is deduced by the right-hand side
+%expression, in the above example resulting in the variable \mintinline{go}|x| to
+%be of type \mintinline{go}|int|.
+
+%the assignment \mintinline{go}|x = 6| should be reported,
+%as it is mutating the variable \mintinline{go}|x|.
+
+%Go also has shorthand operators for assignment, which are just abbreviations
+%for the longer form \mintinline{go}|x = x <operator> <identifier>|:
+
+%\begin{gocode}
+%x += 5
+%x -= 5
+%x *= 5
+%x /= 5
+%\end{gocode}
+
+%And the usual postfix operators for incrementing and decrementing,
+%\mintinline{go}|x++| and \mintinline{go}|x--|.
+
+%Handling all above stated assignments can be done by checking for AST
+%nodes of the type `AssignStmt`\autocite{assign-statements}. The short
+%variable declaration syntax \mintinline{go}|x := 5|
