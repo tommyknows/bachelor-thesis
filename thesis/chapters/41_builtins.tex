@@ -8,7 +8,7 @@ For a complete implementation, the following steps are necessary:
 \begin{itemize}
     \item Adding the GoDoc\autocite{godoc} that describes the function and it's usage
     \item Adding type-checking support in external packages for tools like
-    Gopls\autocite{gopls}
+        Gopls\footnote{Gopls is Go's official language server implementation\autocite{gopls}.}
     \item Adding the implementation within the internal\footnote{
             ``An import of
             a path containing the element “internal” is disallowed if the
@@ -39,12 +39,9 @@ the compiler is invoked indirectly. To directly invoke the compiler,
 from the main package located in \textit{src/cmd/compile}, which in turn
 uses the internal package.
 
-\newglossaryentry{gopls}{name=Gopls,description={Gopls is go's official language
-server implementation\autocite{gopls}}}
-
 Everything that is not in \textit{src/cmd/compile} is referred to as the `public'
 part of the compiler in this thesis. The `public' parts are used by external
-tools, for example \gls{gopls}, for type-checking, source code validation and
+tools, for example Gopls, for type-checking, source code validation and
 analysis.
 
 \subsection{Adding the GoDoc}

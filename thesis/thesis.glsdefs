@@ -148,33 +148,3 @@ parent={},%
 %
 }%
 }%
-\ifglsentryexists{gopls}{}%
-{%
-\gls@defglossaryentry{gopls}%
-{%
-name={Gopls},%
-sort={Gopls},%
-type={main},%
-first={Gopls},%
-firstplural={Goplss},%
-text={Gopls},%
-plural={Goplss},%
-description={Gopls is go's official language server implementation\autocite {gopls}},%
-descriptionplural={Gopls is go's official language server implementation\autocite {gopls}},%
-symbol={\relax },%
-symbolplural={\relax },%
-user1={},%
-user2={},%
-user3={},%
-user4={},%
-user5={},%
-user6={},%
-long={},%
-longplural={},%
-short={},%
-shortplural={},%
-counter={page},%
-parent={},%
-%
-}%
-}%
