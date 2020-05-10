@@ -56,7 +56,7 @@ The Go ecosystem already provides an official library for building code analysis
 the `analysis' package from the Go Tools repository\autocite{go-analysis}. With this package,
 implementing a static code analyizer is being reduced to writing the actual AST node analysis.
 
-To define an analysis, a variable of type \mintinline{go}|analysis.Analyzer| has to be declared:
+To define an analysis, a variable of type \mintinline{go}|*analysis.Analyzer| has to be declared:
 
 \begin{gocode}
 var Analyzer = &analysis.Analyzer{
@@ -65,7 +65,6 @@ var Analyzer = &analysis.Analyzer{
 	Run:  func(*analysis.Pass) (interface{}, error)
 }
 \end{gocode}
-
 The necessary steps are now adding the `Run' function and registering the analyser
 in the \mintinline{go}|main()| function.
 
@@ -82,7 +81,6 @@ for _, file := range pass.Files {
 	})
 }
 \end{gocode}
-
 To implement funcheck as described, we need to %TODO
 take care of three different AST node types. The first and easiest one is
 \mintinline{go}|*ast.IncDecStmt|. An `IncDecStmt' node is a \mintinline{go}|x++|
@@ -94,7 +92,6 @@ case *ast.IncDecStmt:
 	pass.Reportf(as.Pos(), "inline re-assignment of %s", as.X)
 }
 \end{gocode}
-
 The other two types are \mintinline{go}|*ast.DeclStmt| and \mintinline{go}|*ast.AssignStmt|.
 They are not as simple to handle, which is why they are covered in their own chapters.
 
@@ -106,52 +103,72 @@ last statement\footnote{This rule is to simplify the logic of the checker and ma
     for developers to read the code. It means that no code may be between \mintinline{go}|var f func|
 and \mintinline{go}|f = func() { ... }|.}.
 
+To detect such reassignments, funcheck iterates over all identifiers on the left-hand side
+of an assignment statement.
+All elements on the left-hand side that are not identifiers are reassignments and do not need
+to be examined any more\footnote{For example, on the left-hand side of an assignment might be an
+    \mintinline{go}|*ast.IndexExpr|, which indexes a slice or a map. However, these
+can only be reassignments as they would not be allowed in a declaration}.
+
+Every identifier (an AST node with type \mintinline{go}|*ast.Ident|) contains an object\footnote{`An
+    object describes a named language entity such as a package, constant, type, variable,
+function (incl. methods), or a label'\autocite{go-ast-object}.} that links to the declaration.
+
+This declaration, of whatever type it may be, always has a position (and a corresponding function
+to retrieve that position) in the source file.
+
+A reassignment is detected when an identifier's declaration position does not match the assignment's
+position.
+
+This is illustrated in the code block~\ref{code:assign-pos}. What can be clearly seen is that in
+the assignment \mintinline{go}|y = 3|, \mintinline{go}|y|'s declaration refers to the position
+of the first assignment \mintinline{go}|x, y := 1, 2|, the position where \mintinline{go}|y| has
+been declared.
+
+\begin{code}
+    \captionof{listing}{Illustration of an assignment node and corresponding positions\autocite{ast-positions}}
+    \begin{gocode}
+Assignment "x, y := 1, 2": 2958101
+        Ident "x": 2958101
+                Decl "x, y := 1, 2": 2958101
+        Ident "y": 2958104
+                Decl "x, y := 1, 2": 2958101
+Assignment "y = 3": 2958115
+        Ident "y": 2958115
+                Decl "x, y := 1, 2": 2958101
+    \end{gocode}
+  \label{code:assign-pos}
+\end{code}
+As this technique works on an identifier level, multi-variable declarations or assignments
+can be verified without any additional effort. If one variable in a short variable declaration
+is being reassigned, the variable's `Declaration' field will point to the original position
+of the declaration, which can be easily detected.
+
 \subsubsection{Handling function declarations}
-%\subsection{Examples to report}
 
-%The main idea behind the assignment checker (`assigncheck') is fairly
-%simple and can be demonstrated in just a few lines of code:
+In contrast to all other variable types, function variables may be `reassigned' once.
+As discussed in Chapter~\ref{func-reassign}, this is to allow recursive function
+literals. Detecting and not reporting these assignments is a two-step process, as two
+consecutive AST nodes need to be inspected.
 
-%\begin{code}
-    %\captionof{listing}{Basic reported example}
-    %\begin{gocode}
-%package main
+The first step is to detect function declarations; statements of the form
+\mintinline{go}|var f func() |. Should such a statement be encountered,
+its position will be saved for the following AST node.
 
-%import "fmt"
+In the consecutive AST node it is ensured that if the node is an assignment and
+the assignee identifier is of type function literal, the position matches the
+previously saved one.
 
-%func main() {
-	%x := 5
-	%fmt.Println(x)
-	%x = 6
-	%fmt.Println(x)
-%}
-    %\end{gocode}
-%\end{code}
+The position of the declaration and AST node structure can be seen in~\ref{code:func-reassign}
 
-%This example shows Go's two different assignment operators, the
-%In this example, \mintinline{go}|x := 5| uses the short variable declaration
-%syntax, which `is shorthand for a regular variable declaration with initializer
-%expressions but no types'\autocite{short-hand-decl}; \mintinline{go}|var x = 5|.
-%This implies that the type of the variable is deduced by the right-hand side
-%expression, in the above example resulting in the variable \mintinline{go}|x| to
-%be of type \mintinline{go}|int|.
-
-%the assignment \mintinline{go}|x = 6| should be reported,
-%as it is mutating the variable \mintinline{go}|x|.
-
-%Go also has shorthand operators for assignment, which are just abbreviations
-%for the longer form \mintinline{go}|x = x <operator> <identifier>|:
-
-%\begin{gocode}
-%x += 5
-%x -= 5
-%x *= 5
-%x /= 5
-%\end{gocode}
-
-%And the usual postfix operators for incrementing and decrementing,
-%\mintinline{go}|x++| and \mintinline{go}|x--|.
-
-%Handling all above stated assignments can be done by checking for AST
-%nodes of the type `AssignStmt`\autocite{assign-statements}. The short
-%variable declaration syntax \mintinline{go}|x := 5|
+\begin{code}
+    \captionof{listing}{Illustration of a function literal assignment\autocite{ast-positions}}
+    \begin{gocode}
+Declaration "var f func() int": 2958142
+        Ident "f func() int": 2958146
+Assignment "f = func() int { return y }": 2958160
+        Ident "f": 2958160
+                Decl "f func() int": 2958146
+    \end{gocode}
+    \label{code:func-reassign}
+\end{code}
