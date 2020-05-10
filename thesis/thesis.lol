@@ -40,6 +40,8 @@
 \contentsline {listing}{\numberline {3.9}{\ignorespaces fold AST translation\autocite {fold-walk-implementation}\relax }}{38}{listing.caption.50}%
 \contentsline {listing}{\numberline {3.10}{\ignorespaces filter implementation in Go\relax }}{39}{listing.caption.52}%
 \contentsline {listing}{\numberline {3.11}{\ignorespaces filter AST translation\autocite {filter-walk-implementation}\relax }}{39}{listing.caption.53}%
+\contentsline {listing}{\numberline {3.12}{\ignorespaces Illustration of an assignment node and corresponding positions\autocite {ast-positions}\relax }}{43}{listing.caption.55}%
+\contentsline {listing}{\numberline {3.13}{\ignorespaces Illustration of a function literal assignment\autocite {ast-positions}\relax }}{44}{listing.caption.57}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
@@ -55,7 +57,7 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {listing}{\numberline {1}{\ignorespaces Functional Options for a simple Webserver\relax }}{58}{listing.caption.66}%
-\contentsline {listing}{\numberline {2}{\ignorespaces Example on how to mutate complex types in Go\relax }}{59}{listing.caption.67}%
-\contentsline {listing}{\numberline {3}{\ignorespaces Example on how shadowing works on block scopes\relax }}{60}{listing.caption.68}%
-\contentsline {listing}{\numberline {4}{\ignorespaces Working around the missing foldl implementation in Go\relax }}{61}{listing.caption.69}%
+\contentsline {listing}{\numberline {1}{\ignorespaces Functional Options for a simple Webserver\relax }}{60}{listing.caption.68}%
+\contentsline {listing}{\numberline {2}{\ignorespaces Example on how to mutate complex types in Go\relax }}{61}{listing.caption.69}%
+\contentsline {listing}{\numberline {3}{\ignorespaces Example on how shadowing works on block scopes\relax }}{62}{listing.caption.70}%
+\contentsline {listing}{\numberline {4}{\ignorespaces Working around the missing foldl implementation in Go\relax }}{63}{listing.caption.71}%
