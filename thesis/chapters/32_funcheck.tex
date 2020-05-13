@@ -5,7 +5,7 @@ For this reason, a `functional checker' should be created. It should work
 in a similar fashion to linters like `shellcheck', `go vet' or `gosimple'\footnote{
     A list of Go linters can be found in golangci-lint\autocite{golangci-lint}.
 }, with different `rules' that are reported upon. The name for this tool
-will be `funcheck' because functional programming should be fun. % TODO: seriously?
+will be `funcheck' because functional programming should be fun.
 
 A set of rules should be compiled to identify common `non-functional' constructs
 which should then be reported upon.
@@ -36,8 +36,8 @@ following chapters.
 \subsection{Forbidding mutability and changing state}\label{sec:mutability}
 
 \newglossaryentry{copy-by-value}{name=copy by value, description={Copy by value
-        refers to the argument-passing style where the supplied argumens are
-        copied. To pass references in Go, the developer needs to use pointers
+    refers to the argument-passing style where the supplied argumens are
+    copied. To pass references in Go, the developer needs to use pointers
 instead}}
 
 Immutability refers to objects --- variables --- that are unchangable. This means
@@ -83,7 +83,7 @@ This means that the programmer cannot write
 as a struct is a complex type. Therefore, the solution to making variables
 immutable is to explicitely not allow any mutations in a program\footnote{
     Although this may not be a very strict definition of immutability and doesn't
-    allow for compiler optimisations or similar, it is enough in the context of
+allow for compiler optimisations or similar, it is enough in the context of
 learning functional programming and learning that variables cannot be modified.}.
 While this incorporates a lot of different aspects, the simplest solution
 to that is to disallow the assignment operator \mintinline{go}|=|, and only
@@ -100,8 +100,8 @@ operator, for example \mintinline{go}|++|, \mintinline{go}|--| and
 be reported upon.
 
 Go being a \gls{copy-by-value} language, mutating existing variables
-    accross functions works by passing pointers to these variables instead\footnote{
-        An example for this can be found at~\ref{appendix:mutation}.}.
+accross functions works by passing pointers to these variables instead\footnote{
+An example for this can be found at~\ref{appendix:mutation}.}.
 When removing the regular assignment operators, the usage of pointers becomes
 second nature. Technically, they could be used everywhere now, as it is not
 possible to mutate anything either way. It is left to the developer to decide,
@@ -141,7 +141,7 @@ There are a few issues with IO in a pure function context. For example,
 the following function to write a string to a specified file:
 
 \begin{haskellcode}
-    writeFile :: String -> String
+	writeFile :: String -> String
 \end{haskellcode}
 
 If the programmers calls this function
@@ -153,14 +153,14 @@ value will not do anything meaningful and can be omitted.
 
 Similarly, for getting user input:
 \begin{haskellcode}
-    getChar :: Char
+	getChar :: Char
 \end{haskellcode}
 
 If this function is called multiple times, the compiler may reorder the
 execution of these calls, again, because it expects the functions to be
 pure, so the execution order should not matter:
 \begin{haskellcode}
-    get2Chars = [getChar, getChar]
+	get2Chars = [getChar, getChar]
 \end{haskellcode}
 
 However, in this example, execution order is extremely important. To
@@ -169,7 +169,7 @@ wrap all functions with a `RealWorld' argument. So the
 \mintinline{haskell}|getChar| example from before gets rewritten as
 
 \begin{haskellcode}
-    getChar :: RealWorld -> (Char, RealWorld)
+	getChar :: RealWorld -> (Char, RealWorld)
 \end{haskellcode}
 
 This can be read as `take the current RealWorld, do something with it,
@@ -200,18 +200,18 @@ The var keyword needs to be followed by one or more identifiers and maybe
 types or the initial value. These are all valid declarations:
 
 \begin{code}
-    \captionof{listing}{Go Variable Declarations}
-    \begin{gocode}
+	\captionof{listing}{Go Variable Declarations}
+	\begin{gocode}
 var i int
 var U, V, W float64
 var k = 1
 var x, y float32 = -1, -2
-    \end{gocode}
+	\end{gocode}
 \end{code}
 What can be seen in this example is that the type of the variable can be
 deducted automatically\footnote{The compiler will infer the type at compile
-    time. That operation is always successful, although it may not be what
-    the programmer desires. For example, \mintinline{go}|var x = 5| will
+time. That operation is always successful, although it may not be what
+the programmer desires. For example, \mintinline{go}|var x = 5| will
 always result in \mintinline{go}|x| to be of type \mintinline{go}|int|.},
 or be specified explicitely.
 
@@ -220,15 +220,15 @@ is due to the fact that there is a second way to declare and initialise
 variables to a specific value, the `Short variable declaration' syntax:
 
 \begin{gocode}
-    k := 1
+	k := 1
 \end{gocode}
 
 \begin{quote}
-    It is shorthand for a regular variable declaration with initializer expressions but no types:
+It is shorthand for a regular variable declaration with initializer expressions but no types:
 
-    \begin{bnfcode}
+\begin{bnfcode}
 "var" IdentifierList = ExpressionList .
-    \end{bnfcode}
+\end{bnfcode}
 \end{quote}\autocite{short-hand-decl}
 
 In practice, the short variable declaration is used more often due to the
@@ -241,12 +241,12 @@ also have a short-hand notation to re-assign the value back to the variable,
 for example:
 
 \begin{code}
-    \captionof{listing}{Go Assignment Operators}
+	\captionof{listing}{Go Assignment Operators}
 \begin{gocode}
-    var x = 5
-    x += 5 // equal to x = x + 5
-    x %= 3 // equal to x = x % 3
-    x <<= 2 // equal to x = x << 2 (bitshift)
+	var x = 5
+	x += 5 // equal to x = x + 5
+	x %= 3 // equal to x = x % 3
+	x <<= 2 // equal to x = x << 2 (bitshift)
 \end{gocode}
 \end{code}\footnote{Non-exhaustive list of operators. A complete listing
 of operators can be found in the Go language spec\autocite{spec-operators}.}
@@ -257,7 +257,7 @@ programming.
 However, there are a few exceptions to this rule, which are covered in the
 following chapters.
 
-\subsubsection{Function Assignments}\label{func-reassign}
+\subsubsection{Function Assignments}\label{sec:func-reassign}
 
 A variable declaration brings an identifier into scope. The Go Language Specification
 defines this scope according to the following rule:
@@ -276,12 +276,12 @@ This means that when defining a function, the functions identifier is not
 in scope within that function:
 
 \begin{code}
-    \captionof{listing}{Go scoping issue with recursive functions}
+	\captionof{listing}{Go scoping issue with recursive functions}
 \begin{gocode}
 func X() {
-    f := func() {
-        f() // <- 'f' is not in scope yet.
-    }
+	f := func() {
+		f() // <- 'f' is not in scope yet.
+	}
 }
 \end{gocode}
 \end{code}
@@ -300,20 +300,20 @@ However, there is a simple, although verbose solution to this problem: The funct
 has to be declared in advance:
 
 \begin{code}
-    \captionof{listing}{Fixing the scope issue on recursive functions}
-    \begin{gocode}
+	\captionof{listing}{Fixing the scope issue on recursive functions}
+	\begin{gocode}
 func X() {
-    var f func() // f enters scope after this line
-    f = func() {
-        f() // this is allowed, as f is in scope
-    }
+	var f func() // f enters scope after this line
+	f = func() {
+		f() // this is allowed, as f is in scope
+	}
 }
 \end{gocode}
 \end{code}
 This exception will need to be allowed by the assignment checker, as recursive functions
 are one of the building blocks in functional programming.
 
-\subsubsection{Multiple Assignments}
+\subsubsection{Multiple Assignments}\label{sec:multi-assign}
 
 \newglossaryentry{ebnf}{name=Extended Backus-Naur Form, description={An extended version of the `Backus-Naur
 Form, a notation technique to describe programming language syntax}}
@@ -323,9 +323,9 @@ a variable into scope and assigns it to a given expression (value). It is also
 possible to declare multiple variables at once, as can be seen in the \gls{ebnf}
 notation:
 \begin{code}
-    \begin{bnfcode}
+	\begin{bnfcode}
 ShortVarDecl = IdentifierList ":=" ExpressionList .
-    \end{bnfcode}
+	\end{bnfcode}
 \end{code}
 This clearly shows that both left- and right-hand side take a list, meaning one or more
 elements, making a statement like \mintinline{go}|x, y := 1, 2| valid\footnote{The
@@ -350,3 +350,61 @@ field2, offset := nextField(str, offset)  // redeclares offset
 
 This should not be allowed, as the programmer can introduce mutation by redeclaring
 already existing variables in a short variable declaration.
+
+\subsubsection{For Loops}
+
+Although the aformentioned rules cover almost every case of reassignment, they miss
+one of the most important parts: For loops.
+
+In Go, there is only one looping construct, the \mintinline{go}|for| loop. However, it can
+be used in roughly four different ways:
+
+The infinite loop:
+\begin{gocode}
+for {
+	// ...
+}
+\end{gocode}
+The while loop:
+\begin{gocode}
+for x == true { // boolean expression
+	// ...
+}
+\end{gocode}
+The regular C-style for loop:
+\begin{gocode}
+for x := 0; x < 10; x++ {
+	// ...
+}
+\end{gocode}
+And the range loop, which allows to range (iterate) over slices and maps\footnote{And
+channels, which are not touched upon in this thesis}:
+\begin{gocode}
+for idx, elem := range []int{1,8,5,4} {
+	// ...
+}
+\end{gocode}
+Range returns two values, both of which can be omitted\footnote{The values can be omitted
+    by using the blank identifier `\_'. Skipping the index is thus
+    \mintinline{go}|_, elem := range s|, while skipping the value with
+\mintinline{go}|i, _ := range s| is equal to just \mintinline{go}|i := range s|.}. When
+ranging over a slice, the index and a copy of the element at that index is returned. For
+maps, a key and a copy of the corresponding value is returned.
+
+Except of the C-style for loop, the loops do not have a reassignment statement when
+converted to the AST. For this reason, they would not be detected by funcheck and thus
+the programmer could use them.
+However, issues emerge when having a closer look at the loop constructs.
+
+The \mintinline{go}|range| loop needs to keep track of the element, and it does so (internally)
+by using a pointer. This results in an (internal) reassignment.
+
+The regular C-style for loop and the `while' loop do not work at all without reassignments.
+Although in the while-loop the reassignment happens at another place, it is easier for the
+user if he gets a notification on the loop construct instead.
+
+The infinite loop does not contain any reassignments and would thereby be legal by the
+definition of the reassignment rule. However, in purely functional programming language,
+loops do only exist as a concept, and are implemented with, for example, fold's and maps.
+
+For these reasons, for loops will be reported in funcheck.

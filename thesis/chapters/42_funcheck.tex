@@ -1,8 +1,8 @@
 As discussed in Chapter~\ref{sec:funcheck-theory}, a linter needs to be written
 to detect reassignments within a Go program.
 
-To get a grasp about the issues this linter is trying to solve, we will % TODO
-first write down some examples, cases that should be matched against.
+To get a grasp about the issues this linter is trying to report, the first step
+is to capture examples, cases that should be matched against.
 
 \subsection{Examples}
 
@@ -72,7 +72,7 @@ The `Run' function takes a `Pass' type. The Pass provides information about the 
 that is being analysed and some helper-functions to report diagnostics.
 
 With `analysis.Pass.Files` and the help of the `go/ast` package, traversing the syntax
-tree of every file in a package is done % TODO:
+tree of every file in a package is made extremely convenient:
 
 \begin{gocode}
 for _, file := range pass.Files {
@@ -81,21 +81,35 @@ for _, file := range pass.Files {
 	})
 }
 \end{gocode}
-To implement funcheck as described, we need to %TODO
-take care of three different AST node types. The first and easiest one is
-\mintinline{go}|*ast.IncDecStmt|. An `IncDecStmt' node is a \mintinline{go}|x++|
-or \mintinline{go}|x--| expression and should always be reported.
+To implement funcheck as described, five different AST node types need to be
+taken care of. The simpler ones are
+\mintinline{go}|*ast.IncDecStmt|, \mintinline{go}|*ast.ForStmt| and \mintinline{go}|*ast.RangeStmt|.
+An `IncDecStmt' node is a \mintinline{go}|x++| or \mintinline{go}|x--|
+expression and should always be reported.
+`ForStmt' and `RangeStmt' are similar; a `RangeStmt' is a `for' loop with the
+\mintinline{go}|range| keyword instead of an init-, condition- and post-stametent.
+
+Both of these loop-types need to be reported explicitly as they do not show up
+as reassignments in the AST.
+The basic building blocks for our is the following \mintinline{go}|switch|
+statement:
 
 \begin{gocode}
 switch as := n.(type) {
 case *ast.IncDecStmt:
 	pass.Reportf(as.Pos(), "inline re-assignment of %s", as.X)
+
+case *ast.ForStmt:
+	pass.Reportf(as.Pos(), "internal reassignment (for loop) in %q", renderFor(pass.Fset, as))
+
+case *ast.RangeStmt:
+	pass.Reportf(as.Pos(), "internal reassignment (for loop) in %q", renderRange(pass.Fset, as))
 }
 \end{gocode}
-The other two types are \mintinline{go}|*ast.DeclStmt| and \mintinline{go}|*ast.AssignStmt|.
+The remaining two node types are \mintinline{go}|*ast.DeclStmt| and \mintinline{go}|*ast.AssignStmt|.
 They are not as simple to handle, which is why they are covered in their own chapters.
 
-\subsubsection{Detecting reassignments}
+\subsection{Detecting reassignments}
 
 To recapitulate, the goal of this step is to detect all assignments except blank identifiers
 (discarded values cannot be mutated) and function literals, if the function is declared in the
@@ -105,10 +119,39 @@ and \mintinline{go}|f = func() { ... }|.}.
 
 To detect such reassignments, funcheck iterates over all identifiers on the left-hand side
 of an assignment statement.
-All elements on the left-hand side that are not identifiers are reassignments and do not need
-to be examined any more\footnote{For example, on the left-hand side of an assignment might be an
-    \mintinline{go}|*ast.IndexExpr|, which indexes a slice or a map. However, these
-can only be reassignments as they would not be allowed in a declaration}.
+
+On the left-hand side of an assignment is a list of expressions. These expressions can be
+identifiers, index expressions (\mintinline{go}|*ast.IndexExpr|, for map and slice access),
+a `star expression' (\mintinline{go}|*ast.StarExpr|\footnote{star expressions
+    are expressions that are prefixed by an asterisk, dereferencing a pointer. For example
+\mintinline{go}|*x = 5|, if \mintinline{go}|x| is of type \mintinline{go}|*int|.}) or others.
+
+If the expression is not an identifier, the assignment must be a reassignment, as all non-identifier
+expressions contain an already declared identifier. For example, the slice index expression
+\mintinline{go}|s[5]| is of type \mintinline{go}|*ast.IndexExpr|:
+\begin{gocode}
+// An IndexExpr node represents an expression followed by an index.
+IndexExpr struct {
+	X      Expr      // expression
+	Lbrack token.Pos // position of "["
+	Index  Expr      // index expression
+	Rbrack token.Pos // position of "]"
+}
+\end{gocode}
+
+Where \mintinline{go}|IndexExpr.X| is our identifier `s' (of type \mintinline{go}|*ast.Ident|)
+and a \mintinline{go}|IndexExpr.Index| is \mintinline{go}|5| (of type \mintinline{go}|*ast.BasicLit|).
+
+As these nested identifiers already need to be declared beforehand (else they could not be used
+in the expression), all expressions on the left-hand side of an assignment that are not identifiers
+are reassignments.
+
+Identifiers are the only expressions that can occur in declarations and reassignments. A naive
+approach would be to check for the colon in a short variable declaration (\mintinline{go}|:=|).
+However, as touched upon in Chapter~\ref{sec:multi-assign}, even short variable declarations may
+contain redeclarations, if at least one variable is new.
+
+Thus, another approach is needed.
 
 Every identifier (an AST node with type \mintinline{go}|*ast.Ident|) contains an object\footnote{`An
     object describes a named language entity such as a package, constant, type, variable,
@@ -117,8 +160,9 @@ function (incl. methods), or a label'\autocite{go-ast-object}.} that links to th
 This declaration, of whatever type it may be, always has a position (and a corresponding function
 to retrieve that position) in the source file.
 
-A reassignment is detected when an identifier's declaration position does not match the assignment's
-position.
+A reassignment is detected if an identifier's declaration position does not match the assignment's
+position (indicating that the variable is being assigned at a different place to where it is
+declared).
 
 This is illustrated in the code block~\ref{code:assign-pos}. What can be clearly seen is that in
 the assignment \mintinline{go}|y = 3|, \mintinline{go}|y|'s declaration refers to the position
@@ -140,14 +184,15 @@ Assignment "y = 3": 2958115
   \label{code:assign-pos}
 \end{code}
 As this technique works on an identifier level, multi-variable declarations or assignments
-can be verified without any additional effort. If one variable in a short variable declaration
-is being reassigned, the variable's `Declaration' field will point to the original position
-of the declaration, which can be easily detected.
+can be verified without any additional effort.
+If a variable in a short variable declaration is being reassigned, the variable's `Declaration'
+field will point to the original position of its declaration, which can be easily detected
+(as shown in code block~\ref{code:assign-pos}).
 
-\subsubsection{Handling function declarations}
+\subsection{Handling function declarations}
 
 In contrast to all other variable types, function variables may be `reassigned' once.
-As discussed in Chapter~\ref{func-reassign}, this is to allow recursive function
+As discussed in Chapter~\ref{sec:func-reassign}, this is to allow recursive function
 literals. Detecting and not reporting these assignments is a two-step process, as two
 consecutive AST nodes need to be inspected.
 
@@ -155,7 +200,7 @@ The first step is to detect function declarations; statements of the form
 \mintinline{go}|var f func() |. Should such a statement be encountered,
 its position will be saved for the following AST node.
 
-In the consecutive AST node it is ensured that if the node is an assignment and
+In the consecutive AST node it is ensured that, if the node is an assignment and
 the assignee identifier is of type function literal, the position matches the
 previously saved one.
 
@@ -172,3 +217,43 @@ Assignment "f = func() int { return y }": 2958160
     \end{gocode}
     \label{code:func-reassign}
 \end{code}
+With this technique it is possible to excempt functions from the no-reassignment rule.
+
+\subsection{Testing Funcheck}
+
+The analysis-package is distributed with a subpackage `analysistest'. This package makes
+it extremely simple to test a code analysing tool.
+
+By providing testdata and the expected messages from funcheck in a structured way, all
+that is needed to test funcheck is:
+
+\begin{code}
+    \captionof{listing}{Testing a code analyser with the `analysistest' package}
+\begin{gocode}
+package assigncheck
+
+import (
+        "testing"
+
+        "golang.org/x/tools/go/analysis/analysistest"
+)
+
+func TestRun(t *testing.T) {
+        analysistest.Run(t, analysistest.TestData(), Analyzer)
+}
+\end{gocode}
+\end{code}
+
+The library expects the testdata in the current directory in a folder named `testdata' and
+then spawns and executes the analyser on the files in that folder. Comments in those files
+are used to describe the expected message:
+
+\begin{gocode}
+x := 5
+fmt.Println(x)
+x = 6 // want `^reassignment of x$`
+fmt.Println(x)
+\end{gocode}
+
+This will ensure that on the line \mintinline{go}|x = 6| an error message is reported that says
+`reassignment of x'.

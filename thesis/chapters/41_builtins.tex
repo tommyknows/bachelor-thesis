@@ -29,15 +29,14 @@ The go source code that is relevant for this thesis can be classified into three
 types. One is the godoc - the documentation for the new built-in functions. The
 other two are the `public' and the `private' implementation of these builtins.
 
-% TODO: this could need a rewrite
-The `private' implementation is everything that is located within the
+The `private' implementation is located within the
 \textit{src/cmd/compile/internal} package\autocite{internal-packages}. It can only
 be used by the package in \textit{src/cmd/compile}, which contains the
-implementation of the compiler itself. When calling \mintinline{shell}|go build .|,
-the compiler is invoked indirectly. To directly invoke the compiler,
-\mintinline{shell}|go tool compile| can be used. The compile tool gets compiled
-from the main package located in \textit{src/cmd/compile}, which in turn
-uses the internal package.
+implementation of the compiler itself.
+
+When calling \mintinline{shell}|go build .|, the compiler is invoked indirectly
+through the main `go' binary. To directly invoke the compiler,
+\mintinline{shell}|go tool compile| can be used.
 
 Everything that is not in \textit{src/cmd/compile} is referred to as the `public'
 part of the compiler in this thesis. The `public' parts are used by external
@@ -83,8 +82,7 @@ In the `types' package, the builtins have to be registered as such and as
 \end{code}
 This registration defines the type of the built-in - they are all expressions,
 as they return a value - and the number of arguments.
-After that, the type-checking and its associated tests can be implemented.
-% TODO: reference the implementation
+After that, the type-checking and its associated tests are to be implemented.
 
 This concludes the type-checking for external tools and makes `gopls' return errors
 Once type-checking the new built-in functions is implemented, `gopls' can be
