@@ -24,7 +24,6 @@ Rather, a simple `grep' has been used to find matches. This means that it is
 likely to contain some mismatches, for example in code comments. All in all,
 this analysis should only be an indicator of what functions are used most.
 
- % TODO: replace 'prepend' with cons, where applicable (talking about Haskell)
 Running the analysis on the 7 repositories listed above, searching for a number
 of pre-selected list functions, indicates that the most used functions are `:'
 (cons), `map' and `fold', as shown in table~\ref{tab:occurrences-list-funcs}.
@@ -345,7 +344,7 @@ rule:
 This rule forbids a function to be named `:'. Instead, the function could be
 named `cons'. However, Go already has a function to add to the end of a slice,
 `append'. Thus, adding to the beginning of a slice will be named `prepend'.
-Using prepend is very similar to append, an example can be found at~\ref{code:prepend-go}
+Using prepend should be very similar to append, to give an example:
 
 \begin{code}
     \captionof{listing}{Example usage of prepend in go}
