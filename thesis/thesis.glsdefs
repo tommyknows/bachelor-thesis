@@ -148,3 +148,33 @@ parent={},%
 %
 }%
 }%
+\ifglsentryexists{stdout}{}%
+{%
+\gls@defglossaryentry{stdout}%
+{%
+name={stdout},%
+sort={stdout},%
+type={main},%
+first={stdout},%
+firstplural={stdouts},%
+text={stdout},%
+plural={stdouts},%
+description={Standard Output, the default output stream for programs},%
+descriptionplural={Standard Output, the default output stream for programs},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
