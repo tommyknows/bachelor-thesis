@@ -6,6 +6,7 @@ func main() {
 	fmt.Println(quicksort([]int{1, 8, 5, 3, 4, 9}))
 }
 
+// start-quicksort
 func quicksort(p []int) []int {
 	if len(p) == 0 {
 		return []int{}
@@ -16,3 +17,4 @@ func quicksort(p []int) []int {
 
 	return append(quicksort(lesser), prepend(p[0], quicksort(greater))...)
 }
+// end-quicksort

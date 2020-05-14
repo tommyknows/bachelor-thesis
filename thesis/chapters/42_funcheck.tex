@@ -68,8 +68,9 @@ var Analyzer = &analysis.Analyzer{
 The necessary steps are now adding the `Run' function and registering the analyser
 in the \mintinline{go}|main()| function.
 
-The `Run' function takes a `Pass' type. The Pass provides information about the package
-that is being analysed and some helper-functions to report diagnostics.
+The `Run' function takes an \mintinline{go}|*analysis.Pass| type. The Pass provides
+information about the package that is being analysed and some helper-functions to report
+diagnostics.
 
 With `analysis.Pass.Files` and the help of the `go/ast` package, traversing the syntax
 tree of every file in a package is made extremely convenient:
@@ -77,7 +78,7 @@ tree of every file in a package is made extremely convenient:
 \begin{gocode}
 for _, file := range pass.Files {
 	ast.Inspect(file, func(n ast.Node) bool {
-		// node analysing here
+		// node analysis here
 	})
 }
 \end{gocode}
