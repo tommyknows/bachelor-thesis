@@ -48,6 +48,8 @@
 \addvspace {10\p@ }
 \contentsline {listing}{\numberline {4.1}{\ignorespaces Pretty-printing declarations in idiomatic Go\relax }}{49}{listing.caption.59}%
 \contentsline {listing}{\numberline {4.2}{\ignorespaces Pretty-printing declarations in functional Go\relax }}{50}{listing.caption.60}%
+\contentsline {listing}{\numberline {4.3}{\ignorespaces Quicksort Implementations compared\relax }}{52}{listing.caption.61}%
+\contentsline {listing}{\numberline {4.4}{\ignorespaces Comparision Java Streams and Functional Go\relax }}{53}{listing.caption.62}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
@@ -60,4 +62,9 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {listing}{\numberline {1}{\ignorespaces Functional Options for a simple Webserver\relax }}{66}{listing.caption.71}%
+\contentsline {listing}{\numberline {1}{\ignorespaces Functional Options for a simple Webserver\relax }}{70}{listing.caption.70}%
+\contentsline {listing}{\numberline {2}{\ignorespaces Example on how to mutate complex types in Go\relax }}{71}{listing.caption.71}%
+\contentsline {listing}{\numberline {3}{\ignorespaces Example on how shadowing works on block scopes\relax }}{72}{listing.caption.72}%
+\contentsline {listing}{\numberline {4}{\ignorespaces Working around the missing foldl implementation in Go\relax }}{73}{listing.caption.73}%
+\contentsline {listing}{\numberline {5}{\ignorespaces The original prettyprint implementation\relax }}{74}{listing.caption.74}%
+\contentsline {listing}{\numberline {6}{\ignorespaces The refactored, functional prettyprint implementation\relax }}{77}{listing.caption.75}%

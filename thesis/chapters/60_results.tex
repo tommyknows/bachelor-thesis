@@ -3,4 +3,23 @@
 % !TEX encoding = UTF-8 Unicode
 % !TEX root = ../thesis.tex
 
-\todo[inline]{(Zusammenfassung der Resultate)}
+To learn functional programming without being introduced to a new syntax at the same time
+ensures that programmers can fully concentrate on functional concepts. Although Go already
+supported a functional programming style, the programmer may not have known if the code is
+purely functional or if there are still imperative constructs embedded.
+
+With the introduction of `funcheck', the programmer can rest assured that the code is purely
+functional.
+
+However, functional code often relies heavily on lists and list-processing functions.
+Due to the lack of polymorphism, relying only on pure Go means writing a lot of redundant code
+for commonly used list processing functions. To mitigate this issue, we introduced
+common higher-order functions into the list of Go's built-in functions.
+As these are handled directly at compile time, built-in functions may be polymorphic, for
+example allowing the programmer to use the same `fmap' function for all list-types.
+
+To determine which higher-order functions are most commonly used, we analysed the most
+popular open-source Haskell projects. As a result, `fmap', `fold', `filter' and `prepend'
+(`cons') have been added as built-ins into the compiler.
+These functions make it easier to write purely functional code in Go, in turn helping
+the programmer to learn functional programming with a familiar language and syntax.
