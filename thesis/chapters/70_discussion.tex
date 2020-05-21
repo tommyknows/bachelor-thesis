@@ -3,16 +3,57 @@
 % !TEX encoding = UTF-8 Unicode
 % !TEX root = ../thesis.tex
 
-\todo[inline]{%
-  \quad --{
-    Bespricht die erzielten Ergebnisse bezüglich ihrer Erwartbarkeit,
-    Aussagekraft und Relevanz
-  } \\
-  \quad -- Interpretation und Validierung der Resultate \\
-  \quad -- Rückblick auf Aufgabenstellung, erreicht bzw. nicht erreicht \\
-  \quad -- {
-    Legt dar, wie an die Resultate (konkret vom Industriepartner oder
-    weiteren Forschungsarbeiten; allgemein) angeschlossen werden kann; legt
-    dar, welche Chancen die Resultate bieten
-  }
-}
+The aforementioned extensions to the Go language and its tooling should be a help to learn
+functional programming. We believe that through these extensions it is easier to write
+purely functional code in Go, enabling a developer to learn functional programming with
+a familiar syntax in an obvious way. Here, Go's simplicity and verbosity are a key differentiator
+to other languages. Instead of having as many features as possible to support every usecase,
+Go has been designed with simplicity in mind\footnote{For example, Go has 25 keywords, compared
+to 37 in C99 and 84 in C++11}.
+
+In many cases, this leads to more `verbose' code --- more lines of code compared to a similar
+implementation in other languages. However, we argue that, especially for the first steps
+in functional programming,
+
+\begin{quote}
+Clear is better than clever\autocite{cheney-clear}
+\end{quote}
+
+Staying in touch with this core Go principle, this results in functional code that may be
+verbose, but easy to read and understand.
+
+It should be clear that the result is not a `production-ready' functional programming language.
+It is a language to help getting started with functional programming; either by re-implemeting pieces
+of code that have not been clear in how they work, or by taking an imperative block of code
+and refactoring it to make it purely functional.
+
+In many cases, the resulting code will still look familiar to the imperative counterpart,
+even if `funcheck' assures that it is purely functional. This, we believe, bridges the gap
+that developers usually have to overcome by themselves.
+
+To be a purely functional programming language, Go is missing too many features that would be
+required to write concise functional code. The very basic type system\footnote{Not only
+	does Go not have polymorphism (yet), Go's type system is simple by design: there are no
+	implicit type conversions, no sum types (tagged unions, variant) and almost no type inference.
+}, no advanced pattern matching and implicit currying are all examples why Go is not useful
+in day-to-day functional programming.
+
+At the same time, the obvious nature of Go is exactly because it is missing all
+of these features. The Go team explicitly tries not to include too many features within
+the language in order to keep the complexity of code to a minimum\autocite{go-feature}.
+The simplicity of the language is a key feature of Go and an important reason why it was
+chosen to implement the ideas in the first place.
+Especially for learning new concepts, hiding implementations and ideas behind features
+may not be what is desired and helpful.
+
+On another note, what has not been an aspect in this thesis is
+performance. Go by itself is relatively performant, however functional constructs, especially
+recursive function calls, come with a performance cost. While in purely functional languages
+this can be optimised, Go cannot or does not want to do these optimisations\footnote{For example,
+with tail call optimisation, the Go team explicitly decided not to do it because the stack trace
+would be lost partially}. Regardless, the performance of a language is not as important if it
+is not used in a production environment, which is why it was never a criteria in the first place.
+
+To conclude, we believe that to fully master functional programming, there is no way around a
+purely functional language. However, with the work provided in this thesis, getting started with
+functional programming has been made easier and more accessible than before.

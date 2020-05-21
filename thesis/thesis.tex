@@ -58,11 +58,12 @@
 \newenvironment{code}{\captionsetup{type=listing}}{}
 \SetupFloatingEnvironment{listing}{name=Source Code}
 \definecolor{bg}{rgb}{0.95,0.95,0.95}
-\newminted{go}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
-\newminted{bnf}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{bash}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
-\newminted{haskell}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
+\newminted{bnf}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{c}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
+\newminted{go}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
+\newminted{haskell}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
+\newminted{java}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newmintedfile{go}{breaklines,breakanywhere,tabsize=2,bgcolor=bg,linenos,stepnumber=5,numberfirstline}
 
 
@@ -204,145 +205,144 @@ from the root of the git repository\cite{git-repo}:
 ./work/common-list-functions/count-function.sh "map " " : " "fold" "filter " "reverse " "take " "drop " "maximum" "sum " "zip " "product " "minimum " "reduce "
 \end{bashcode}
 
+\section{Mutating variables in Go}\label{appendix:mutation}
+\begin{code}
+	\captionof{listing}{Example on how to mutate complex types in Go}
+	\gofile{../work/examples/mutate/main.go}
+\end{code}
 
-%\section{Mutating variables in Go}\label{appendix:mutation}
-%\begin{code}
-    %\captionof{listing}{Example on how to mutate complex types in Go}
-    %\gofile{../work/examples/mutate/main.go}
-%\end{code}
+\section{Shadowing variables in Go}\label{appendix:shadowing}
+\begin{code}
+	\captionof{listing}{Example on how shadowing works on block scopes}
+	\gofile{../work/examples/shadowing/main.go}
+\end{code}
 
-%\section{Shadowing variables in Go}\label{appendix:shadowing}
-%\begin{code}
-    %\captionof{listing}{Example on how shadowing works on block scopes}
-    %\gofile{../work/examples/shadowing/main.go}
-%\end{code}
+\section{Workaround for the missing foldl' implementation in Go}\label{appendix:foldl-go}
+\begin{code}
+	\captionof{listing}{Working around the missing foldl implementation in Go}
+	\label{code:foldl-go}
+	\gofile{../work/examples/foldl-workaround/main.go}
+	\begin{bashcode}
+$> fgo run .
+0
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x1 addr=0x0 pc=0x109e945]
 
-%\section{Workaround for the missing foldl' implementation in Go}\label{appendix:foldl-go}
-%\begin{code}
-    %\captionof{listing}{Working around the missing foldl implementation in Go}
-    %\label{code:foldl-go}
-    %\gofile{../work/examples/foldl-workaround/main.go}
-    %\begin{bashcode}
-%$> fgo run .
-%0
-%panic: runtime error: invalid memory address or nil pointer dereference
-%[signal SIGSEGV: segmentation violation code=0x1 addr=0x0 pc=0x109e945]
+goroutine 1 [running]:
+main.what(0x2, 0x0, 0x2)
+		/tmp/map/main.go:16 +0x5
+main.main()
+		/tmp/map/main.go:12 +0x187
+exit status 2
+	\end{bashcode}
+\end{code}
 
-%goroutine 1 [running]:
-%main.what(0x2, 0x0, 0x2)
-        %/tmp/map/main.go:16 +0x5
-%main.main()
-        %/tmp/map/main.go:12 +0x187
-%exit status 2
-    %\end{bashcode}
-%\end{code}
+\section{Prettyprint implementation}\label{appendix:prettyprint-func}
+\begin{code}
+	\captionof{listing}{The original prettyprint implementation}
+	\gofile{../work/funcheck/prettyprint/prettyprint.go}
+\end{code}
+\begin{code}
+	\captionof{listing}{The refactored, functional prettyprint implementation}
+	\begin{gocode}
+package prettyprint
 
-%\section{Prettyprint implementation}\label{appendix:prettyprint-func}
-%\begin{code}
-	%\captionof{listing}{The original prettyprint implementation}
-	%\gofile{../work/funcheck/prettyprint/prettyprint.go}
-%\end{code}
-%\begin{code}
-	%\captionof{listing}{The refactored, functional prettyprint implementation}
-	%\begin{gocode}
-%package prettyprint
+import (
+	"bytes"
+	"fmt"
+	"go/ast"
+	"go/printer"
+	"go/token"
 
-%import (
-	%"bytes"
-	%"fmt"
-	%"go/ast"
-	%"go/printer"
-	%"go/token"
+	"golang.org/x/tools/go/analysis"
+)
 
-	%"golang.org/x/tools/go/analysis"
-%)
+var Analyzer = &analysis.Analyzer{
+	Name: "prettyprint",
+	Doc:  "prints positions",
+	Run:  run,
+}
 
-%var Analyzer = &analysis.Analyzer{
-	%Name: "prettyprint",
-	%Doc:  "prints positions",
-	%Run:  run,
-%}
+type null struct{}
 
-%type null struct{}
+func checkDecl(as *ast.DeclStmt, fset *token.FileSet) {
+	fmt.Printf("Declaration %q: %v\n", render(fset, as), as.Pos())
 
-%func checkDecl(as *ast.DeclStmt, fset *token.FileSet) {
-	%fmt.Printf("Declaration %q: %v\n", render(fset, as), as.Pos())
+	check := func(_ null, spec ast.Spec) (n null) {
+		val, ok := spec.(*ast.ValueSpec)
+		if !ok {
+			return
+		}
+		if val.Values != nil {
+			return
+		}
+		if _, ok := val.Type.(*ast.FuncType); !ok {
+			return
+		}
+		fmt.Printf("\tIdent %q: %v\n", render(fset, val), val.Names[0].Pos())
+		return
+	}
 
-	%check := func(_ null, spec ast.Spec) (n null) {
-		%val, ok := spec.(*ast.ValueSpec)
-		%if !ok {
-			%return
-		%}
-		%if val.Values != nil {
-			%return
-		%}
-		%if _, ok := val.Type.(*ast.FuncType); !ok {
-			%return
-		%}
-		%fmt.Printf("\tIdent %q: %v\n", render(fset, val), val.Names[0].Pos())
-		%return
-	%}
+	if decl, ok := as.Decl.(*ast.GenDecl); ok {
+		_ = foldl(check, null{}, decl.Specs)
+	}
+}
 
-	%if decl, ok := as.Decl.(*ast.GenDecl); ok {
-		%_ = foldl(check, null{}, decl.Specs)
-	%}
-%}
+func checkAssign(as *ast.AssignStmt, fset *token.FileSet) {
+	fmt.Printf("Assignment %q: %v\n", render(fset, as), as.Pos())
 
-%func checkAssign(as *ast.AssignStmt, fset *token.FileSet) {
-	%fmt.Printf("Assignment %q: %v\n", render(fset, as), as.Pos())
+	check := func(_ null, expr ast.Expr) (n null) {
+		ident, ok := expr.(*ast.Ident) // Lhs always is an "IdentifierList"
+		if !ok {
+			return
+		}
 
-	%check := func(_ null, expr ast.Expr) (n null) {
-		%ident, ok := expr.(*ast.Ident) // Lhs always is an "IdentifierList"
-		%if !ok {
-			%return
-		%}
+		fmt.Printf("\tIdent %q: %v\n", ident.String(), ident.Pos())
 
-		%fmt.Printf("\tIdent %q: %v\n", ident.String(), ident.Pos())
+		switch {
+		case ident.Name == "_":
+			fmt.Printf("\t\tBlank Identifier!\n")
+		case ident.Obj == nil:
+			fmt.Printf("\t\tDecl is not in the same file!\n")
+		default:
+			// make sure the declaration has a Pos func and get it
+			declPos := ident.Obj.Decl.(ast.Node).Pos()
+			fmt.Printf("\t\tDecl %q: %v\n", render(fset, ident.Obj.Decl), declPos)
+		}
 
-		%switch {
-		%case ident.Name == "_":
-			%fmt.Printf("\t\tBlank Identifier!\n")
-		%case ident.Obj == nil:
-			%fmt.Printf("\t\tDecl is not in the same file!\n")
-		%default:
-			%// make sure the declaration has a Pos func and get it
-			%declPos := ident.Obj.Decl.(ast.Node).Pos()
-			%fmt.Printf("\t\tDecl %q: %v\n", render(fset, ident.Obj.Decl), declPos)
-		%}
+		return
+	}
+	_ = foldl(check, null{}, as.Lhs)
+}
 
-		%return
-	%}
-	%_ = foldl(check, null{}, as.Lhs)
-%}
+func run(pass *analysis.Pass) (interface{}, error) {
+	inspect := func(_ null, file *ast.File) (n null) {
+		ast.Inspect(file, func(n ast.Node) bool {
+			switch as := n.(type) {
+			case *ast.DeclStmt:
+				checkDecl(as, pass.Fset)
+			case *ast.AssignStmt:
+				checkAssign(as, pass.Fset)
+			}
+			return true
+		})
+		return
+	}
+	_ = foldl(inspect, null{}, pass.Files)
 
-%func run(pass *analysis.Pass) (interface{}, error) {
-	%inspect := func(_ null, file *ast.File) (n null) {
-		%ast.Inspect(file, func(n ast.Node) bool {
-			%switch as := n.(type) {
-			%case *ast.DeclStmt:
-				%checkDecl(as, pass.Fset)
-			%case *ast.AssignStmt:
-				%checkAssign(as, pass.Fset)
-			%}
-			%return true
-		%})
-		%return
-	%}
-	%_ = foldl(inspect, null{}, pass.Files)
+	return nil, nil
+}
 
-	%return nil, nil
-%}
-
-%// render returns the pretty-print of the given node
-%func render(fset *token.FileSet, x interface{}) string {
-	%var buf bytes.Buffer
-	%if err := printer.Fprint(&buf, fset, x); err != nil {
-		%panic(err)
-	%}
-	%return buf.String()
-%}
-	%\end{gocode}
-%\end{code}
+// render returns the pretty-print of the given node
+func render(fset *token.FileSet, x interface{}) string {
+	var buf bytes.Buffer
+	if err := printer.Fprint(&buf, fset, x); err != nil {
+		panic(err)
+	}
+	return buf.String()
+}
+	\end{gocode}
+\end{code}
 
 % - Add your appendix here:
 
