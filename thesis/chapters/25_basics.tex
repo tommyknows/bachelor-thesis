@@ -1,0 +1,272 @@
+\section{Go Slices}\label{sec:go-slices}
+
+As mentioned in section~\ref{sec:why-go}, Go does not have a `list' implementation. The reason for this
+is twofold. First, as Go does not have polymorphism, it is not possible for users to implement a generic
+`list' type that would work with any underlying type. Second, the Go Authors instead added `slices' as
+a type to the language.
+
+Go's Slices can be viewed as an abstraction over arrays, to mitigate some of the weaknesses of arrays
+when compared to lists.
+
+\begin{quote}
+    Arrays have their place, but they're a bit inflexible, so you don't see them too often in Go code.
+    Slices, though, are everywhere. They build on arrays to provide great power and convenience.\autocite{golang-slices}
+\end{quote}
+
+Slices can be visualised as a `struct' over an array:
+
+\begin{gocode}
+// NOTE: this type does not really exist, it
+// is just to visualise how they are implemented.
+type Slice struct {
+    // the underlying "backing store" array
+    array *[]T
+    // the length of the slice / view on the
+    //array
+    len   int
+    // the capacity of the array from the
+    // starting index of the slice
+    cap   int
+}
+\end{gocode}
+
+With the `append' function, elements can be added to a slice. Should the underlying array not have enough
+capacity left to store the new elements, a new array will be created and the data from the old array will
+be copied into the new one. This happens transparently to the user.
+
+\subsection{Using Slices}
+
+`head', `tail' and `last' operations can be done with index expressions:
+
+\begin{gocode}
+// []<T> initialises a slice, while [n]<T> initialises an
+// array, which is of fixed length n. One can also use `...'
+// instead of a natural number, to let the compiler count
+// the number of elements.
+s := []string{"first", "second", "third"}
+head := s[0]
+tail := s[1:]
+last := s[len(s)-1]
+\end{gocode}
+
+Adding elements or joining slices is achieved with `append':
+
+\begin{gocode}
+s := []string{"first", "second"}
+s = append(s, "third", "fourth")
+t := []string{"fifth", "seventh"}
+s = append(s, t...)
+// to prepend an element, one has to create a
+// slice out of that element
+s = append([]string{"zeroth"}, s...)
+\end{gocode}
+
+Append is a variadic function, meaning it takes \textit{n} elements. If the slice is of type \textit{[]<T>},
+the appended elements have to be of type \textit{<T>}.
+
+To join two lists, the second list is expanded into
+variadic arguments.
+
+More complex operations like removing elements, inserting elements in the middle or finding
+elements in a slice require helper functions, which have also been documented in Go's
+Slice Tricks\autocite{slice-tricks}.
+
+\subsection{What is missing from Slices}
+
+This quick glance at slices should clarify that, though the runtime characteristics of lists and slices
+can differ, from a usage standpoint, what is possible with lists is also possible with slices.
+
+However, what is missing from Go's slices are a lot of the classical list `helper' functions.
+In a typical program written in a functional language, lists take a central role\footnote{Interestingly,
+	there is no clear and direct answer as to why they do. One reason may be because they are recursively
+	defined and trivially to implement functionally. Further, they are easier to use than arrays, where
+	the programmer would need to track the index and bound of the array (imagine keeping track of the
+indices in a recursive function)\autocite{why-lists}}. Because of this, functional languages have
+a number of helper functions like `map', `filter' and `fold'\autocite{haskell-list-funcs} that currently do
+not exist in Go and would need to be implemented by the programmer. With no support for polymorphism, an
+different implementation would need to be written for every slice-type that is used. The type \mintinline{go}|[]int|
+(read: a slice of integers) differs from \mintinline{go}|[]string|, which means that a possible
+`map' function would have to be written once to support slices of integers, once to support slices
+of strings, and a combination of these two:
+
+\begin{gocode}
+func mapIntToInt(f func(int) int, []int) []int
+func mapIntToString(f func(int) string, []int) []string
+func mapStringToInt(f func(string) int, []string) []int
+func mapStringToString(f func(string) string, []string) []string
+\end{gocode}
+
+With 7 base types (eliding the different `int' types like `int8', `uint16`, `int16', etc.), this would
+mean $7^{2} = 49$ map functions just to cover these base types. Counting the different numeric
+types into that equation (totally 19 distinct types\autocite{go-basetypes}), would grow that number to $19^{2} = 361$ functions.
+
+Though this code could be generated, it leaves out custom user-defined types, which would still
+need to be generated separately.
+
+Another option would be that `map' would take and return empty interfaces
+(\mintinline{go}|interface{}|). However, `the empty interface says
+nothing'\autocite{empty-interface}. The declaration of `map' would be:
+\begin{gocode}
+	func map(f func(interface{}) interface{}, []interface{}) interface{}
+\end{gocode}
+
+This function header does not say anything about it's types, which would
+mean that they would need to be checked at runtime and handled gracefully. It
+would also require the caller to do a type assertion after every call. Further,
+converting slices between types cannot be done directly. Instead, a
+new slice has to be created:
+\begin{gocode}
+s := []string{"hello", "world"}
+var i []interface{}
+for _, e := range s {
+	i = append(i, e)
+}
+// i is now populated and can be used. to convert
+// it back to []string:
+for idx, e := range i {
+	s[idx] = e.(string)
+}
+\end{gocode}
+
+This by itself is a usage pattern that cannot be justified. Further, the
+example `map' function declaration does not specify which types must be
+equal; this would need to be a convention.
+
+To mitigate this point, the most common list-operations (in Go slice-operations) will
+need to be added as built-ins to the compiler, so that the programmer can use these functions
+on every slice-type without any necessary conversions.
+
+\section{Built-in functions}
+
+The language specification defines what built-in functions are and which built-in
+functions should exist:
+\begin{quote}
+    Built-in functions are predeclared. They are called like any other function
+    but some of them accept a type instead of an expression as the first argument.
+
+    The built-in functions do not have standard Go types, so they can only appear
+    in call expressions; they cannot be used as function values.\autocite{go-spec-builtins}
+\end{quote}
+
+As Go does not have generics, functions that return a variable, but
+concrete type have to be built into the language itself.
+
+For example, \mintinline{go}|append|:
+\begin{gocode}
+// The append built-in function appends elements to the end of a slice.
+// ...
+func append(slice []Type, elems ...Type) []Type
+\end{gocode}
+
+This shows that the types supplied to append are not specified upfront. Instead, they
+are resolved during compilation of the program.
+
+Thus, in order to have generic list processing functions, these functions need to
+be implemented as built-ins in the compiler.
+
+\section{The Go Compiler}
+
+The Go programming language is defined by its specification\autocite{go-spec}, and not
+it's implementation. As of Go 1.14, there are two major implementations of that
+specification; Google's self-hosting compiler toolchain\footnote{This is what most
+    often is referred to as `the Go compiler'.}
+`gc', which is written in Go, and `gccgo', a frontend for GCC, writen in C++.
+
+When talking about the Go compiler, what's mostly referred to is `gc'\footnote{`gc' stands
+for `Go Compiler', and not `Garbage Collection' (`GC').}.
+
+A famous, although not completely correct story tells about Go being designed
+while a C++ program was compiling\autocite{less-is-more}.
+This is why one of the main goals when designing Go was fast compilation times:
+\begin{quote}
+    Finally, working with Go is intended to be fast: it should take at most a few
+    seconds to build a large executable on a single computer. To meet these goals
+    required addressing a number of linguistic issues: an expressive but lightweight
+    type system; concurrency and garbage collection; rigid dependency specification;
+    and so on. These cannot be addressed well by libraries or tools; a new language
+    was called for.\autocite{go-faq}
+\end{quote}
+
+This is why Go has taken some measures to to combat slow compilation times. According
+to Rob Pike, one of the creators of Go, Go's compiler is not notably fast, but
+most other compilers are slow:
+
+\begin{quote}
+    The compiler hasn't even been properly tuned for speed. A truly fast compiler
+    would generate the same quality code much faster.\autocite{nuts-compiler}
+\end{quote}
+
+The language design does have some limitations
+however to lower compilation times. In general, Go's dependency resolution is simpler
+compared to other languages, for example by not allowing circular dependencies.
+Furthermore, compilation is not even attempted if there are unused
+imports or unused declarations of variables, types and functions.
+This leads to less code to compile and in turn shorter compilation times.
+Another reason is that `the `gc' compiler is simpler code compared to most
+recent compilers'\autocite{nuts-compiler}.
+
+Compiling Go programs with the standard `gc' compiler can be split into four
+phases:
+
+\subsection{Parsing Go programs}
+
+\newglossaryentry{dag}{name=DAG, description={Directed Acyclic Graph}}
+\newglossaryentry{ast}{name=AST,description={Abstract Syntax Tree, an abstract representation of source code as a tree}}
+
+The first phase of compilation is parsing Go programs into a syntax tree. This
+is done by tokenizing the code (`lexical analysis' - the `lexer'), parsing
+(`syntax analysis' - the `parser') it and then constructing a syntax tree (\gls{ast}) for
+each source file\footnote{Technically, the syntax tree is a syntax \gls{dag}\autocite{ast-node-dag}}.
+
+In comparison to most production-level languages, Go can be parsed without a
+symbol table. It has been designed to be easy to parse
+and analyse, which makes the Go parser simple in it's design\autocite{go-faq-symbol}.
+
+\subsection{Type-checking and AST-transformation}\label{sec:comp-type}
+
+The second phase of compilation starts by converting the `syntax' package's
+AST, created in the first phase, to the compiler's AST representation. This
+is due to historical reasons, as the `gc's AST definition was carried over
+from the C implemenation.
+
+After the conversion, the AST is type-checked. Within the type-checking, there
+are also some additional steps included like `declared and not used' and
+determining wheter a function terminates.
+
+After type-checking, some transformations are applied on the AST. This includes,
+but is not limited to, eliminating dead code, inlining function calls and escape
+analysis. What is also done in the transformation phase is rewriting builtin function
+calls, replacing for example a call to the builtin `append' with the necessary
+AST structure and rutime-calls to implement its functionality.
+
+\subsection{SSA}
+
+\newglossaryentry{ssa}{name=SSA,description={Single Static Assignment, an intermediate representation between the AST and the compiled binary that simplifies and improves compiler optimisations}}
+In the third phase, the AST is converted to \gls{ssa} form. SSA  is `a
+lower-level intermediate representation with specific properties that make it
+easier to implement optimizations and to eventually generate machine code from
+it'\autocite{compiler-readme}.
+
+The conversion consists of multiple `passes' through the SSA that
+apply machine-independent rules to optimise code. These generic
+rewrite rules are applied on every architecture and thus mostly
+concern expressions (e.g. replace expressions with constant values and
+optimise multiplications), dead code elimination and removal of unneeded
+nil-checks.
+
+\subsection{Generating machine code}
+
+Lastly, in the fourth phase of the compilation, machine-specific
+SSA optimisations are applied, including, but not limited to:
+\begin{itemize}
+    \item Rewriting generic values into their machine-specific variants
+        (for example, on amd64, combining load-store operations)
+    \item Another dead-code elimination pass
+    \item Pointer liveness analysis
+    \item Removing unused local variables
+\end{itemize}
+
+After generating and optimising the SSA form, the code is passed to the
+assembler, which replaces the so far generic instructions with
+architecture-specific machine code and writes out the final object file.
+\autocite{compiler-readme}

@@ -255,8 +255,8 @@ readability and conciseness.
 Furthermore, the conversion to a stream and back to a list
 (\mintinline{java}|list.stream()| and \mintinline{java}|.collect(Collectors.toList())|)
 is not required in Go, as the operations all work on slices. Here, only having a single
-list-like type built into the language is an advantage, as the mental overhead to convert
-the list only to run a `filter' function can be avoided.
+list-like type built into the language is an advantage, as the (at least syntactical)
+overhead to convert the list only to run a `filter' function can be avoided.
 
 Apart from syntactical differences, Java Streams contain all the functions that
 have been added as built-ins to Go too, and more.
@@ -265,8 +265,4 @@ However, Java's Syntax is arguably more complex than Go. An indicator for this m
 the language specification; Go's Language Specification is roughly 110 pages, while
 Java's specification is more than 700 pages\footnote{
 	The Java 8 Specification is 724\autocite{java-8-spec}, the Java 14
-	Specification 774\autocite{java-14-spec} pages. An interesting sidenote may
-	be that Go's specification grew by roughly 15 pages in 8 years (Go 1.0.0, 2012 - Go
-	1.14.0, 2020), Java's by almost 170 pages between Java 7 (2013) and Java 14 (2020).
-},
-more than 6 times the size.
+	Specification 774\autocite{java-14-spec} pages.}, more than 6 times the size.

@@ -1,7 +1,6 @@
 package fractran
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -24,5 +23,4 @@ func TestFractran(t *testing.T) {
 	if res[0] != 8192 {
 		t.Errorf("did not get correct result. expected=%v, got=%v", 8192, res[0])
 	}
-	fmt.Println(res[0])
 }
