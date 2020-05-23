@@ -14,9 +14,10 @@ The first step is to define a set of rules.
 
 \subsection{Functional Purity}\label{sec:func-purity}
 
-The goal of funcheck is to report on everything that is not purely
-functional. However, there is no agreed upon definition\autocite{functional-controversy}.
-In the context of this thesis, the following definition will be used:
+The goal of funcheck is to report every construct that can not be considered
+to be purely functional. As there is no agreed upon definition on what
+functional purity is\autocite{functional-controversy}, the first step is to
+define functional purity for the context of this thesis:
 
 \begin{quote}
     A style of building the structure and elements of computer programs that
@@ -131,69 +132,104 @@ If global state cannot be changed, it also cannot have a dynamic influence
 over a function's return values.
 
 As such, forbidding re-assignments is an extremely simple solution to
-ensure functional purity.
+ensure functional purity within the program. However, this solution misses
+an important aspect in most programs: interacting with the outside world.
 
-\subsubsection{A Note about IO}
-The only thing that is left is interacting with the outside world; network,
-files, user input and sensors, to name a few. Haskell's IO Package ensures
-that these technically impure functions work the way one would expect.
-There are a few issues with IO in a pure function context. For example,
-the following function to write a string to a specified file:
+\subsection{IO}
+Network and file access, time, randomness, user input and sensors are all examples
+of IO, things that interact with state outside of the program.
+
+Input and Output in a program --- through wether channel it may be --- is
+impure by design. Due to this, the Haskell language auhtor faced a difficult
+challenge; how to add impure functions to an otherwise completely pure
+language.
+
+In a pure language, functions only depend on their arguments, have
+no side effects and return a value computed from these arguments. Becasue
+of this, the execution order of functions is not rellevant, a function
+can be executed whenever its return value is needed.
+Due to this, the compiler can optimise the code, calling the functions
+in a specific (or in no specific) order, omitting calls if their return
+values are unused or lazily evaluating functions.
+
+However, impure IO functions need to be considered too.
+
+For example, one would expect that it is possible to write a trivial `writeFile'
+function that takes a filename and a string with the contents for that file with
+the function definition roughly being:
 
 \begin{haskellcode}
-	writeFile :: String -> String
+writeFile :: String -> String
 \end{haskellcode}
+Supposed that this function could be called with
+\mintinline{haskell}|writeFile "hello.txt" "Hello World"|. As there is a magical
+computer that never files, this function does not return anything; it always succeeds.
 
-If the programmers calls this function
-\mintinline{haskell}|writeFile "hello.txt" "Hello World"|, there are
-no return values anymore, As such, the compiler would simply omit the call
-to this `writeFile' function completely. The rationale behind this is that
-it expects all functions to be pure, and as such, a function with no return
-value will not do anything meaningful and can be omitted.
+Because of this, the function does not have any return value. Or it may return a
+value for the bytes written, but that value is discarded on the call site.
+As there is no dependency on that function anymore, the compiler assumes that
+this function does not need to be executed at all --- it still expects all
+functions to be pure (even if this is not the case in this example).
+Being able to follow the purity guarantees, the compiler emits the call
+to the writeFile function and the file never gets written.
 
 Similarly, for getting user input:
 \begin{haskellcode}
-	getChar :: Char
+getChar :: Char
 \end{haskellcode}
-
 If this function is called multiple times, the compiler may reorder the
 execution of these calls, again, because it expects the functions to be
 pure, so the execution order should not matter:
 \begin{haskellcode}
-	get2Chars = [getChar, getChar]
+get2Chars = [getChar, getChar]
 \end{haskellcode}
+However, in this example, execution order is extremely important.
 
-However, in this example, execution order is extremely important. To
-solve this problem, Haskell introduced the IO monad, in which they
-wrap all functions with a `RealWorld' argument. So the
-\mintinline{haskell}|getChar| example from before gets rewritten as
+To solve this problem, Haskell introduced the IO monad, in which
+all functions are wrapped with a `RealWorld' argument. So the
+\mintinline{haskell}|getChar| example would be written as\footnote{
+	This is not the actual function header for getChar, only an illustration.
+	The actual function header of getChar is \mintinline{haskell}|getChar :: IO Char|.
+}:
 
 \begin{haskellcode}
-	getChar :: RealWorld -> (Char, RealWorld)
+getChar :: RealWorld -> (Char, RealWorld)
 \end{haskellcode}
-
 This can be read as `take the current RealWorld, do something with it,
 and return a Char and a (possibly changed) RealWorld'\autocite{haskell-io}.
 
 With this solution, the compiler cannot reorder or omit IO actions, ensuring
 the correct execution of the program.
 
-The IO Monad is a sophisticated solution to a problem that exists because of
-compiler optimisations. These can only be guaranteed to be correct because
-the compiler knows (or rather expects) that all functions are pure.
+The IO monad is a sophisticated solution to work around the purity guarantees.
+It enables Haskellers to use impure functions in anotherwise completely pure language.
+Put another way: the IO monad exists because of compiler optimisations, which in turn are
+based on the assumption that everything is pure.
 
 In Go, the compiler does not and can not make this assumption. There also
 is no `pure' keyword to mark a function as such. For that reason, the
 compiler cannot optimise as aggressivly, and the whole IO problem does
-not exist\footnote{Although when nesting calls, one may need to be careful about
-execution order.}.
+not exist. However, in the context of this thesis, interacting with the outside world ---
+using IO-functions --- means that functional purity cannot be guaranteed anymore.
+Haskell's solution to this issue is relatively complex, and while it may be applicable
+to Go, it would require massively rewriting Go's standard library. Furthermore,
+the IO monad does not make impure functions magically pure. Rather, it
+clearly marks functions as impure.
+
+Another issue, apart from the amount of work that would be needed, is that
+the goal is to provide an easy introduction to functional programming.
+IO, as one may see, is one of the hardest topics.
+
+For those reasons, although it may violate the functional purity requirements,
+the underlying issue with IO will be ignored. This means that the programmer
+will still be able to use IO functions as in regular Go programs.
 
 \subsection{Assignments in Go}
 
-As desribed in Section~\ref{sec:mutability}, the only check that needs
+As described in section~\ref{sec:mutability}, the only check that needs
 to be done is that there are no re-assignments in the code. There are a few
 exceptions, which will be covered later. First, it is important to have
-a few examples and test cases to be precise on what should be reported.
+a few examples and test cases to be clear on what should be reported.
 
 To declare variables in Go, the \mintinline{go}|var| keyword is used.
 The var keyword needs to be followed by one or more identifiers and maybe
@@ -217,12 +253,11 @@ or be specified explicitely.
 
 However, the notation \mintinline{go}|var k = 1| is seldomely seen. This
 is due to the fact that there is a second way to declare and initialise
-variables to a specific value, the `Short variable declaration' syntax:
+variables to a specific value, the `short variable declaration' syntax:
 
 \begin{gocode}
 	k := 1
 \end{gocode}
-
 \begin{quote}
 It is shorthand for a regular variable declaration with initializer expressions but no types:
 
@@ -243,10 +278,10 @@ for example:
 \begin{code}
 	\captionof{listing}{Go Assignment Operators}
 \begin{gocode}
-	var x = 5
-	x += 5 // equal to x = x + 5
-	x %= 3 // equal to x = x % 3
-	x <<= 2 // equal to x = x << 2 (bitshift)
+var x = 5
+x += 5 // equal to x = x + 5
+x %= 3 // equal to x = x % 3
+x <<= 2 // equal to x = x << 2 (bitshift)
 \end{gocode}
 \end{code}\footnote{Non-exhaustive list of operators. A complete listing
 of operators can be found in the Go language spec\autocite{spec-operators}.}

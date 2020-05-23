@@ -4,28 +4,35 @@
 % !TEX root = ../thesis.tex
 
 \section{Learning Functional Programming}
-\todo[inline]{
-    rewrite first sentence. Also, Rust being 'more popular' is dangerous, too.
-    Less vague expressions, "seems to be", "and many more".
-    Java 8 added a lot of functional features, C\# too.
-}
-When Javascript and Python started to take off around 2010\autocite{python-popularity},
-they also brought rise to a lot of concepts borrowed from functional programming.
-Since then, many new multi-paradigm
-languages have appeared and gotten more popular, as for example Go, Rust,
-Kotlin and Dart.
-Most of the languages mentioned support an imperative, object-oriented, as well as a functional programming style.
-Rust, being the `most popular programming language'%\autocite{rust-loved}%
-for 4 years in a row (2016--2019), has been
-significantly influenced by functional programming languages\autocite{rust-functional} and borrows a lot of functional
-concepts in idiomatic Rust code.
 
-Learning a functional programming language increases fluency with these concepts and teaches a different
-way to think and approach problems when programming. For those reasons, and many more, a lot of programmers
-advocate learning a functional programming language.
+In 2007, C\# 3.0 was released. Two years later, Ryan Dhal published the initial version
+of NodeJS, eliminating JavaScript's ties to the browser and introducing it as a server-side
+programming language. In 2013, Java 8 was released. Within the same timeframe, Python
+has been rapidly growing in popularity\autocite{python-popularity}.
 
-Though the exact definition of what a \textit{purely} functional language consists of remains a controversy\autocite{functional-controversy},
-the most popular, pure functional programming language seems to be Haskell\autocite{comparison-functional-languages}.
+What all these events have in common is that they brought along concepts from functional
+programming, so far mainly used in academia, into the daily life of many programmers.
+
+Further, many new multi-paradigm programming languages have been introduced,
+including Rust, Kotlin, Go and Dart. They all had functions as first-class citizens in
+the language since their initial release.
+
+For example Rust, being the `most popular programming language' for 4 years in a row (2016--2019)
+according to the StackOverflow Developer survey\autocite{rust-loved}, has been significantly
+influenced by functional programming languages\autocite{rust-functional}. Further, in idiomatic
+Rust code, a functional style can be clearly observed.
+
+Learning a purely functional programming language increases fluency with these concepts and
+teaches a different way to think and approach problems when programming. Due to this, many
+people recommend learning a functional programming
+language\autocite{blog1-funcprog}\autocite{blog2-funcprog}\autocite{blog3-funcprog}\autocite{blog4-funcprog},
+even if one may not end up using that language at all\autocite{quora-funcprog}.
+
+Even though the exact definition of what a \textit{purely} functional language is remains a
+controversy\autocite{functional-controversy}, most literature about functional programming,
+including academia and online resources like blogs, contain code examples written in Haskell.
+Further, according to the Tiobe Index\autocite{tiobe-index}, Haskell is also the most popular
+purely functional programming language\autocite{comparison-functional-languages}.
 
 \section{Haskell}
 
@@ -64,149 +71,45 @@ is not to underestimate and adds to Haskell's steep learning curve.
 
 \section{Goals}
 
-\todo[inline]{unclear first sentence, not specific enough}
-
-The goal is to solve the issue of the first steps in functional programming.
 Learning a new paradigm and syntax at the same time can be daunting and discouraging for novices.
-By using a modern, multi-paradigm language with a clear
-and familiar syntax, the functional programming beginner should be able to focus on the paradigm
-first, and then change to a language like Haskell to fully get into functional programming.
+By using a modern, multi-paradigm language with a clear and familiar syntax, the functional
+programming beginner should be able to focus on the paradigm first, and then change to a language
+like Haskell to fully get into functional programming.
 
-To ease the learning curve of functional programming, this thesis will consist of two parts:
+To ease the learning curve of functional programming, this thesis will consist of two parts.
+In the first part, writing functional code should be made as easy as possible. This means that
+a language with an easy and familiar syntax should be chosen. Further, this programming language
+should already support functions as first-class citizens. Additionally, it should be statically
+typed, as a static type system makes it easier to reason about a program and can support the
+programmer while writing code.
+In the second part, a linter is created to check code for non-functional statements. To achieve
+this, functional purity has to be defined, a ruleset has to be worked out and implemented into
+a static analysis tool.
 
-\todo[inline]{should not be a list, for the flow}
-\begin{itemize}
-    \item Make a multi-paradigm language support functional programming as much as needed.
-        The criteria for this language are:
-    \begin{itemize}
-        \item Easy, familiar syntax
-        \item Be statically typed, as this makes it easier to reason about a program
-        \item Have support for functional programming features like first class functions, currying
-            and partial application
-    \end{itemize}
-    \item Create a linter that checks code on its functional purity. For this, some rules will have
-        to be curated to define what pure functional code is.
-\end{itemize}
-
-It s not the goal to create a production-ready functional language, so runtime and performance requirements
-can be ignored.
-
-\section{Why Go}
+\section{Why Go}\label{sec:why-go}
 
 The language of choice for this task is Go, a statically typed, garbage-collected programming language
 designed at Google in 2009\autocite{golang-publish}. With its strong syntactic similarity to C, it should
 be familiar to most programmers.
-Go is an extremely verbose language with almost no syntactic sugar. This makes it a perfect fit to
-grasp the concepts and trace the inner workings of functional programming.
 
-There are, however, a few downsides of using Go:
+Go strives for simplicity and its syntax is extremely small and easy to learn. For example, the
+language consists only of 25 keywords and purposefully omits constructs like the ternary operator
+(<bool> ? <then> : <else>) as a replacement for the longer `if <bool> \{ <then> \} else \{ <else> \}' due
+to clarity. `A language needs only one conditional control flow construct'\autocite{go-ternary},
+and this also holds true for many other constructs. In Go, there is usually only one way
+to express something, improving the clarity of code.
 
-\todo[inline]{shouldn't be a list either}
-\begin{itemize}
-    \item No polymorphism. Go 2 will likely have support for polymorphism, but at the time of writing,
-        there is no implementation available.
-    \item Missing implementations for common functions like `map', `filter', `reduce' and more.
-    \item No list implementation. Go has `slices', which are `views' on arrays, but
-        no list datatype.
-\end{itemize}
+Due to this clarity and unambiguity, the language is a perfect fit to grasp the concepts and trace
+the inner workings of functional programming. It should be easy to read code and understand what
+it does without years of experience with the language.
 
-\subsection{Go Slices}
-
-Go's Slices can be viewed as an abstraction over arrays, to mitigate some of the weaknesses of arrays
-compared to lists.
-
-\begin{quote}
-    Arrays have their place, but they're a bit inflexible, so you don't see them too often in Go code.
-    Slices, though, are everywhere. They build on arrays to provide great power and convenience.\autocite{golang-slices}
-\end{quote}
-
-Slices can be visualised as a `struct' over an array:
-
-\begin{gocode}
-// NOTE: this type does not really exist, it
-// is just to visualise how they are implemented.
-type Slice struct {
-    // the underlying "backing store" array
-    array *[]T
-    // the length of the slice / view on the
-    //array
-    len   int
-    // the capacity of the array from the
-    // starting index of the slice
-    cap   int
-}
-\end{gocode}
-
-With the `append' function, elements can be added to a slice. Should the underlying array not have enough
-capacity left to store the new elements, a new array will be created and the data from the old array will
-be copied into the new one. This happens transparently to the user.
-
-\subsubsection{Using Slices}
-
-`head', `tail' and `last' operations can be done with index expressions:
-
-\begin{gocode}
-// []<T> initialises a slice, while [n]<T> initialises an
-// array, which is of fixed length n. One can also use `...'
-// instead of a natural number, to let the compiler count
-// the number of elements.
-s := []string{"first", "second", "third"}
-head := s[0]
-tail := s[1:]
-last := s[len(s)-1]
-\end{gocode}
-
-Adding elements or joining slices is achieved with `append':
-
-\begin{gocode}
-s := []string{"first", "second"}
-s = append(s, "third", "fourth")
-t := []string{"fifth", "seventh"}
-s = append(s, t...)
-// to prepend an element, one has to create a
-// slice out of that element
-s = append([]string{"zeroth"}, s...)
-\end{gocode}
-
-Append is a variadic function, meaning it takes \textit{n} elements. If the slice is of type \textit{[]<T>},
-the appended elements have to be of type \textit{<T>}.
-
-To join two lists, the second list is expanded into
-variadic arguments.
-
-More complex operations like removing elements, inserting elements in the middle or finding
-elements in a slice require helper functions, which have also been documented in Go's
-Slice Tricks\autocite{slice-tricks}.
-
-\subsubsection{What is missing from Slices}
-
-This quick glance at slices should clarify that, though the runtime characteristics of lists and slices
-can differ, from a usage standpoint, what is possible with lists is also possible with slices.
-
-However, what is missing from Go's slices are a lot of the classical list `helper' functions. In a typical program written in a functional
-language, lists take a central role. This results in a number of helper functions\autocite{haskell-list-funcs}
-that currently do not exist in Go and would need to be implemented by the programmer.
-With no support for polymorphism, the programmer would need to implement a function for every slice-type
-that is used. The type \mintinline{go}|[]int| (read: a slice of integers) differs from \mintinline{go}|[]string|
-which means that a possible `map' function would have to be
-written once to support slices of integers, once to support slices of strings, and a combination of these two:
-
-\begin{gocode}
-func mapIntToInt(f func(int) int, []int) []int
-func mapIntToString(f func(int) string, []int) []string
-func mapStringToInt(f func(string) int, []string) []int
-func mapStringToString(f func(string) string, []string) []string
-\end{gocode}
-
-With 7 base types (eliding the different `int' types like `int8', `uint16`, `int16', etc.), this would
-mean $7^{2} = 49$ map functions just to cover these base types. Counting the different numeric
-types into that equation (totally 19 distinct types\autocite{go-basetypes}), would grow that number to $19^{2} = 361$ functions.
-
-Though this code could be generated, it leaves out custom user-defined types, which would still
-need to be generated separately.
-
-To mitigate this point, the most common list-operations (in Go slice-operations) will be added to
-the compiler, so that the programmer can use these functions on every slice-type.
+There are however a few downsides of using Go. So far, Go does not have polymorphism, which means
+that functions always have to be written with specific types. Due to this, Go also does not include
+common list processing functions like `map', `filter', `reduce' and more\footnote{Although Go does
+	have some polymorphic functions like `append', these are specified as built-in functions in the
+language and not user-defined}. Further, Go does not have a built-in `list' datatype. However, Go's
+`slices' cover a lot of use cases for lists already. Section~\ref{sec:go-slices} goes into more
+details on slices.
 
 \section{Existing Work}
 
@@ -234,14 +137,52 @@ func main() {
 Using functions as function parameters or return types is a commonly used feature in Go, not just
 within the standard library.
 
-A software design pattern that has gained popularity is `functional options'. The pattern has been
-outlined in Dave Cheney's blog post `Functional options for friendly APIs'
-and is a great example on how to use the support for multiple paradigms.
+\subsection{Functional Options}
 
-A quick example on how functional options are implemented and used can be found in the
+A software design pattern that has gained popularity within the Go community is `functional options'.
+The pattern has been outlined in Dave Cheney's blog post `Functional options for friendly APIs'
+and is a great example on how to use the support for multiple paradigms.
+The basic idea with functional options is that a type constructor receives an unknown (0-n) amount
+of options:
+\begin{gocode}
+func New(requiredSetting string, opts ...option) *MyType {
+	t := &MyType{
+		setting: requiredSetting,
+	}
+
+	for _, opt := range opts {
+		opt(t)
+	}
+
+	return t
+}
+
+type option func(t *MyType)
+\end{gocode}
+
+These options can then access the instance of \mintinline{go}|MyType| to modify it accordingly,
+for example:
+
+\begin{gocode}
+func EnableFeatureX() option {
+	return func(t *MyType) {
+		t.featureX = true
+	}
+}
+\end{gocode}
+
+To enable feature X, `New' can be called with that option:
+\begin{gocode}
+t := New("required", EnableFeatureX())
+\end{gocode}
+
+With this pattern, it is easy to introduce new options without breaking old usages of the API.
+Furthermore, the typical `config struct' pattern can be avoided and meaningful zero values
+can be set.
+
+A more extensive example on how functional options are implemented and used can be found in
 appendix~\ref{appendix:funcopts}.
 
-Dave Cheney's summary on functional options is thus:
 \begin{quote}
     In summary
     \begin{itemize}
@@ -256,13 +197,13 @@ While this is a great example of what can be done with support for functional co
 Go has so far been discouraged by the core Go team, which is understandable for a multi-paradigm programming language.
 However, multiple developers have already researched and tested Go's ability to do functional programming.
 
-\subsubsection{Functional Go?}
+\subsection{Functional Go?}
 
 In his talk `Functional Go'\autocite{func-go-talk}, Francesc Campoy Flores analysed some commonly used functional
 language features in Haskell and how they can be ported with Go. Ignoring speed and stackoverflows due to non-existent
 tail call optimisation\autocite{go-tco}, the main issue was with the type system and the missing polymorphism.
 
-\subsubsection{go-functional}
+\subsection{go-functional}
 
 In July 2017, Aaron Schlesinger, a Go programmer for Micosoft Azure, gave a talk on functional programming wit Go.
 He released a repository\autocite{go-functional} that contains `core utilities for functional Programming in Go'.
@@ -275,22 +216,13 @@ In the `README' file of the repository, he also states that:
     \autocite{go-functional-readme}
 \end{quote}
 
-\todo[inline]{rename this section?}
-\section{Work to be done}
+\section{Conclusion}
 
-To conclude, the work that has to be done for this thesis is:
+The aforementioned projects showcase the main issue with functional programming in Go: the missing
+helper functions that are prevalent in functional languages and that they currently cannot be implemented
+in a generic way.
 
-\begin{itemize}
-    \item Define which `standard' list functions are most commonly used in functional programming
-    \item Implement some of them into the compiler
-    \begin{itemize}
-        \item at least one of these functions needs to have complete type-checking
-        \item demonstrate some usage examples for these functions
-    \end{itemize}
-    \item Research `rules' for pure functional programming
-    \begin{itemize}
-        \item for example, this could be exact definitions of immutability and purity
-    \end{itemize}
-    \item Add these rules to a checker. This could be an already available tool like `go vet', or a newly
-    developed, purpose-built utility
-\end{itemize}
+To make functional programming more accessible in Go, this thesis will research what the most used
+higher-order functions are and implement them with a focus on usability.
+Furthermore, a list of rules for pure functional should be curated and implmented in a linter. This
+linter can then be used to check existing code and report constructs which are not functional.

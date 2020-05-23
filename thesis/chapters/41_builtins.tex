@@ -146,7 +146,7 @@ functions are covered in the following chapters.
     between the references `bachelor-thesis' and `go1.14'\autocite{ba-go1-14-thesis-diff}.
 }
 
-\subsubsection{fmap}
+\subsubsection{fmap}\label{ch:impl-fmap}
 
 To make the implementation in the AST easier, the algorithm will first be
 developed in Go, and then translated. Implementing fmap in Go is relatively
@@ -251,7 +251,7 @@ The AST walk translates fold to:
     \captionof{listing}{fold AST translation\autocite{fold-walk-implementation}}
     \gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fold-header}{end-fold-header}
 \end{code}
-\subsubsection{filter}
+\subsubsection{filter}\label{ch:impl-filter}
 
 Being a slice-manipulating function, filter also needs to traverse the whole
 slice in a for-loop. However, compared to the other newly built-in functions,
