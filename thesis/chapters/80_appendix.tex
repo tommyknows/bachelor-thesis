@@ -150,7 +150,7 @@ func render(fset *token.FileSet, x interface{}) string {
 	\end{gocode}
 \end{code}
 
-\section{Compiling and using functional Go}
+\section{Compiling and using functional Go}\label{appendix:install-fgo}
 
 To compile and use the changes to the Go compiler that have been implemented in
 this thesis, these instructions should be followed.
@@ -163,10 +163,44 @@ $> cd go
 $> git checkout bachelor-thesis
 \end{bashcode}
 
+\subsection{With Docker}
+
+If Docker is installed on your system, you can follow these steps from within
+the checked out `go' git repository on the branch `bachelor-thesis'.
+The downside of this approach is that it complicates building and sharing binaries.
+To compile your own project, the directory has to be mounted into the container.
+If your Guest OS is not Linux, cross-compilation is required so that the executable
+can be ran on the host.
+
+These steps have been wrapped inside a script that prints out the necessary commands
+to configure your environment.
+
+\begin{bashcode}
+$> eval "$(./setup-docker.sh)"
+\end{bashcode}
+The commands within the shell script will
+build Go in the container and print commands to configure the environment. The `eval'
+command then executes these printed commands. Executing this command may take a while,
+as the Go compiler is compiled within this process.
+
+To build projects with the functional Go installation, simply use `fgo' on the command line.
+An alias has been created that mounts the current directory and executes the `fgo'
+command within the container.
+
+Note that if this only configures the `fgo' command in the current shell session. To
+persist it across shell-sessions, execute the script without eval:
+\begin{bashcode}
+$> ./setup-docker.sh
+\end{bashcode}
+
+And add the printed commands to your `.bashrc' (or equivalent). Further, you may
+also need to change the binary path from `/tmp/fgo/bin' to a path which is not
+cleaned up regularly.
+
 \subsection{With a working Go installation}
 
 If you already have a working Go installation on your system, the following
-steps provide a way to get functional go up and running in the same way
+steps provide a way to get functional Go up and running in the same way
 a normal go installation does.
 
 These steps need to be executed from within the checked out `go' git
@@ -183,9 +217,11 @@ $> go env -w GOROOT=$(realpath $(pwd)/..)
 The `go env' command sets the GOROOT to point to the newly compiled tools
 and source code and is valid for the current shell session only.
 
-After these steps, the binary `fgo' can be used to test and build
-functional go code. `fgo' is not different to the normal `go' command, so
-all commands that work with the normal `go' command should also work with
+\subsection{Using the installation}
+
+After these steps, the binary (or alias) `fgo' can be used to test and build
+functional Go code. `fgo' is not different to the normal `go' command, so
+all commands that work with the normal `go' command also work with
 the `fgo' command.
 
 \begin{bashcode}
@@ -195,32 +231,61 @@ $> fgo build ./...
 \end{bashcode}
 
 
-\subsection{With Docker}
+\section{Building Funcheck}
 
-If Docker is installed on your system, you can follow these steps from within
-the checked out `go' git repository on the branch `bachelor-thesis'.
-The downside of this approach is that the installation can only be used in
-the container, and directories have to be mounted into the container to compile
-projects.
+Funcheck needs to be built against functional Go to properly detect the builtin functions.
+If you have not done so already, install `fgo' as shown in~\ref{appendix:install-fgo}.
 
-\begin{bashcode}
-$> CODEDIR=<some directory>
-$> docker build . -t fgo
-$> docker run --rm --it -v $CODEDIR:/work fgo bash
-\end{bashcode}
-These commands build Go in the container and setup the environment. To build
-projects with the functional Go installation, set \mintinline{bash}|CODEDIR|
-to the path where your code resides.
-
-Then, from within the container, the binary `fgo' can be used to test and build
-functional go code. `fgo' is not different to the normal `go' command, but is the
-go binary that has been compiled with the functional additions.
+Then, funcheck can be installed directly with `go get' (or rather, `fgo get'). `go get'
+downloads the source code to the Go modules directory (usually in \mintinline{bash}|$GOPATH/pkg/mod|),
+compiles the specified package and moves the binary to \mintinline{bash}|$GOPATH/bin|.
 
 \begin{bashcode}
-$> cd /work
-$> fgo test ./...
-$> fgo build ./...
+$> # go get should not be called from within a go module
+$> cd /tmp
+$> fgo get github.com/tommyknows/funcheck
+$> funcheck -h
 \end{bashcode}
+
+This installs `funcheck' into \mintinline{bash}|$GOBIN| or, if \mintinline{bash}|$GOBIN|
+is not set, into \mintinline{bash}|$GOPATH/bin|.
+
+You can also clone the git repository and use `fgo build' to build `funcheck':
+\begin{bashcode}
+$> git clone https://github.com/tommyknows/funcheck.git
+$> cd funcheck
+$> fgo build .
+$> mv ./funcheck /usr/local/bin/funcheck
+$> funcheck -h
+\end{bashcode}
+
+To run funcheck against the current directory / package, simply run
+\begin{bashcode}
+$> funcheck .
+\end{bashcode}
+
+\section{Building Gopls}\label{appendix:build-gopls}
+
+Gopls is the official language server for Go. Similar to funcheck, there are two options
+to install it on your local machine.
+
+Installing with `go get':
+\begin{bashcode}
+$> # go get should not be called from within a go module
+$> cd /tmp
+$> fgo get golang.org/x/tools/gopls
+$> gopls -h
+\end{bashcode}
+
+Or by downloading the source manually:
+\begin{bashcode}
+$> git clone https://github.com/golang/tools.git
+$> cd ./tools/gopls
+$> fgo build .
+$> mv ./gopls /usr/local/bin/gopls
+$> gopls -h
+\end{bashcode}
+
 
 
 % - Add your appendix here:
