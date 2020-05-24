@@ -169,7 +169,7 @@
         \vspace{9mm}
       }
 
-      \zhaw@titlepagerow{\IfLanguageName{nswissgerman}{Autoren}{Authors}}{%
+      \zhaw@titlepagerow{\IfLanguageName{nswissgerman}{Autoren}{Author}}{%
         \@author \\
       }
 

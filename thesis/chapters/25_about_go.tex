@@ -1,9 +1,12 @@
+This chapter introduces the core concepts in Go that are needed to follow this paper.
+
 \section{Go Slices}\label{sec:go-slices}
 
-As mentioned in section~\ref{sec:why-go}, Go does not have a `list' implementation. The reason for this
+As mentioned in Section~\ref{sec:why-go}, Go does not have a `list' implementation and lists are rarely used.
+The reason for this
 is twofold. First, as Go does not have polymorphism, it is not possible for users to implement a generic
-`list' type that would work with any underlying type. Second, the Go Authors instead added `slices' as
-a type to the language.
+`list' type that would work with any underlying type. Second, the Go authors added `slices' as a core type
+to the language. From a usage perspective, lists would not add anything compared to slices.
 
 Go's Slices can be viewed as an abstraction over arrays, to mitigate some of the weaknesses of arrays
 when compared to lists.
@@ -21,12 +24,11 @@ Slices can be visualised as a `struct' over an array:
 type Slice struct {
     // the underlying "backing store" array
     array *[]T
-    // the length of the slice / view on the
-    //array
-    len   int
+    // the length of the slice / view on the array
+    len int
     // the capacity of the array from the
     // starting index of the slice
-    cap   int
+    cap int
 }
 \end{gocode}
 
@@ -83,7 +85,7 @@ In a typical program written in a functional language, lists take a central role
 	the programmer would need to track the index and bound of the array (imagine keeping track of the
 indices in a recursive function)\autocite{why-lists}}. Because of this, functional languages have
 a number of helper functions like `map', `filter' and `fold'\autocite{haskell-list-funcs} that currently do
-not exist in Go and would need to be implemented by the programmer. With no support for polymorphism, an
+not exist in Go and would need to be implemented by the programmer. With no support for polymorphism, a
 different implementation would need to be written for every slice-type that is used. The type \mintinline{go}|[]int|
 (read: a slice of integers) differs from \mintinline{go}|[]string|, which means that a possible
 `map' function would have to be written once to support slices of integers, once to support slices
@@ -100,7 +102,7 @@ With 7 base types (eliding the different `int' types like `int8', `uint16`, `int
 mean $7^{2} = 49$ map functions just to cover these base types. Counting the different numeric
 types into that equation (totally 19 distinct types\autocite{go-basetypes}), would grow that number to $19^{2} = 361$ functions.
 
-Though this code could be generated, it leaves out custom user-defined types, which would still
+Though this code could be generated, it misses user-defined types which would still
 need to be generated separately.
 
 Another option would be that `map' would take and return empty interfaces
@@ -114,7 +116,7 @@ This function header does not say anything about it's types, which would
 mean that they would need to be checked at runtime and handled gracefully. It
 would also require the caller to do a type assertion after every call. Further,
 converting slices between types cannot be done directly. Instead, a
-new slice has to be created:
+new slice has to be created and the elements converted into it:
 \begin{gocode}
 s := []string{"hello", "world"}
 var i []interface{}
@@ -128,7 +130,7 @@ for idx, e := range i {
 }
 \end{gocode}
 
-This by itself is a usage pattern that cannot be justified. Further, the
+This exemplifies why using the empty interface is not an option. Further, the
 example `map' function declaration does not specify which types must be
 equal; this would need to be a convention.
 
@@ -168,12 +170,11 @@ be implemented as built-ins in the compiler.
 
 The Go programming language is defined by its specification\autocite{go-spec}, and not
 it's implementation. As of Go 1.14, there are two major implementations of that
-specification; Google's self-hosting compiler toolchain\footnote{This is what most
-    often is referred to as `the Go compiler'.}
-`gc', which is written in Go, and `gccgo', a frontend for GCC, writen in C++.
+specification; Google's self-hosting compiler toolchain `gc', which is written in
+Go, and `gccgo', a frontend for GCC, writen in C++.
 
 When talking about the Go compiler, what's mostly referred to is `gc'\footnote{`gc' stands
-for `Go Compiler', and not `Garbage Collection' (`GC').}.
+for `go compiler', and not `garbage collection' (`GC').}.
 
 A famous, although not completely correct story tells about Go being designed
 while a C++ program was compiling\autocite{less-is-more}.
@@ -205,7 +206,7 @@ This leads to less code to compile and in turn shorter compilation times.
 Another reason is that `the `gc' compiler is simpler code compared to most
 recent compilers'\autocite{nuts-compiler}.
 
-Compiling Go programs with the standard `gc' compiler can be split into four
+Compiling a Go program with the standard `gc' compiler can be split into four
 phases:
 
 \subsection{Parsing Go programs}
@@ -215,10 +216,11 @@ phases:
 
 The first phase of compilation is parsing Go programs into a syntax tree. This
 is done by tokenizing the code (`lexical analysis' - the `lexer'), parsing
-(`syntax analysis' - the `parser') it and then constructing a syntax tree (\gls{ast}) for
-each source file\footnote{Technically, the syntax tree is a syntax \gls{dag}\autocite{ast-node-dag}}.
+(`syntax analysis' - the `parser') it and then constructing a syntax tree
+(\gls{ast})\footnote{Technically, the syntax tree is a syntax \gls{dag}\autocite{ast-node-dag}}
+for each source file.
 
-In comparison to most production-level languages, Go can be parsed without a
+In comparison to many other programming languages, Go can be parsed without a
 symbol table. It has been designed to be easy to parse
 and analyse, which makes the Go parser simple in it's design\autocite{go-faq-symbol}.
 
@@ -226,18 +228,18 @@ and analyse, which makes the Go parser simple in it's design\autocite{go-faq-sym
 
 The second phase of compilation starts by converting the `syntax' package's
 AST, created in the first phase, to the compiler's AST representation. This
-is due to historical reasons, as the `gc's AST definition was carried over
-from the C implemenation.
+is due to historical reasons, as `gc's AST definition was carried over
+from the C implementation.
 
 After the conversion, the AST is type-checked. Within the type-checking, there
-are also some additional steps included like `declared and not used' and
-determining wheter a function terminates.
+are also some additional steps included like checking for `declared and not used'
+variables and determining whether a function terminates.
 
 After type-checking, some transformations are applied on the AST. This includes,
 but is not limited to, eliminating dead code, inlining function calls and escape
-analysis. What is also done in the transformation phase is rewriting builtin function
-calls, replacing for example a call to the builtin `append' with the necessary
-AST structure and rutime-calls to implement its functionality.
+analysis. What is also done in the transformation phase is rewriting built-in function
+calls, replacing for example a call to the built-in `append' with the necessary
+AST structure and runtime-calls to implement its functionality.
 
 \subsection{SSA}
 
@@ -250,23 +252,22 @@ it'\autocite{compiler-readme}.
 The conversion consists of multiple `passes' through the SSA that
 apply machine-independent rules to optimise code. These generic
 rewrite rules are applied on every architecture and thus mostly
-concern expressions (e.g. replace expressions with constant values and
-optimise multiplications), dead code elimination and removal of unneeded
+concern expressions (for example replacing expressions with constant values and
+optimising multiplications), dead code elimination and removal of unneeded
 nil-checks.
 
 \subsection{Generating machine code}
 
 Lastly, in the fourth phase of the compilation, machine-specific
-SSA optimisations are applied, including, but not limited to:
+SSA optimisations are applied. These may include:
 \begin{itemize}
     \item Rewriting generic values into their machine-specific variants
         (for example, on amd64, combining load-store operations)
-    \item Another dead-code elimination pass
+    \item Dead-code elimination pass
     \item Pointer liveness analysis
     \item Removing unused local variables
 \end{itemize}
 
 After generating and optimising the SSA form, the code is passed to the
 assembler, which replaces the so far generic instructions with
-architecture-specific machine code and writes out the final object file.
-\autocite{compiler-readme}
+architecture-specific machine code and writes out the final object file\autocite{compiler-readme}.

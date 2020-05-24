@@ -23,6 +23,38 @@ from the root of the git repository\cite{git-repo}:
 	\gofile{../work/examples/shadowing/main.go}
 \end{code}
 
+\section{Foldl and Foldl' difference}\label{appendix:foldl-strictness}
+\begin{code}
+    \captionof{listing}{foldl and foldl' strictness\autocite{fold-types}}
+    \begin{haskellcode}
+> (?) :: Int -> Int -> Int
+> _ ? 0 = 0
+> x ? y = x*y
+>
+> list :: [Int]
+> list = [2,3,undefined,5,0]
+>
+> foldl (?) 1 list
+foldl (?) 1 [2,3,undefined,5,0] -->
+foldl (?) (1 ? 2) [3,undefined,5,0] -->
+foldl (?) ((1 ? 2) ? 3) [undefined,5,0] -->
+foldl (?) (((1 ? 2) ? 3) ? undefined) [5,0] -->
+foldl (?) ((((1 ? 2) ? 3) ? undefined) ? 5) [0] -->
+foldl (?) (((((1 ? 2) ? 3) ? undefined) ? 5) ? 0) [] -->
+((((1 ? 2) ? 3) ? undefined) ? 5) ? 0 -->
+0
+
+> foldl' (?) 1 list
+foldl' (?) 1 [2,3,undefined,5,0] -->
+    1 ? 2 --> 2
+foldl' (?) 2 [3,undefined,5,0] -->
+    2 ? 3 --> 6
+foldl' (?) 6 [undefined,5,0] -->
+    6 ? undefined -->
+*** Exception: Prelude.undefined
+    \end{haskellcode}
+\end{code}
+
 \section{Workaround for the missing foldl' implementation in Go}\label{appendix:foldl-go}
 \begin{code}
 	\captionof{listing}{Working around the missing foldl implementation in Go}
@@ -234,7 +266,7 @@ $> fgo build ./...
 \section{Building Funcheck}
 
 Funcheck needs to be built against functional Go to properly detect the builtin functions.
-If you have not done so already, install `fgo' as shown in~\ref{appendix:install-fgo}.
+If you have not done so already, install `fgo' as shown in Appendix~\ref{appendix:install-fgo}.
 
 Then, funcheck can be installed directly with `go get' (or rather, `fgo get'). `go get'
 downloads the source code to the Go modules directory (usually in \mintinline{bash}|$GOPATH/pkg/mod|),

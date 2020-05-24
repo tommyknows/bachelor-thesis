@@ -102,7 +102,7 @@ be reported upon.
 
 Go being a \gls{copy-by-value} language, mutating existing variables
 accross functions works by passing pointers to these variables instead\footnote{
-An example for this can be found at~\ref{appendix:mutation}.}.
+An example for this can be found in Appendix~\ref{appendix:mutation}.}.
 When removing the regular assignment operators, the usage of pointers becomes
 second nature. Technically, they could be used everywhere now, as it is not
 possible to mutate anything either way. It is left to the developer to decide,
@@ -226,7 +226,7 @@ will still be able to use IO functions as in regular Go programs.
 
 \subsection{Assignments in Go}
 
-As described in section~\ref{sec:mutability}, the only check that needs
+As described in Section~\ref{sec:mutability}, the only check that needs
 to be done is that there are no re-assignments in the code. There are a few
 exceptions, which will be covered later. First, it is important to have
 a few examples and test cases to be clear on what should be reported.
@@ -264,7 +264,8 @@ It is shorthand for a regular variable declaration with initializer expressions 
 \begin{bnfcode}
 "var" IdentifierList = ExpressionList .
 \end{bnfcode}
-\end{quote}\autocite{short-hand-decl}
+\autocite{short-hand-decl}
+\end{quote}
 
 In practice, the short variable declaration is used more often due to the
 fact that there is no need to specify the type of the variable manually and
