@@ -25,7 +25,7 @@ For a complete implementation, the following steps are necessary:
         \end{itemize}
 \end{itemize}
 
-The go source code that is relevant for this thesis can be classified into three different
+The Go source code that is relevant for this thesis can be classified into three different
 types. One is the godoc - the documentation for the new built-in functions. The
 other two are the `public' and the `private' implementation of these builtins.
 
@@ -87,7 +87,7 @@ After that, the type-checking and its associated tests are to be implemented.
 This concludes the type-checking for external tools and makes `gopls' return errors
 Once type-checking the new built-in functions is implemented, `gopls' can be
 compiled against the new public packages.\footnote{
-This means pointing the go toolchain to the correct directory by setting
+This means pointing the Go toolchain to the correct directory by setting
 the value of `GOROOT' with \mintinline{shell}|go env -w GOROOT=<path>|.
 }
 It will then return errors if the wrong types are used. For example, when trying

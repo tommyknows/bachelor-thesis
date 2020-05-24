@@ -5,7 +5,7 @@
 
 \section{Learning Functional Programming}
 
-In 2007, C\# 3.0 was released. Two years later, Ryan Dhal published the initial version
+In 2007, C\# 3.0 has been released. Two years later, Ryan Dhal published the initial version
 of NodeJS, eliminating JavaScript's ties to the browser and introducing it as a server-side
 programming language. In 2013, Java 8 was released. Within the same timeframe, Python
 has been rapidly growing in popularity\autocite{python-popularity}.
@@ -23,7 +23,7 @@ For example Rust, the `most popular programming language' for 4 years in a row (
 according to the StackOverflow Developer survey\autocite{rust-loved}, has been significantly
 influenced by functional programming languages\autocite{rust-functional}. Further, in idiomatic
 Rust code, a functional style can be clearly observed\footnote{A simple example for this may be
-that variables are immutable by default}.
+that variables are immutable by default.}.
 
 Learning a purely functional programming language increases fluency with these concepts and
 teaches a different way to think and approach problems when programming. Due to this, many
@@ -31,8 +31,7 @@ people recommend learning a functional programming
 language\autocite{blog1-funcprog}\autocite{blog2-funcprog}\autocite{blog3-funcprog}\autocite{blog4-funcprog},
 even if one may not end up using that language at all\autocite{quora-funcprog}.
 
-Even though the exact definition of what a \textit{purely} functional language is remains a
-controversy\autocite{functional-controversy}, most literature about functional programming,
+Most literature about functional programming,
 including academia and online resources like blogs, contain code examples written in Haskell.
 Further, according to the Tiobe Index\autocite{tiobe-index}, Haskell is also the most popular
 purely functional programming language\autocite{comparison-functional-languages}.
@@ -75,17 +74,18 @@ is not to underestimate and adds to Haskell's steep learning curve.
 \section{Goals}
 
 Learning a new paradigm and syntax at the same time can be daunting and discouraging for novices.
-By using a modern, multi-paradigm language with a clear and familiar syntax, the functional
+The entry barrier for functional programming should be lowered by
+using a modern, multi-paradigm language with a clear and familiar syntax. The functional
 programming beginner should be able to focus on the paradigm first, and then change to a language
 like Haskell to fully get into functional programming.
 
-To ease the learning curve of functional programming, this thesis will consist of two parts.
-In the first part, writing functional code should be made as easy as possible. This means that
-a language with an easy and familiar syntax should be chosen. Further, this programming language
+To achieve this goal, this thesis will consist of two parts.
+In the first part, writing functional code will be made as easy as possible. This means that
+a programming language with an easy and familiar syntax should be chosen. Optimally, this language
 should already support functions as first-class citizens. Additionally, it should be statically
 typed, as a static type system makes it easier to reason about a program and can support the
 programmer while writing code.
-In the second part, a linter is created to check code for non-functional statements. To achieve
+In the second part, a linter will be created to check code for non-functional statements. To achieve
 this, functional purity has to be defined, a ruleset has to be worked out and implemented into
 a static analysis tool.
 
@@ -96,28 +96,28 @@ designed at Google in 2009\autocite{golang-publish}. With its strong syntactic s
 be familiar to most programmers.
 
 Go strives for simplicity and its syntax is extremely small and easy to learn. For example, the
-language consists only of 25 keywords and purposefully omits constructs like the ternary operator
-(<bool> ? <then> : <else>) as a replacement for the longer `if <bool> \{ <then> \} else \{ <else> \}' due
-to clarity. `A language needs only one conditional control flow construct'\autocite{go-ternary},
+language consists of only 25 keywords and purposefully omits constructs like the ternary operator
+(<bool> ? <then> : <else>) as a replacement for the longer `if <bool> \{ <then> \} else \{ <else> \}'
+for clarity. `A language needs only one conditional control flow construct'\autocite{go-ternary},
 and this also holds true for many other constructs. In Go, there is usually only one way
 to express something, improving the clarity of code.
 
 Due to this clarity and unambiguity, the language is a perfect fit to grasp the concepts and trace
 the inner workings of functional programming. It should be easy to read code and understand what
-it does without years of experience with the language.
+it does without a lot of experience with the language.
 
 There are however a few downsides of using Go. So far, Go does not have polymorphism, which means
 that functions always have to be written with specific types. Due to this, Go also does not include
 common list processing functions like `map', `filter', `reduce' and more\footnote{Although Go does
 	have some polymorphic functions like `append', these are specified as built-in functions in the
 language and not user-defined}. Further, Go does not have a built-in `list' datatype. However, Go's
-`slices' cover a lot of use cases for lists already. Section~\ref{sec:go-slices} goes into more
-details on slices.
+`slices' cover a lot of use cases for lists already. Section~\ref{sec:go-slices} covers this topic
+in more detail.
 
 \section{Existing Work}
 
-With Go's support of some functional aspects, patterns and best practices have emerged that relate
-to functional programming.
+With Go's support of some functional aspects, patterns and best practices have emerged that make
+us of functional programming constructs.
 For example, in the \textit{net/http} package of the standard library, the function
 \begin{gocode}
 func HandleFunc(pattern string, handler func(ResponseWriter, *Request))
@@ -138,13 +138,13 @@ func main() {
 \autocite{go-http-doc}
 
 Using functions as function parameters or return types is a commonly used feature in Go, not just
-within the standard library.
+within the standard library. Furthermore, design patterns have emerged within the community
+that use functional concepts. An example for this are `functional options'.
 
 \subsection{Functional Options}
 
-A software design pattern that has gained popularity within the Go community is `functional options'.
-The pattern has been outlined in Dave Cheney's blog post `Functional options for friendly APIs'
-and is a great example on how to use the support for multiple paradigms.
+The `functional options' pattern has been outlined in Dave Cheney's blog post `Functional options
+for friendly APIs' and is a great example on how to use the support for multiple paradigms.
 The basic idea with functional options is that a type constructor receives an unknown (0-n) amount
 of options:
 \begin{gocode}
@@ -184,7 +184,7 @@ Furthermore, the typical `config struct' pattern can be avoided and meaningful z
 can be set.
 
 A more extensive example on how functional options are implemented and used can be found in
-appendix~\ref{appendix:funcopts}.
+Appendix~\ref{appendix:funcopts}.
 
 \begin{quote}
     In summary
@@ -204,15 +204,14 @@ However, multiple developers have already researched and tested Go's ability to 
 
 In his talk `Functional Go'\autocite{func-go-talk}, Francesc Campoy Flores analysed some commonly used functional
 language features in Haskell and how they can be ported with Go. Ignoring speed and stackoverflows due to non-existent
-tail call optimisation\autocite{go-tco}, the main issue was with the type system and the missing polymorphism.
+tail call optimisation\autocite{go-tco}, the main issue is with the type system and the missing polymorphism.
 
 \subsection{go-functional}
 
-In July 2017, Aaron Schlesinger, a Go programmer for Micosoft Azure, gave a talk on functional programming wit Go.
+In July 2017, Aaron Schlesinger, a Go programmer for Microsoft Azure, gave a talk on functional programming with Go.
 He released a repository\autocite{go-functional} that contains `core utilities for functional Programming in Go'.
 The project is currently unmaintained, but showcases functional programming concepts like currying, functors and
-monoids in Go.
-In the `README' file of the repository, he also states that:
+monoids in Go. In the `README' file of the repository, he also states that:
 \begin{quote}
     Note that the types herein are hard-coded for specific types, but you could
     use code generation to produce these FP constructs for any type you please!
@@ -227,5 +226,6 @@ in a generic way.
 
 To make functional programming more accessible in Go, this thesis will research what the most used
 higher-order functions are and implement them with a focus on usability.
-Furthermore, a list of rules for pure functional should be curated and implmented in a linter. This
-linter can then be used to check existing code and report constructs which are not functional.
+Furthermore, to learn purely functional programming, a list of rules for pure functional code should
+be curated and implemented in a static code analysis tool. This tool can then be used to check
+existing code and report constructs that are not functional.

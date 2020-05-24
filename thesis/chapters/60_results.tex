@@ -18,7 +18,7 @@ pure, this objective is difficult to accomplish. The reason for this are Input /
 input, network connections, randomness and time are all impure. Haskell wraps
 these impure functions in the IO monad, which is a way to work around the compiler's optimisations
 based on functional purity. While the IO monad does not make impure functions pure, it
-does serve as documentation to it's users (`if the function has IO, it is impure') and
+does serve as documentation to its users (`if the function has IO, it is impure') and
 guarantees a certain execution order.
 
 Go on the other hand does not have this issue. The Go compiler does not optimise execution
@@ -56,7 +56,7 @@ fmt.Println(s)
 \end{gocode}
 
 \begin{bashcode}
-\$> funcheck .
+$> funcheck .
 file.go:3:2: reassignment of s
 \end{bashcode}
 
@@ -80,9 +80,9 @@ which are registered, type-checked and implemented within the Go compiler.
 As these are handled directly at compile time, built-in functions may be polymorphic, for
 example allowing the programmer to use the same `filter' function for all list-types.
 
-To determine which higher-order functions are most commonly used, we analysed the most
-popular open-source Haskell projects (pandoc, shellcheck and purescript, to name a few).
-As a result, `fmap', `fold', `filter' and `prepend'
+To determine which higher-order functions are most commonly used, the most popular
+open-source Haskell projects (pandoc, shellcheck and purescript, to name a few) have
+been analysed. As a result, `fmap', `fold', `filter' and `prepend'
 (`cons') have been added as built-ins into the compiler.
 These functions make it easier to write purely functional code in Go, in turn helping
 the programmer to learn functional programming with a familiar language and syntax.
@@ -96,7 +96,8 @@ the algorithm in Go code directly. This took more than 800 lines of code to do s
 
 As a result, using these functions is equal to using any other built-in function: there
 is documentation in Godoc, type-checking support in the language server\footnote{If the
-language server (gopls) is compiled against the modified version of Go\ref{appendix:build-gopls}}
+language server (gopls) is compiled against the modified version of Go, as
+described in Appendix~\ref{appendix:build-gopls}}
 and in the compiling phase, as well as a polymorphic function header, allowing the
 programmer to call the function with any allowed type.
 
@@ -110,44 +111,41 @@ A demonstration of these functions and how functional Go code looks like can be 
 package main
 
 import (
-	"fmt"
-	"strconv"
+        "fmt"
+        "strconv"
 )
 
-type parity bool
+// Counterpart to Haskell's `derive Show`
+//go:generate stringer -type parity
 
-const (
-	even parity = true
-	odd  parity = false
-)
+type parity int
+
+const even parity = 0
+const odd parity = 1
 
 // shouldBe returns a function that returns true if an int is of the
 // given parity
 func shouldBe(p parity) func(i int) bool {
-	return func(i int) bool {
-		return (i%2 == 0) == p
-	}
+        return func(i int) bool {
+                return i%2 == int(p)
+        }
 }
 
 func main() {
-	l := []int{1, 2, 3, 4, 5}
-	l5 := fmap(func(i int) int { return i * 5 }, prepend(0, l))
+        l := []int{1, 2, 3, 4, 5}
+        l5 := fmap(func(i int) int { return i * 5 }, prepend(0, l))
 
-	// fold over even / odd numbers and add them to a string
-	evens := foldl(
-		func(s string, i int) string { return s + strconv.Itoa(i) + " " },
-		"even: ",
-		filter(shouldBe(even), l5),
-	)
-	odds := foldl(
-		func(s string, i int) string { return s + strconv.Itoa(i) + " " },
-		"odd: ",
-		filter(shouldBe(odd), l5),
-	)
+        addToString := func(s string, i int) string {
+                return s + strconv.Itoa(i) + " "
+        }
+        // fold over even / odd numbers and add them to a string
+        evens := foldl(addToString, even.String()+": ",
+                filter(shouldBe(even), l5))
+        odds := foldl(addToString, odd.String()+": ",
+                filter(shouldBe(odd), l5))
 
-	fmt.Println(evens, odds) // even: 0 10 20  odd: 5 15 25
+        fmt.Println(evens, odds)
 }
-
 \end{gocode}
 \end{code}
 \end{listing}
@@ -157,3 +155,13 @@ can fully concentrate of the concepts of functional programming while keeping
 a familiar syntax at hand. However, it should not be considered a fully featured
 purely functional programming language. Rather, it should serve as a starting point and
 make the transition to a language like Haskell easier.
+
+Differences in the syntax between Haskell and Go exemplify why purely functional programming
+languages have a distinct syntax compared to imperative or object-oriented languages.
+Many constructs can be expressed more concisely in Haskell, without the additional
+overhead that many programming languages, including Go, introduce.
+
+Using `the right tool for the job' is important, and this paper shows that imperative or
+object-oriented programming languages are not the right tool for production-grade
+functional programming. However, they can serve as a starting point and help the
+transition to it.
