@@ -78,13 +78,13 @@ Slice Tricks\autocite{slice-tricks}.
 This quick glance at slices should clarify that, though the runtime characteristics of lists and slices
 can differ, from a usage standpoint, what is possible with lists is also possible with slices.
 
-However, what is missing from Go's slices are a lot of the classical list `helper' functions.
 In a typical program written in a functional language, lists take a central role\footnote{Interestingly,
 	there is no clear and direct answer as to why they do. One reason may be because they are recursively
 	defined and trivially to implement functionally. Further, they are easier to use than arrays, where
 	the programmer would need to track the index and bound of the array (imagine keeping track of the
 indices in a recursive function)\autocite{why-lists}}. Because of this, functional languages have
-a number of helper functions like `map', `filter' and `fold'\autocite{haskell-list-funcs} that currently do
+a number of helper functions like `map', `filter' and `fold'\autocite{haskell-list-funcs} to modify and
+work on lists. These so callend `higher order functions' currently do
 not exist in Go and would need to be implemented by the programmer. With no support for polymorphism, a
 different implementation would need to be written for every slice-type that is used. The type \mintinline{go}|[]int|
 (read: a slice of integers) differs from \mintinline{go}|[]string|, which means that a possible
@@ -99,13 +99,13 @@ func mapStringToString(f func(string) string, []string) []string
 \end{gocode}
 
 With 7 base types (eliding the different `int' types like `int8', `uint16`, `int16', etc.), this would
-mean $7^{2} = 49$ map functions just to cover these base types. Counting the different numeric
+mean $7^{2} = 49$ map functions just to cover the base types. Counting the different numeric
 types into that equation (totally 19 distinct types\autocite{go-basetypes}), would grow that number to $19^{2} = 361$ functions.
 
 Though this code could be generated, it misses user-defined types which would still
-need to be generated separately.
+need to be generated separately in a pre-compile step.
 
-Another option would be that `map' would take and return empty interfaces
+Another option, instead of having a function per type, would be that `map' takes and returns empty interfaces
 (\mintinline{go}|interface{}|). However, `the empty interface says
 nothing'\autocite{empty-interface}. The declaration of `map' would be:
 \begin{gocode}
@@ -115,30 +115,34 @@ nothing'\autocite{empty-interface}. The declaration of `map' would be:
 This function header does not say anything about it's types, which would
 mean that they would need to be checked at runtime and handled gracefully. It
 would also require the caller to do a type assertion after every call. Further,
-converting slices between types cannot be done directly. Instead, a
-new slice has to be created and the elements converted into it:
+a slice of type \mintinline{go}|T| cannot simply be converted or asserted to a slice of another type
+\mintinline{go}|T2|\autocite{go-interface-slice-conv}\autocite{go-interface-slice-conv2}.
+Because of this limitation, a usage pattern of map would be\footnote{There are more
+	issues with this code sample, for example the returned \mintinline{go}|interface{}|. If
+	it was \mintinline{go}|[]interface{}|, the conversion would need to be applied again. With
+	\mintinline{go}|interface{}|, a type assertion would suffice. However, the implementation
+would be extremely tedious}:
 \begin{gocode}
 s := []string{"hello", "world"}
 var i []interface{}
 for _, e := range s {
 	i = append(i, e)
 }
-// i is now populated and can be used. to convert
-// it back to []string:
-for idx, e := range i {
-	s[idx] = e.(string)
-}
+// i is now populated and can be used.
+r := map(someFunc, f)
+// to convert it back to []string:
+s = r.([]string)
 \end{gocode}
 
 This exemplifies why using the empty interface is not an option. Further, the
-example `map' function declaration does not specify which types must be
-equal; this would need to be a convention.
-
-To mitigate this point, the most common list-operations (in Go slice-operations) will
-need to be added as built-ins to the compiler, so that the programmer can use these functions
-on every slice-type without any necessary conversions.
+function could not really be type-checked at compile type, as there is no indication
+of which argument's type must be equal.
 
 \section{Built-in functions}
+
+To mitigate these issues, the most common list-operations (in Go slice-operations) will
+be added as built-ins to the compiler, so that the programmer can use these functions
+on every slice-type without any conversion or code generation being necessary.
 
 The language specification defines what built-in functions are and which built-in
 functions should exist:
@@ -150,18 +154,15 @@ functions should exist:
     in call expressions; they cannot be used as function values.\autocite{go-spec-builtins}
 \end{quote}
 
-As Go does not have generics, functions that return a variable, but
-concrete type have to be built into the language itself.
-
-For example, \mintinline{go}|append|:
+For example, the documentation for the built-in \mintinline{go}|append|:
 \begin{gocode}
 // The append built-in function appends elements to the end of a slice.
 // ...
 func append(slice []Type, elems ...Type) []Type
 \end{gocode}
 
-This shows that the types supplied to append are not specified upfront. Instead, they
-are resolved during compilation of the program.
+The documentation shows that the types supplied to append are not specified upfront.
+Instead, they are resolved and checked during compilation of the program.
 
 Thus, in order to have generic list processing functions, these functions need to
 be implemented as built-ins in the compiler.
@@ -174,7 +175,7 @@ specification; Google's self-hosting compiler toolchain `gc', which is written i
 Go, and `gccgo', a frontend for GCC, writen in C++.
 
 When talking about the Go compiler, what's mostly referred to is `gc'\footnote{`gc' stands
-for `go compiler', and not `garbage collection' (`GC').}.
+for `go compiler', and not `garbage collection' (which is abbreviated as `GC').}.
 
 A famous, although not completely correct story tells about Go being designed
 while a C++ program was compiling\autocite{less-is-more}.
@@ -188,7 +189,13 @@ This is why one of the main goals when designing Go was fast compilation times:
     was called for.\autocite{go-faq}
 \end{quote}
 
-This is why Go has taken some measures to to combat slow compilation times. According
+Go has taken some measures to to combat slow compilation times. In general, Go's dependency resolution is simpler
+compared to other languages, for example by not allowing circular dependencies.
+Furthermore, compilation is not even attempted if there are unused
+imports or unused declarations of variables, types and functions.
+This leads to less code to compile and in turn shorter compilation times.
+Another reason is that `the `gc' compiler is simpler code compared to most
+recent compilers'\autocite{nuts-compiler}. However, according
 to Rob Pike, one of the creators of Go, Go's compiler is not notably fast, but
 most other compilers are slow:
 
@@ -197,17 +204,7 @@ most other compilers are slow:
     would generate the same quality code much faster.\autocite{nuts-compiler}
 \end{quote}
 
-The language design does have some limitations
-however to lower compilation times. In general, Go's dependency resolution is simpler
-compared to other languages, for example by not allowing circular dependencies.
-Furthermore, compilation is not even attempted if there are unused
-imports or unused declarations of variables, types and functions.
-This leads to less code to compile and in turn shorter compilation times.
-Another reason is that `the `gc' compiler is simpler code compared to most
-recent compilers'\autocite{nuts-compiler}.
-
-Compiling a Go program with the standard `gc' compiler can be split into four
-phases:
+How Go generates code with the `gc' compiler can be split into four phases:
 
 \subsection{Parsing Go programs}
 
@@ -215,7 +212,7 @@ phases:
 \newglossaryentry{ast}{name=AST,description={Abstract Syntax Tree, an abstract representation of source code as a tree}}
 
 The first phase of compilation is parsing Go programs into a syntax tree. This
-is done by tokenizing the code (`lexical analysis' - the `lexer'), parsing
+is done by tokenising the code (`lexical analysis' - the `lexer'), parsing
 (`syntax analysis' - the `parser') it and then constructing a syntax tree
 (\gls{ast})\footnote{Technically, the syntax tree is a syntax \gls{dag}\autocite{ast-node-dag}}
 for each source file.
