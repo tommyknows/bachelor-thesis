@@ -5,8 +5,8 @@
 
 To learn functional programming without being introduced to a new syntax at the same time
 ensures that programmers can fully concentrate on functional concepts. Although Go already
-supported a functional programming style, the programmer may not have known if the code is
-purely functional or if there are still imperative constructs embedded.
+supported a functional programming style, the programmer may not have known if the code was
+purely functional or if there still were imperative constructs embedded.
 
 In the last chapters, functional purity has been defined as a law based on two rules; immutability
 and function purity. Immutability means that once assigned, a variable's value never
@@ -17,11 +17,11 @@ It has been shown that although purely functional languages like Haskell aim to 
 pure, this objective is difficult to accomplish. The reason for this are Input / Output actions; user
 input, network connections, randomness and time are all impure. Haskell wraps
 these impure functions in the IO monad, which is a way to work around the compiler's optimisations
-based on functional purity. While the IO monad does not make impure functions pure, it
+based on functional purity. In addition, although the IO monad does not make impure functions pure, it
 does serve as documentation to its users (`if the function has IO, it is impure') and
 guarantees a certain execution order.
 
-Go on the other hand does not have this issue. The Go compiler does not optimise execution
+Go on the other hand does not have this issue, as the Go compiler does not optimise execution
 based on purity guarantees. Having a similar construct like the IO monad in Go would as such
 only serve documentation purposes. Because of this, the decision has been taken to ignore
 the impurity that is implied with IO actions.
@@ -60,16 +60,17 @@ $> funcheck .
 file.go:3:2: reassignment of s
 \end{bashcode}
 
-This linter can be used and ran against any Go package. To eliminate the reported errors,
+This linter can be used and executed against any Go package. To eliminate the reported errors,
 code has to be rewritten in what ends up being purely functional code.
 
 However, functional code often relies heavily on lists and list-processing functions.
-Although Go does not have a built-in list datatype, Go's slices, an abstraction on arrays,
+Although Go does not have a built-in list datatype, Go's slices, an abstraction built
+on top of arrays,
 mitigate a lot of downsides when comparing regular arrays to lists\footnote{Arrays / Slices
-and Lists have a completely different runtime behaviour (indexing, adding or removing elements).
+and Lists have a different runtime behaviour (indexing, adding or removing elements).
 However, the performance of the code was not considered to be relevant in this thesis.}.
 
-What Go's slices lack on the other side are the typical higher-order functions like `map',
+What Go's slices lack on the other hand are the typical higher-order functions like `map',
 `filter' or `reduce'. These are commonly used in functional programming and most languages
 contain implementations of these functions already --- Go does not.
 
@@ -88,7 +89,7 @@ These functions make it easier to write purely functional code in Go, in turn he
 the programmer to learn functional programming with a familiar language and syntax.
 
 While implementing these functions in a regular Go program would be a matter of minutes,
-adding them to the Go compiler is more effort. To illustrate, the functions
+adding them to the Go compiler is not as simple. To illustrate, the functions
 have been written out in regular Go in the chapters~\ref{ch:impl-fmap} to~\ref{ch:impl-filter}
 and are 33 lines of code, all functions combined. In the Go compiler, it is necessary to
 register the functions, type-check the calls and manipulate the \gls{ast} instead of writing
@@ -98,15 +99,12 @@ As a result, using these functions is equal to using any other built-in function
 is documentation in Godoc, type-checking support in the language server\footnote{If the
 language server (gopls) is compiled against the modified version of Go, as
 described in Appendix~\ref{appendix:build-gopls}}
-and in the compiling phase, as well as a polymorphic function header, allowing the
+and in the compilation phase, as well as a polymorphic function header, allowing the
 programmer to call the function with any allowed type.
 
 A demonstration of these functions and how functional Go code looks like can be found at~\ref{code:funcexample}
 
 \begin{listing}[ht]
-\begin{code}
-	\captionof{listing}{Demonstration of the new built-in functions}
-	\label{code:funcexample}
 \begin{gocode}
 package main
 
@@ -147,7 +145,7 @@ func main() {
         fmt.Println(evens, odds)
 }
 \end{gocode}
-\end{code}
+\caption{Demonstration of the new built-in functions\label{code:funcexample}}
 \end{listing}
 
 With these additions to Go and its ecosystem, aspiring functional programmers
@@ -163,5 +161,5 @@ overhead that many programming languages, including Go, introduce.
 
 Using `the right tool for the job' is important, and this paper shows that imperative or
 object-oriented programming languages are not the right tool for production-grade
-functional programming. However, they can serve as a starting point and help the
-transition to it.
+functional programming. However, they can serve as a good starting point and help transitioning
+to it.

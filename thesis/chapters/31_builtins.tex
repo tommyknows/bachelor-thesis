@@ -30,7 +30,6 @@ of pre-selected list functions, indicates that the most used functions are `:'
 
 \begin{table}[htb]
 \centering
-\caption{Occurrences of list functions\ref{appendix:function-occurrences}}\label{tab:occurrences-list-funcs}
 \begin{tabular}{ll}
 \toprule
 map & 1241 \\
@@ -59,13 +58,8 @@ minimum & 10 \\
 \midrule
 reduce & 8
 \end{tabular}
+\caption{Occurrences of list functions\ref{appendix:function-occurrences}}\label{tab:occurrences-list-funcs}
 \end{table}
-\footnote{The cons function (`:') is overrepresented in this list,
-    as it can also be used to deconstruct lists within pattern matching. Filtering
-    these occurrences would need a more advanced algorithm. However, even if $\tfrac{3}{4}$
-    of these usages are used in pattern matching, the cons function would still be
-    in the top 3.
-}
 %\footnote{The map function listed here also includes occurrences of `fmap'. A more
     %detailed look at the data shows that there are 632 occurrences of `fmap', which
     %means that `fmap' and `map' are used equally as often. As `fmap' however requires
@@ -73,34 +67,36 @@ reduce & 8
 %}
 
 Based on this information, it has been decided to implement the map, cons, fold
-and filter functions into the Go compiler.
+and filter functions into the Go compiler\footnote{The cons function (`:') is overrepresented in this list,
+    as it can also be used to deconstruct lists within pattern matching. Filtering
+    these occurrences would need a more advanced algorithm. However, even if $\tfrac{3}{4}$
+    of these usages are used in pattern matching, the cons function would still be
+    in the top 3.
+}.
 
 \subsection{Map}
 
 The most used function in Haskell is map. The table~\ref{tab:occurrences-list-funcs}
 counts roughly 1200 occurrences of map, although around 600 of those occurrences are from
-fmap. fmap is the generic version of map: while map only works on lists, fmap
-works on every type that implements the `Functor' typeclass\footnote{typeclasses
+fmap. fmap is part of the Functor typeclass\footnote{typeclasses
     in Haskell are similar to interfaces in imperative and object-oriented
-languages}, including tuples, `Maybe' and lists.
-`In practice a functor represents a type that can be mapped over.'\autocite{functor-wiki}
-A common analogy for functors are `boxes'. A functor behaves like a box where
-a value can be put into and taken out again. For lists, the operation of `taking out'
-elements means processing each value one by one. For `Maybe', it means `unpacking' the
-concrete value and processing it, and if there is no concrete value, returning `Nothing'
-instead.
+languages}, which is described as `a type that can be mapped over'\autocite{functor-wiki}.
+In general, a common analogy of the Functor typeclass is a box. A functor is like a box
+where a value can be put into and taken out again. fmap processes and transforms the item
+in that box. For lists, this process means iterating over and processing every item within that list.
+For the `Maybe' type it means `unpacking' the concrete value and processing it, or if there is
+no concrete value, returning `Nothing' instead.
 
-map (and fmap) is one of the most useful higher-order functions:
+The map function is exactly like fmap but only works on lists:
+
 \begin{quote}
     \[map\] returns a list constructed by appling a function (the first argument) to all
     items in a list passed as the second argument\autocite{haskell-map}.
 \end{quote}
 
-Some usage examples of map can be found at~\ref{code:haskell-map}.
+Some usage examples of map can be seen at~\ref{code:haskell-map}.
 
-\begin{code}
-    \captionof{listing}{Example usage for map and fmap}
-    \label{code:haskell-map}
+\begin{listing}
     \begin{haskellcode}
 Prelude> :t map
 map :: (a -> b) -> [a] -> [b]
@@ -115,32 +111,37 @@ Prelude> map (++ " world") ["hello","goodbye"]
 Prelude> map show [1,2,3]
 ["1","2","3"]
     \end{haskellcode}
-\end{code}
-Due to missing polymorphism, map cannot be implemented as easily in Go. While
+    \caption{Example usage for map and fmap}\label{code:haskell-map}
+\end{listing}
+Due to missing polymorphism, map cannot be implemented easily in Go. While
 a specific definition of map would be
-\mintinline{go}|func map(f func(int) string, []int) []string|,
-this definition would only hold true for the specific types \mintinline{go}|int|
+\begin{gocode}
+func map(f func(int) string, []int) []string
+\end{gocode}
+this definition would only hold true for the specific type combination \mintinline{go}|int|
 and \mintinline{go}|string|. A more generic definition, similar to append,
-would be \mintinline{go}|func map(f func(Type1) Type2, []Type1) []Type2|. For
-this to work, the function has to be implemented as a built-in into the compiler.
+would be:
+\begin{gocode}
+func map(f func(Type1) Type2, []Type1) []Type2
+\end{gocode}
+For this to work, the function has to be implemented as a built-in into the compiler.
 
 As there is already a `map' token in the Go compiler (for the map data type),
 the function will be called `fmap'. However, compared to Haskell's `fmap',
 Go's `fmap' only works on slices. This is due
-to the absence of an `iterator'-like concept. The `range' clause, used with
-`for' loops, only works on slices and maps - both are built-in data types. It does
-not work on custom data structures, which would make the implementation a far
-bigger task.
+to the absence of an `functor'-like concept. Again, due to the absence of polymorphism,
+this cannot realistically built into the language.
+
 Nonetheless, to avoid possible naming confusions, the `map' function in Go will
 be called `fmap'.
 
 In Go, the usage of `fmap' should result in making the program~\ref{code:fmap-usage-go}
-behave as shown.
+behave as shown\footnote{Printf's first argument, the
+verb `\%\#v', can be used to print the type (`\#') and the value (`v') of a
+variable\autocite{fmt-godoc}.}.
 
-\begin{code}
-    \captionof{listing}{Example usage of map in go}
-    \label{code:fmap-usage-go}
-    \begin{gocode}
+\begin{listing}
+\begin{gocode}
 package main
 
 import (
@@ -152,9 +153,8 @@ func main() {
   fmt.Printf("%#v", fmap(strconv.Itoa, []int{1, 2, 3})) // []string{"1", "2", "3"}
 }
 \end{gocode}
-\footnote{Printf's first argument, the verb `\%\#v', can be used to print the type
-(`\#') and the value (`v') of a variable\autocite{fmt-godoc}.}
-\end{code}
+\caption{Example usage of map in Go}\label{code:fmap-usage-go}
+\end{listing}
 \subsection{Cons}
 
 The name cons has been introduced by LISP, where it describes a record structure
@@ -187,11 +187,12 @@ rule:
 This rule forbids a function to be named `:'. Instead, the function could be
 named `cons'. However, Go already has a function to add to the end of a slice,
 `append'. Thus, adding to the beginning of a slice will be named `prepend'.
-Using prepend should be very similar to append, to give an example:
+Using prepend should be very similar to append. The behaviour of `prepend'
+should be equal to using `append' with a slight workaround\footnote{This workaround
+	is to create a slice containing the prepended element, and expanding the
+destination slice with `...', as \mintinline{go}|append| is a variadic function}:
 
-\begin{code}
-    \captionof{listing}{Example usage of prepend in go}
-    \label{code:prepend-go}
+\begin{listing}
     \begin{gocode}
 package main
 
@@ -201,13 +202,15 @@ import (
 )
 
 func main() {
-    fmt.Printf("%#v", prepend(0, []int{1, 2, 3})) // []int{0, 1, 2, 3}
+	fmt.Printf("%#v", append([]int{0}, []int{1,2,3}...)// []int{0, 1, 2, 3}
+	fmt.Printf("%#v", prepend(0, []int{1, 2, 3})) // []int{0, 1, 2, 3}
 }
 \end{gocode}
-\end{code}
+    \caption{Example usage of prepend in go}\label{code:prepend-go}
+\end{listing}
 \subsection{Fold}\label{sec:fold}
 
-Fold, sometimes also named `reduce' or `aggregate' is another higher-order function
+Fold, sometimes also named `reduce' or `aggregate', is another higher-order function
 that is very commonly used in functional programming.
 
 \begin{quote}
@@ -216,18 +219,21 @@ that is very commonly used in functional programming.
     constituent parts, building up a return value.\autocite{fold-wiki}
 \end{quote}
 
+In other words, fold processes a list one by one and executes a `combining operation'
+on every element, for example summing up a list of integers.
+
 The family of fold functions in Haskell consist of three different implementations of
-that definition: `foldr', `foldl' and `foldl\''.
+that definition: foldr, foldl and foldl'.
 The difference between foldr and foldl is hinted at their function headers:
-\begin{code}
-    \captionof{listing}{Function headers of the fold functions}
+\begin{listing}
     \begin{haskellcode}
-Prelude Data.List> :t foldr
-foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b
 Prelude Data.List> :t foldl
 foldl :: Foldable t => (b -> a -> b) -> b -> t a -> b
+Prelude Data.List> :t foldr
+foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b
     \end{haskellcode}
-\end{code}
+    \caption{Function headers of the fold functions}
+\end{listing}
 The argument with type `b' is passed as the first argument to the foldl
 function, and as the second argument to foldr. As can be seen in the illustrations
 of foldl and foldr in~\ref{fig:fold}, the evaluation order of the two functions
@@ -243,16 +249,15 @@ differ.
 
 This is most obvious when using an example where the function is not associative:
 
-\begin{code}
-    \captionof{listing}{foldr and foldl execution order}
-    \label{code:foldr-example}
+\begin{listing}
     \begin{haskellcode}
-foldr (-) 0 [1..7]
-1 - (2 - (3 - (4 - (5 - (6 - (7 - 0)))))) = 4
 foldl (-) 0 [1..7]
 ((((((0 - 1) - 2) - 3) - 4) - 5) - 6) - 7 = -28
+foldr (-) 0 [1..7]
+1 - (2 - (3 - (4 - (5 - (6 - (7 - 0)))))) = 4
     \end{haskellcode}
-\end{code}
+    \caption{foldr and foldl execution order}\label{code:foldr-example}
+\end{listing}
 In foldl, the accumulator (`0') is added to the left end of the list (prepended),
 while with foldr, the accumulator is added to the right end.
 For associative functions (e.g. `+') this does not make a difference, it does
@@ -277,8 +282,7 @@ be applied in th Go version. See Appendix~\ref{appendix:foldl-go}}
 The usage of these fold-functions is equal to the Haskell versions, where foldl's
 arguments are switched in order.
 
-\begin{code}
-    \captionof{listing}{Example usage of foldr and foldl in go}\label{code:fold-go}
+\begin{listing}
 \begin{gocode}
 package main
 
@@ -290,7 +294,8 @@ func main() {
   fmt.Printf("%v\n", foldl(sub, 100, []int{10, 20, 30})) // 40
 }
 \end{gocode}
-\end{code}
+    \caption{Example usage of foldr and foldl in go}\label{code:fold-go}
+\end{listing}
 \subsection{Filter}
 
 The filter function is the conceptually simplest higher-order function.
@@ -301,9 +306,7 @@ a boolean if it should be kept or filtered.
 
 A simple example:
 
-\begin{code}
-    \captionof{listing}{Example usage of filter in Go}
-    \label{code:filter-go}
+\begin{listing}
     \begin{gocode}
 package main
 
@@ -317,4 +320,5 @@ func main() {
   fmt.Println(filter(smallerThan5, []int{1, 8, 5, 4, 7, 3})) // [1, 4, 3]
 }
 \end{gocode}
-\end{code}
+    \caption{Example usage of filter in Go}\label{code:filter-go}
+\end{listing}

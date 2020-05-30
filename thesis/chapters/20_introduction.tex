@@ -19,7 +19,7 @@ the language since their initial release.
 
 Functional programming has landed in the wider programming-community, emerging from niche use-cases
 and academia.
-For example Rust, the `most popular programming language' for 4 years in a row (2016--2019)
+For example Rust, the `most popular programming language' for 5 years in a row (2016--2020)
 according to the StackOverflow Developer survey\autocite{rust-loved}, has been significantly
 influenced by functional programming languages\autocite{rust-functional}. Further, in idiomatic
 Rust code, a functional style can be clearly observed\footnote{A simple example for this may be
@@ -47,7 +47,7 @@ Not only do they need to learn a new language with an unusual syntax (compared t
 also need to change their way of thinking and reasoning about problems.
 For example, the renowned quicksort-implementation from the Haskell Introduction Page\autocite{haskell-quicksort}:
 
-\label{code:haskell-quicksort}
+\begin{listing}
 \begin{haskellcode}
 quicksort :: Ord a => [a] -> [a]
 quicksort []     = []
@@ -56,6 +56,8 @@ quicksort (p:xs) = (quicksort lesser) ++ [p] ++ (quicksort greater)
         lesser  = filter (< p) xs
         greater = filter (>= p) xs
 \end{haskellcode}
+	\caption{Quicksort implementation in Haskell}\label{code:haskell-quicksort}
+\end{listing}
 
 While this is only a very short and clean piece of code, these 6 lines already pose many challenges to non-experienced Haskellers;
 
@@ -122,7 +124,7 @@ For example, in the \textit{net/http} package of the standard library, the funct
 \begin{gocode}
 func HandleFunc(pattern string, handler func(ResponseWriter, *Request))
 \end{gocode}
-is used to register functions for http server handling:
+is used to register functions for http server handling\autocite{go-http-doc}:
 
 \begin{gocode}
 func myHandler(w http.ResponseWriter, r *http.Request) {
@@ -135,7 +137,6 @@ func main() {
     http.ListenAndServe(":8080", nil)
 }
 \end{gocode}
-\autocite{go-http-doc}
 
 Using functions as function parameters or return types is a commonly used feature in Go, not just
 within the standard library. Furthermore, design patterns have emerged within the community
@@ -151,6 +152,7 @@ of options:
 func New(requiredSetting string, opts ...option) *MyType {
 	t := &MyType{
 		setting: requiredSetting,
+		featureX: false,
 	}
 
 	for _, opt := range opts {

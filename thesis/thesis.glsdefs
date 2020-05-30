@@ -122,15 +122,15 @@ parent={},%
 {%
 \gls@defglossaryentry{ebnf}%
 {%
-name={Extended Backus-Naur Form},%
-sort={Extended Backus-Naur Form},%
+name={EBNF},%
+sort={EBNF},%
 type={main},%
-first={Extended Backus-Naur Form},%
-firstplural={Extended Backus-Naur Forms},%
-text={Extended Backus-Naur Form},%
-plural={Extended Backus-Naur Forms},%
-description={An extended version of the `Backus-Naur Form, a notation technique to describe programming language syntax},%
-descriptionplural={An extended version of the `Backus-Naur Form, a notation technique to describe programming language syntax},%
+first={EBNF},%
+firstplural={EBNFs},%
+text={EBNF},%
+plural={EBNFs},%
+description={Extended Backus-Naur Form, an extended version of the `Backus-Naur Form, a notation technique to describe programming language syntax},%
+descriptionplural={Extended Backus-Naur Form, an extended version of the `Backus-Naur Form, a notation technique to describe programming language syntax},%
 symbol={\relax },%
 symbolplural={\relax },%
 user1={},%
@@ -161,6 +161,36 @@ text={stdout},%
 plural={stdouts},%
 description={Standard Output, the default output stream for programs},%
 descriptionplural={Standard Output, the default output stream for programs},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{sumtypes}{}%
+{%
+\gls@defglossaryentry{sumtypes}%
+{%
+name={sum types},%
+sort={sum types},%
+type={main},%
+first={sum types},%
+firstplural={sum typess},%
+text={sum types},%
+plural={sum typess},%
+description={Sum types, often also called aggregated types, variant or tagged union is a data structure that can hold one of several, predefined data types. For example, Haskell's \mintinline {haskell}|Either| holds either a value of type A or type B. Similar to that, \mintinline {haskell}|Maybe| can hold either a concrete value, or `Nothing'.},%
+descriptionplural={Sum types, often also called aggregated types, variant or tagged union is a data structure that can hold one of several, predefined data types. For example, Haskell's \mintinline {haskell}|Either| holds either a value of type A or type B. Similar to that, \mintinline {haskell}|Maybe| can hold either a concrete value, or `Nothing'.},%
 symbol={\relax },%
 symbolplural={\relax },%
 user1={},%

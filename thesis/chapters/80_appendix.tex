@@ -1,7 +1,7 @@
 \section{Example for Functional Options}\label{appendix:funcopts}
 \begin{code}
-    \captionof{listing}{Functional Options for a simple Webserver}
     \gofile{../work/examples/functional-options/main.go}
+    \caption{Functional Options for a simple Webserver}
 \end{code}
 
 \section{Analysis of function occurrences in Haskell code}\label{appendix:function-occurrences}
@@ -13,19 +13,18 @@ from the root of the git repository\cite{git-repo}:
 
 \section{Mutating variables in Go}\label{appendix:mutation}
 \begin{code}
-	\captionof{listing}{Example on how to mutate complex types in Go}
 	\gofile{../work/examples/mutate/main.go}
+	\caption{Example on how to mutate complex types in Go}
 \end{code}
 
 \section{Shadowing variables in Go}\label{appendix:shadowing}
 \begin{code}
-	\captionof{listing}{Example on how shadowing works on block scopes}
 	\gofile{../work/examples/shadowing/main.go}
+	\caption{Example on how shadowing works on block scopes}
 \end{code}
 
 \section{Foldl and Foldl' difference}\label{appendix:foldl-strictness}
 \begin{code}
-    \captionof{listing}{foldl and foldl' strictness\autocite{fold-types}}
     \begin{haskellcode}
 > (?) :: Int -> Int -> Int
 > _ ? 0 = 0
@@ -53,12 +52,11 @@ foldl' (?) 6 [undefined,5,0] -->
     6 ? undefined -->
 *** Exception: Prelude.undefined
     \end{haskellcode}
+    \caption{foldl and foldl' strictness\autocite{fold-types}}
 \end{code}
 
 \section{Workaround for the missing foldl' implementation in Go}\label{appendix:foldl-go}
 \begin{code}
-	\captionof{listing}{Working around the missing foldl implementation in Go}
-	\label{code:foldl-go}
 	\gofile{../work/examples/foldl-workaround/main.go}
 	\begin{bashcode}
 $> fgo run .
@@ -73,15 +71,15 @@ main.main()
 		/tmp/map/main.go:12 +0x187
 exit status 2
 	\end{bashcode}
+	\caption{Working around the missing foldl implementation in Go\label{code:foldl-go}}
 \end{code}
 
 \section{Prettyprint implementation}\label{appendix:prettyprint-func}
 \begin{code}
-	\captionof{listing}{The original prettyprint implementation}
 	\gofile{../work/funcheck/prettyprint/prettyprint.go}
+	\caption{The original prettyprint implementation}
 \end{code}
 \begin{code}
-	\captionof{listing}{The refactored, functional prettyprint implementation}
 	\begin{gocode}
 package prettyprint
 
@@ -180,6 +178,7 @@ func render(fset *token.FileSet, x interface{}) string {
 	return buf.String()
 }
 	\end{gocode}
+	\caption{The refactored, functional prettyprint implementation}
 \end{code}
 
 \section{Compiling and using functional Go}\label{appendix:install-fgo}

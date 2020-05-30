@@ -109,7 +109,7 @@ Another option, instead of having a function per type, would be that `map' takes
 (\mintinline{go}|interface{}|). However, `the empty interface says
 nothing'\autocite{empty-interface}. The declaration of `map' would be:
 \begin{gocode}
-	func map(f func(interface{}) interface{}, []interface{}) interface{}
+	func map(f func(interface{}) interface{}, interface{}) interface{}
 \end{gocode}
 
 This function header does not say anything about it's types, which would
@@ -117,11 +117,7 @@ mean that they would need to be checked at runtime and handled gracefully. It
 would also require the caller to do a type assertion after every call. Further,
 a slice of type \mintinline{go}|T| cannot simply be converted or asserted to a slice of another type
 \mintinline{go}|T2|\autocite{go-interface-slice-conv}\autocite{go-interface-slice-conv2}.
-Because of this limitation, a usage pattern of map would be\footnote{There are more
-	issues with this code sample, for example the returned \mintinline{go}|interface{}|. If
-	it was \mintinline{go}|[]interface{}|, the conversion would need to be applied again. With
-	\mintinline{go}|interface{}|, a type assertion would suffice. However, the implementation
-would be extremely tedious}:
+Because of this limitation, a typical usage pattern of map would be:
 \begin{gocode}
 s := []string{"hello", "world"}
 var i []interface{}
@@ -204,7 +200,7 @@ most other compilers are slow:
     would generate the same quality code much faster.\autocite{nuts-compiler}
 \end{quote}
 
-How Go generates code with the `gc' compiler can be split into four phases:
+The code generation with the `gc' compiler is split into four phases:
 
 \subsection{Parsing Go programs}
 
@@ -217,24 +213,24 @@ is done by tokenising the code (`lexical analysis' - the `lexer'), parsing
 (\gls{ast})\footnote{Technically, the syntax tree is a syntax \gls{dag}\autocite{ast-node-dag}}
 for each source file.
 
-In comparison to many other programming languages, Go can be parsed without a
-symbol table. It has been designed to be easy to parse
-and analyse, which makes the Go parser simple in it's design\autocite{go-faq-symbol}.
+Go has been designed to be easy to parse and analyse, which makes the parser
+simpler in it's design. For example, in contrast to many other programming languages,
+Go does not require a symbol table to parse source code.\autocite{go-faq-symbol}.
 
 \subsection{Type-checking and AST-transformation}\label{sec:comp-type}
 
 The second phase of compilation starts by converting the `syntax' package's
 AST, created in the first phase, to the compiler's AST representation. This
-is due to historical reasons, as `gc's AST definition was carried over
+is due to historical reasons, as gc's AST definition was carried over
 from the C implementation.
 
 After the conversion, the AST is type-checked. Within the type-checking, there
 are also some additional steps included like checking for `declared and not used'
 variables and determining whether a function terminates.
 
-After type-checking, some transformations are applied on the AST. This includes,
-but is not limited to, eliminating dead code, inlining function calls and escape
-analysis. What is also done in the transformation phase is rewriting built-in function
+After type-checking, transformations are applied on the AST. This includes
+eliminating dead code, inlining function calls and escape analysis, to name a few.
+What is also done in the transformation phase is rewriting built-in function
 calls, replacing for example a call to the built-in `append' with the necessary
 AST structure and runtime-calls to implement its functionality.
 
@@ -260,7 +256,7 @@ SSA optimisations are applied. These may include:
 \begin{itemize}
     \item Rewriting generic values into their machine-specific variants
         (for example, on amd64, combining load-store operations)
-    \item Dead-code elimination pass
+    \item Dead-code elimination
     \item Pointer liveness analysis
     \item Removing unused local variables
 \end{itemize}

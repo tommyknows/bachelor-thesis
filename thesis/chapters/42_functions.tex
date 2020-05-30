@@ -1,0 +1,191 @@
+In the private packages - the actual compiler - the expressions have to be
+type-checked, ordered and transformed.
+
+The type-checking process is similar to the one executed for external tools.
+Furthermore, during the type-checking
+process, the built-in function's return types are set and node types
+may be converted, if possible and necessary.
+An operation may expect it's arguments to be in \mintinline{go}|node.Left|
+and \mintinline{go}|node.Right|, which means type-checking will also need
+to move the argument nodes from their default location in
+\mintinline{go}|node.List| to \mintinline{go}|node.Left| and
+\mintinline{go}|node.Right|.
+
+Ordering ensures the evaluation order and re-orders expressions. All of
+the new built-in functions will be evaluated left-to-right and there are no
+special cases to handle.
+
+Transforming means changing the AST nodes from the built-in operation to
+nodes that the compiler knows how to translate to SSA. The actual algorithm
+that these functions use cannot be implemented in normal Go code, they have to be
+translated directly to AST nodes and statements.
+
+There are more steps to compiling Go code, for example escape-checking,
+SSA conversion and a lot of optimisations. These are not necessary to
+implement and do not have a direct relation to the new built-ins.
+
+The algorithms and part of the implementations for the built-in
+functions are covered in the following chapters\footnote{
+	To see the full implementation, the git diff can be viewed\autocite{ba-go1-14-thesis-diff}.
+}.
+
+\subsubsection{fmap}\label{ch:impl-fmap}
+
+To make the implementation in the AST easier, the algorithm will first be
+developed in Go, and then translated. Implementing fmap in Go is relatively
+simple:
+
+\begin{listing}
+	\begin{gocode}
+func fmap(fn func(Type) Type1, src []Type) (dest []Type1) {
+	for _, elem := range src {
+		dest = append(dest, fn(elem))
+	}
+	return dest
+}
+\end{gocode}
+	\caption{Fmap implementation in Go}\label{code:fmap-go}
+\end{listing}
+However, there is room for improvement within that function. Instead
+of calling \mintinline{go}|append| at every iteration of the loop, the slice can
+be allocated with \mintinline{go}|make| at the beginning of the function. Thus,
+calls to grow the slice at runtime can be saved.
+
+\begin{listing}
+	\begin{gocode}
+func fmap(fn func(Type) Type1, src []Type) []Type1 {
+	dest := make([]Type1, len(src))
+	for i, elem := range src {
+		dest[i] = fn(elem)
+	}
+	return dest
+}
+	\end{gocode}
+	\caption{Improved implementation of fmap}\label{code:fmap-go-improved}
+\end{listing}
+This algorithm can be translated to the following AST node:
+
+\begin{code}
+	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fmap-header}{end-fmap-header}
+	\caption{fmap AST translation\autocite{fmap-walk-implementation}}
+\end{code}
+\subsubsection{prepend}
+
+The general algorithm for `prepend' is:
+\begin{listing}
+	\begin{gocode}
+func prepend(elem Type, slice []Type) []Type {
+	dest := make([]Type, 1, len(src)+1)
+	dest[0] = elem
+	return append(dest, slice...)
+}
+	\end{gocode}
+	\caption{prepend implementation in Go}
+\end{listing}
+The call to \mintinline{go}|make(...)| creates a slice with the length of 1 and the capacity
+to hold all elements of the source slice, plus one. By allocating the slice with the full
+length, another slice allocation within the call to \mintinline{go}|append(...)| is saved.
+The element to prepend is added as the first element of the slice, and append will then
+copy the `src' slice into `dest'.
+
+The implementation within `walkprepend' reflects these lines of Go code, but
+as AST nodes:
+
+\begin{code}
+	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-prepend-header}{end-prepend-header}
+	\caption{prepend AST translation\autocite{prepend-walk-implementation}}
+\end{code}
+\subsubsection{foldr and foldl}
+
+As outlined in Chapter~\ref{sec:fold}, there will be two fold functions;
+foldr and foldl. foldr behaves exactly like its Haskell counterpart,
+while foldl behaves like foldl' in Haskell.
+
+While the fold algorithms are most obvious when using recursion, due to
+performance considerations, an imperative implementation has been chosen:
+
+\begin{listing}
+	\begin{gocode}
+func foldr(fn func(Type, Type1) Type1, acc Type1, slice []Type) Type1 {
+	for i := len(s) - 1; i >= 0; i-- {
+		acc = fn(s[i], acc)
+	}
+	return acc
+}
+
+func foldl(fn func(Type1, Type) Type1, acc Type1, slice []Type) Type1 {
+	for i := 0; i < len(s); i++ {
+		acc = f(acc, s[i])
+	}
+	return acc
+}
+\end{gocode}
+	\caption{fold implementation in Go}
+\end{listing}
+The code further clarifies the differences between the two different folds;
+the slice is processed in reverse order for foldr (as it would be if this
+algorithm would have been implemented with recursion), and the order of
+arguments to the fold function is switched.
+
+The AST walk translates fold to:
+\begin{code}
+	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fold-header}{end-fold-header}
+	\caption{fold AST translation\autocite{fold-walk-implementation}}
+\end{code}
+\subsubsection{filter}\label{ch:impl-filter}
+
+Being a slice-manipulating function, filter also needs to traverse the whole
+slice in a for-loop. However, compared to the other newly built-in functions,
+the size for the target slice is unknown until all items have been traversed,
+which is why filter does not allow for the same optimisations as the other
+functions.
+
+\begin{listing}
+	\begin{gocode}
+func filter(f func(Type) bool, s []Type) []Type {
+	var dst []Type
+	for i := range s {
+			if f(s) {
+				dst = append(dst, s[i])
+			}
+	}
+}
+	\end{gocode}
+	\caption{filter implementation in Go}
+\end{listing}
+And the same algorithm, but translated to AST statements:
+
+\begin{code}
+	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-filter-header}{end-filter-header}
+	\caption{filter AST translation\autocite{filter-walk-implementation}}
+\end{code}
+
+\subsubsection{Writing the AST traversal}
+
+The previous chapters have all shown the function headers of the `walk' functions
+that are used to traverse and rewrite the new built-ins. To illustrate how the
+actual implementation of such an algorithm looks like in these functions, we
+provide a small example here. The full implementation of these algorithms can
+be viewed at the git diff\autocite{ba-go1-14-thesis-diff}.
+
+\begin{listing}
+	\begin{gocode}
+// the type here is not specified, as it is dynamic
+filtered := make([]T, 0)
+
+// this call translates to:
+// construct the first argument to make, the type
+makeType := nod(OTYPE, nil, nil)
+makeType.Type = source.Type // copy the type of the slice
+
+// create the make(...) call
+makeDest := nod(OMAKE, nil, nil)
+// add the arguments (the type and an int constant 0
+makeDest.List.Append(makeType, nodintconst(0)) // make([]<T>, 0))
+
+// create the "variable" where the result of make will be stored
+filtered := temp(source.Type)
+l = append(l, nod(OAS, filtered, makeDest)) // filtered = make([]<T>, 0)
+\end{gocode}
+	\caption{Illustrating the difference between Go code and it's AST code}
+\end{listing}

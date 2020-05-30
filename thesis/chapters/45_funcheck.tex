@@ -1,8 +1,9 @@
-As discussed in Chapter~\ref{sec:funcheck-theory}, a linter needs to be written
-to detect reassignments within a Go program.
+As discussed in Chapter~\ref{sec:funcheck-theory}, to assist writing purely
+functional code, a linter needs to be written that detects reassignments within
+a Go program.
 
-To get a grasp about the issues this linter is trying to report, the first step
-is to capture examples, cases that should be matched against.
+To get a grasp about the issues this linter should report, the first step
+is to capture some examples, cases that should be matched against.
 
 \subsection{Examples}
 
@@ -17,7 +18,9 @@ y += 6  // forbidden
 y <<= 2 // forbidden
 y++     // forbidden
 \end{gocode}
-Where the statement \mintinline{go}|x = 6| and \mintinline{go}|y = 6| should be reported.
+
+Where the statements with a \mintinline{go}|// forbidden
+| comment should be reported.
 
 Adding block scoping to this, shadowing the old variable needs to be allowed:
 \begin{gocode}
@@ -27,12 +30,14 @@ x := 5
 	x := 6 // allowed, as this shadows the old variable
 }
 \end{gocode}
+
 What should be illegal is to declare the variable first and then assign a
 value to it:
 \begin{gocode}
 var x int
 x = 6 // forbidden
 \end{gocode}
+
 The exception here are functions, as they need to be declared first in order
 to recursively call them:
 \begin{gocode}
@@ -41,11 +46,23 @@ f = func() {
 	f()
 }
 \end{gocode}
+
 Furthermore, the linter also needs to be able to handle multiple variables
 at once:
 \begin{gocode}
 var f func()
 x, f, y := 1, func() { f() }, 2
+\end{gocode}
+
+Loops should be reported too, as they are using reassignments internally:
+\begin{gocode}
+for i := 0; i < 5; i++ { // forbidden
+	for i != 3 { // forbidden
+		for { // allowed
+			// ...
+		}
+	}
+}
 \end{gocode}
 
 All the aforementioned examples and more can be found in the testcases for funcheck\autocite{funcheck-examples}.
@@ -54,17 +71,18 @@ All the aforementioned examples and more can be found in the testcases for funch
 
 The Go ecosystem already provides an official library for building code analysis tools,
 the `analysis' package from the Go Tools repository\autocite{go-analysis}. With this package,
-implementing a static code analyizer is being reduced to writing the actual AST node analysis.
+implementing a static code analyser is being reduced to writing the actual AST node analysis.
 
 To define an analysis, a variable of type \mintinline{go}|*analysis.Analyzer| has to be declared:
 
 \begin{gocode}
 var Analyzer = &analysis.Analyzer{
 	Name: "assigncheck",
-	Doc:  "reports re-assignments",
+	Doc:  "reports reassignments",
 	Run:  func(*analysis.Pass) (interface{}, error)
 }
 \end{gocode}
+
 The necessary steps are now adding the `Run' function and registering the analyser
 in the \mintinline{go}|main()| function.
 
@@ -82,6 +100,7 @@ for _, file := range pass.Files {
 	})
 }
 \end{gocode}
+
 To implement funcheck as described, five different AST node types need to be
 taken care of. The simpler ones are
 \mintinline{go}|*ast.IncDecStmt|, \mintinline{go}|*ast.ForStmt| and \mintinline{go}|*ast.RangeStmt|.
@@ -94,19 +113,10 @@ Both of these loop-types need to be reported explicitly as they do not show up
 as reassignments in the AST.
 The basic building blocks for our is the following \mintinline{go}|switch|
 statement:
-
-\begin{gocode}
-switch as := n.(type) {
-case *ast.IncDecStmt:
-	pass.Reportf(as.Pos(), "inline re-assignment of %s", as.X)
-
-case *ast.ForStmt:
-	pass.Reportf(as.Pos(), "internal reassignment (for loop) in %q", renderFor(pass.Fset, as))
-
-case *ast.RangeStmt:
-	pass.Reportf(as.Pos(), "internal reassignment (for loop) in %q", renderRange(pass.Fset, as))
-}
-\end{gocode}
+\begin{code}
+	\gofilerange{../work/funcheck/assigncheck/assigncheck.go}{start-basictypes}{end-basictypes}
+	\caption{Handling the basic AST types in funcheck}
+\end{code}
 The remaining two node types are \mintinline{go}|*ast.DeclStmt| and \mintinline{go}|*ast.AssignStmt|.
 They are not as simple to handle, which is why they are covered in their own chapters.
 
@@ -169,9 +179,7 @@ This is illustrated in the code block~\ref{code:assign-pos}. What can be clearly
 the assignment \mintinline{go}|y = 3|, \mintinline{go}|y|'s declaration refers to the position
 of the first assignment \mintinline{go}|x, y := 1, 2|, the position where \mintinline{go}|y| has
 been declared.
-
-\begin{code}
-    \captionof{listing}{Illustration of an assignment node and corresponding positions\autocite{ast-positions}}
+\begin{listing}
     \begin{gocode}
 Assignment "x, y := 1, 2": 2958101
         Ident "x": 2958101
@@ -182,10 +190,12 @@ Assignment "y = 3": 2958115
         Ident "y": 2958115
                 Decl "x, y := 1, 2": 2958101
     \end{gocode}
-  \label{code:assign-pos}
-\end{code}
+\caption{Illustration of an assignment node and corresponding positions\autocite{ast-positions}\label{code:assign-pos}}
+\end{listing}
+
 As this technique works on an identifier level, multi-variable declarations or assignments
 can be verified without any additional effort.
+
 If a variable in a short variable declaration is being reassigned, the variable's `Declaration'
 field will point to the original position of its declaration, which can be easily detected
 (as shown in code block~\ref{code:assign-pos}).
@@ -199,7 +209,7 @@ consecutive AST nodes need to be inspected.
 
 The first step is to detect function declarations; statements of the form
 \mintinline{go}|var f func() |. Should such a statement be encountered,
-its position will be saved for the following AST node.
+its position is saved for the following AST node.
 
 In the consecutive AST node it is ensured that, if the node is an assignment and
 the assignee identifier is of type function literal, the position matches the
@@ -207,29 +217,28 @@ previously saved one.
 
 The position of the declaration and AST node structure can be seen in~\ref{code:func-reassign}
 
-\begin{code}
-    \captionof{listing}{Illustration of a function literal assignment\autocite{ast-positions}}
+\begin{listing}
     \begin{gocode}
 Declaration "var f func() int": 2958142
         Ident "f func() int": 2958146
 Assignment "f = func() int { return y }": 2958160
         Ident "f": 2958160
                 Decl "f func() int": 2958146
-    \end{gocode}
-    \label{code:func-reassign}
-\end{code}
-With this technique it is possible to excempt functions from the no-reassignment rule.
+\end{gocode}
+	\caption{Illustration of a function literal assignment\autocite{ast-positions}\label{code:func-reassign}}
+\end{listing}
+
+With this technique it is possible to excempt functions from the reassignment rule.
 
 \subsection{Testing Funcheck}
 
 The analysis-package is distributed with a subpackage `analysistest'. This package makes
-it extremely simple to test a code analysing tool.
+it extremely simple to test a code analysis tool.
 
 By providing testdata and the expected messages from funcheck in a structured way, all
 that is needed to test funcheck is:
 
 \begin{code}
-    \captionof{listing}{Testing a code analyser with the `analysistest' package}
 \begin{gocode}
 package assigncheck
 
@@ -243,6 +252,7 @@ func TestRun(t *testing.T) {
         analysistest.Run(t, analysistest.TestData(), Analyzer)
 }
 \end{gocode}
+    \caption{Testing a code analyser with the `analysistest' package}
 \end{code}
 
 The library expects the testdata in the current directory in a folder named `testdata' and

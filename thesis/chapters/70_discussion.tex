@@ -8,7 +8,7 @@ functional programming. I believe that through these extensions it is easier to 
 purely functional code in Go, enabling a developer to learn functional programming with
 a familiar syntax in an obvious way. Here, Go's simplicity and verbosity are a key differentiator
 to other languages. Instead of having as many features as possible to support every usecase,
-Go has been designed with simplicity in mind\footnote{For example, Go has 25 keywords, compared
+Go has been designed with simplicity in mind\footnote{For example, Go only has 25 keywords, compared
 to 37 in C99 and 84 in C++11}.
 
 In many cases, this leads to more `verbose' code --- more lines of code compared to a similar
@@ -35,7 +35,7 @@ To be a purely functional programming language, Go is missing too many features 
 required to write concise functional code. The very basic type system\footnote{Not only
 	does Go not have polymorphism (yet), Go's type system is simple by design: there are no
 	implicit type conversions, no sum types (tagged unions, variant) and almost no type inference.
-}, no advanced pattern matching and implicit currying are all examples why Go is not useful
+}, no advanced pattern matching and only explicit currying are all examples why Go is not useful
 in day-to-day functional programming.
 
 At the same time, the obvious nature of Go is exactly because it is missing all
@@ -53,3 +53,21 @@ this can be optimised, Go cannot or does not want to do these optimisations\foot
 with tail call optimisation, the Go team explicitly decided not to do it because the stack trace
 would be lost}. Regardless, the performance of a language is not as important if it
 is not used in a production environment, which is why it was never a criteria in the first place.
+
+\newglossaryentry{sumtypes}{name=sum types,description={Sum types, often also called aggregated types,
+variant or tagged union is a data structure that can hold one of several, predefined data types. For
+example, Haskell's \mintinline{haskell}|Either| holds either a value of type A or type B. Similar to that,
+\mintinline{haskell}|Maybe| can hold either a concrete value, or `Nothing'}}
+
+The number one issue that still exists is the simple type system. Not only the lack of polymorphism, which
+has been mitigated slightly by providing the most used higher-order functions as built-ins, but also the
+lack of algebraic data types, especially \gls{sumtypes}.
+
+Algebraic data types can be split up into two groups, product types and sum types.
+Most product types can be built with Go too; records are basically
+equal to structs, and tuples are not needed too often, as functions can just return multiple values.
+Sum types however are not available in Go at all. It is possible to imitate sum types in Go
+with interfaces (see the example code in~\ref{code:funcexample}), but the compiler does not ensure that
+all cases are matched against\footnote{There is tooling available to check this\autocite{sushi-sumtypes},
+	but it is third party and not built into the language}. This may be an interesting area for further
+research and implementation possibilities.

@@ -56,7 +56,7 @@
 \usepackage[newfloat]{minted}
 \usepackage{listings}
 \newenvironment{code}{\captionsetup{type=listing}}{}
-\SetupFloatingEnvironment{listing}{name=Source Code}
+\SetupFloatingEnvironment{listing}{name=Source Code,placement=H}
 \definecolor{bg}{rgb}{0.95,0.95,0.95}
 \newminted{bash}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{bnf}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
@@ -64,7 +64,7 @@
 \newminted{go}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{haskell}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{java}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
-\newmintedfile{go}{breaklines,breakanywhere,tabsize=2,bgcolor=bg,linenos,stepnumber=5,numberfirstline}
+\newmintedfile{go}{breaklines,breakanywhere,tabsize=2,bgcolor=bg,linenos,stepnumber=5,numberfirstline,resetmargins}
 
 
 \newcommand{\gofilerange}[4][]{%
