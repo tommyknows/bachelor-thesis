@@ -84,7 +84,7 @@ In a typical program written in a functional language, lists take a central role
 	the programmer would need to track the index and bound of the array (imagine keeping track of the
 indices in a recursive function)\autocite{why-lists}}. Because of this, functional languages have
 a number of helper functions like `map', `filter' and `fold'\autocite{haskell-list-funcs} to modify and
-work on lists. These so callend `higher order functions' currently do
+work on lists. These so called `higher order functions' currently do
 not exist in Go and would need to be implemented by the programmer. With no support for polymorphism, a
 different implementation would need to be written for every slice-type that is used. The type \mintinline{go}|[]int|
 (read: a slice of integers) differs from \mintinline{go}|[]string|, which means that a possible
@@ -168,7 +168,7 @@ be implemented as built-ins in the compiler.
 The Go programming language is defined by its specification\autocite{go-spec}, and not
 it's implementation. As of Go 1.14, there are two major implementations of that
 specification; Google's self-hosting compiler toolchain `gc', which is written in
-Go, and `gccgo', a frontend for GCC, writen in C++.
+Go, and `gccgo', a front end for GCC, written in C++.
 
 When talking about the Go compiler, what's mostly referred to is `gc'\footnote{`gc' stands
 for `go compiler', and not `garbage collection' (which is abbreviated as `GC').}.

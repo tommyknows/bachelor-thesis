@@ -6,8 +6,8 @@
 \section{Learning Functional Programming}
 
 In 2007, C\# 3.0 has been released. Two years later, Ryan Dhal published the initial version
-of NodeJS, eliminating JavaScript's ties to the browser and introducing it as a server-side
-programming language. In 2013, Java 8 was released. Within the same timeframe, Python
+of Node.js, eliminating JavaScript's ties to the browser and introducing it as a server-side
+programming language. In 2013, Java 8 was released. Within the same time frame, Python
 has been rapidly growing in popularity\autocite{python-popularity}.
 
 What all these events have in common is that they brought along concepts from functional
@@ -20,7 +20,7 @@ the language since their initial release.
 Functional programming has landed in the wider programming-community, emerging from niche use-cases
 and academia.
 For example Rust, the `most popular programming language' for 5 years in a row (2016--2020)
-according to the StackOverflow Developer survey\autocite{rust-loved}, has been significantly
+according to the Stack Overflow Developer survey\autocite{rust-loved}, has been significantly
 influenced by functional programming languages\autocite{rust-functional}. Further, in idiomatic
 Rust code, a functional style can be clearly observed\footnote{A simple example for this may be
 that variables are immutable by default.}.
@@ -38,7 +38,7 @@ purely functional programming language\autocite{comparison-functional-languages}
 
 \section{Haskell}
 
-Haskell, the \textit{lingua franca} amongst functional programmers, is a lazely-evaluated, purely functional programming
+Haskell, the \textit{lingua franca} amongst functional programmers, is a lazily-evaluated, purely functional programming
 language. While Haskell's strengths stem from all it's features like type classes, type polymorphism, purity and more,
 these features are also what makes Haskell famously hard to learn\autocite{haskell-hard-one}\autocite{haskell-hard-two}\autocite{haskell-hard-three}\autocite{haskell-hard-four}.
 
@@ -66,7 +66,7 @@ While this is only a very short and clean piece of code, these 6 lines already p
     \item The pattern matching, which would be a `switch' statement or a chain of `if / else' conditions
     \item The deconstruction of the list within the pattern matching
     \item The functional nature of the program, passing `(< p)' (a function returning a function) to another function
-    \item The function call to `filter' without paranthesised arguments and no clear indicator at which arguments
+    \item The function call to `filter' without parenthesised arguments and no clear indicator at which arguments
         it takes and which types are returned
 \end{itemize}
 
@@ -205,7 +205,7 @@ However, multiple developers have already researched and tested Go's ability to 
 \subsection{Functional Go?}
 
 In his talk `Functional Go'\autocite{func-go-talk}, Francesc Campoy Flores analysed some commonly used functional
-language features in Haskell and how they can be ported with Go. Ignoring speed and stackoverflows due to non-existent
+language features in Haskell and how they can be ported with Go. Ignoring speed and stack overflows due to non-existent
 tail call optimisation\autocite{go-tco}, the main issue is with the type system and the missing polymorphism.
 
 \subsection{go-functional}

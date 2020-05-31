@@ -2,9 +2,9 @@
 
 The first task is to implement some helper functions for slices, similar as to how they exist
 for lists in Haskell. To decide on which functions will be implemented, popular
-Haskell repositories on Github have been analysed. The popularity of repositories
+Haskell repositories on GitHub have been analysed. The popularity of repositories
 was decided to be based on their number of stars. Out of all Haskell projects
-on Github, the most popular are\autocite{github-popular-haskell}:
+on GitHub, the most popular are\autocite{github-popular-haskell}:
 
 \begin{itemize}
     \item Shellcheck (koalaman/shellcheck\autocite{github-shellcheck}): A static analysis tool for shell scripts
@@ -12,7 +12,7 @@ on Github, the most popular are\autocite{github-popular-haskell}:
     \item Postgrest (PostgREST/postgrest\autocite{github-postgrest}): REST API for any Postgres database
     \item Semantic (github/semantic\autocite{github-semantic}): Parsing, analyzing, and comparing source code across many languages
     \item Purescript (purescript/purescript\autocite{github-purescript}): A strongly-typed language that compiles to JavaScript
-    \item Compiler (elm/compiler\autocite{github-elmcompiler}): Compiler for Elm, a functional language for reliable webapps
+    \item Compiler (elm/compiler\autocite{github-elmcompiler}): Compiler for Elm, a functional language for reliable web apps
     \item Haxl (facebook/haxl\autocite{github-haxl}): A Haskell library that simplifies access to remote data, such as databases or web-based services
 \end{itemize}
 
@@ -78,10 +78,10 @@ and filter functions into the Go compiler\footnote{The cons function (`:') is ov
 
 The most used function in Haskell is map. The table~\ref{tab:occurrences-list-funcs}
 counts roughly 1200 occurrences of map, although around 600 of those occurrences are from
-fmap. fmap is part of the Functor typeclass\footnote{typeclasses
+fmap. fmap is part of the Functor type class\footnote{type classes
     in Haskell are similar to interfaces in imperative and object-oriented
 languages}, which is described as `a type that can be mapped over'\autocite{functor-wiki}.
-In general, a common analogy of the Functor typeclass is a box. A functor is like a box
+In general, a common analogy of the Functor type class is a box. A functor is like a box
 where a value can be put into and taken out again. fmap processes and transforms the item
 in that box. For lists, this process means iterating over and processing every item within that list.
 For the `Maybe' type it means `unpacking' the concrete value and processing it, or if there is
@@ -90,7 +90,7 @@ no concrete value, returning `Nothing' instead.
 The map function is exactly like fmap but only works on lists:
 
 \begin{quote}
-    \[map\] returns a list constructed by appling a function (the first argument) to all
+    \[map\] returns a list constructed by applying a function (the first argument) to all
     items in a list passed as the second argument\autocite{haskell-map}.
 \end{quote}
 
@@ -278,7 +278,7 @@ Appendix~\ref{appendix:foldl-strictness}.
 To keep things simpler, Go will only have its versions of foldl and foldr, which
 will both be strict --- the Haskell counterparts would thus be foldr and foldl'.\footnote{
 If the behaviour from the normal foldl function is required, a workaround can
-be applied in th Go version. See Appendix~\ref{appendix:foldl-go}}
+be applied in the Go version. See Appendix~\ref{appendix:foldl-go}}
 The usage of these fold-functions is equal to the Haskell versions, where foldl's
 arguments are switched in order.
 

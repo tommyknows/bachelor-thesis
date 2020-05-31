@@ -44,7 +44,7 @@ func fmap(fn func(Type) Type1, src []Type) (dest []Type1) {
 	return dest
 }
 \end{gocode}
-	\caption{Fmap implementation in Go}\label{code:fmap-go}
+	\caption{fmap implementation in Go}\label{code:fmap-go}
 \end{listing}
 However, there is room for improvement within that function. Instead
 of calling \mintinline{go}|append| at every iteration of the loop, the slice can

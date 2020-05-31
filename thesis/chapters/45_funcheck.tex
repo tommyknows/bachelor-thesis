@@ -228,14 +228,14 @@ Assignment "f = func() int { return y }": 2958160
 	\caption{Illustration of a function literal assignment\autocite{ast-positions}\label{code:func-reassign}}
 \end{listing}
 
-With this technique it is possible to excempt functions from the reassignment rule.
+With this technique it is possible to exempt functions from the reassignment rule.
 
 \subsection{Testing Funcheck}
 
-The analysis-package is distributed with a subpackage `analysistest'. This package makes
+The analysis-package is distributed with a sub-package `analysistest'. This package makes
 it extremely simple to test a code analysis tool.
 
-By providing testdata and the expected messages from funcheck in a structured way, all
+By providing test data and the expected messages from funcheck in a structured way, all
 that is needed to test funcheck is:
 
 \begin{code}
@@ -255,7 +255,7 @@ func TestRun(t *testing.T) {
     \caption{Testing a code analyser with the `analysistest' package}
 \end{code}
 
-The library expects the testdata in the current directory in a folder named `testdata' and
+The library expects the test data in the current directory in a folder named `testdata' and
 then spawns and executes the analyser on the files in that folder. Comments in those files
 are used to describe the expected message:
 

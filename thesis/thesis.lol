@@ -34,7 +34,7 @@
 \addvspace {10\p@ }
 \contentsline {listing}{\numberline {4.1}{\ignorespaces Godoc for the new built-in functions\relax }}{37}{listing.caption.26}%
 \contentsline {listing}{\numberline {4.2}{\ignorespaces Registering new built-in functions\relax }}{38}{listing.caption.27}%
-\contentsline {listing}{\numberline {4.3}{\ignorespaces Fmap implementation in Go\relax }}{40}{listing.caption.29}%
+\contentsline {listing}{\numberline {4.3}{\ignorespaces fmap implementation in Go\relax }}{40}{listing.caption.29}%
 \contentsline {listing}{\numberline {4.4}{\ignorespaces Improved implementation of fmap\relax }}{40}{listing.caption.30}%
 \contentsline {listing}{\numberline {4.5}{\ignorespaces fmap AST translation\autocite {fmap-walk-implementation}\relax }}{41}{listing.caption.31}%
 \contentsline {listing}{\numberline {4.6}{\ignorespaces prepend implementation in Go\relax }}{41}{listing.caption.33}%
