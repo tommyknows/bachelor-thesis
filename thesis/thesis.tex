@@ -2,11 +2,12 @@
 % !TEX TS-program = pdflatexmk
 % !TEX encoding = UTF-8 Unicode
 
+\RequirePackage[hyphens]{url}
 \documentclass[%
   a4paper,
   twoside,
   numbers=noenddot,
-  parskip=half+,
+  parskip=half,
   open=any,
   headsepline,
   english, % german, english
@@ -38,6 +39,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Base packages used by the template (any commonly used packages)
 
+%\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+
 \usepackage{float}
 \usepackage{graphicx}
 \graphicspath{{figures/}}
@@ -52,7 +55,9 @@
 % Custom packages
 % - Add packages used by your thesis here:
 
-\usepackage{hyperref}
+%\usepackage{hyperref}
+%\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+
 \usepackage[newfloat]{minted}
 \usepackage{listings}
 \newenvironment{code}{\captionsetup{type=listing}}{}
@@ -64,7 +69,7 @@
 \newminted{go}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{haskell}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
 \newminted{java}{breaklines,breakbytoken,tabsize=2,bgcolor=bg}
-\newmintedfile{go}{breaklines,breakanywhere,tabsize=2,bgcolor=bg,linenos,stepnumber=5,numberfirstline,resetmargins}
+\newmintedfile{go}{breaklines,breakanywhere,tabsize=2,bgcolor=bg,linenos,stepnumber=5,numberfirstline}
 
 
 \newcommand{\gofilerange}[4][]{%
@@ -76,11 +81,14 @@
     \expandafter\gofile\expandafter[\flags]{./code.snippet}
 }
 
+%\sloppy
 
 \usepackage[
     backend=biber,
     style=ieee,
+    dashed=false,
 ]{biblatex}
+\usepackage{xurl}
 \usepackage{caption}
 \usepackage[toc,page]{appendix}
 \usepackage{glossaries}
