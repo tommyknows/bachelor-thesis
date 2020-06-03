@@ -3,4 +3,33 @@
 % !TEX encoding = UTF-8 Unicode
 % !TEX root = ../thesis.tex
 
-\todo[inline]{Stellt den persönlichen Bezug zur Arbeit dar und spricht Dank aus.}
+As a part of my bachelor studies, I chose to attend a course on functional programming.
+Having worked with Go for the last 3 years, first-class and higher-order functions
+were not particularly new ideas to me. However, learning Haskell was, at the beginning,
+overwhelming.
+
+So I rewrote some exercises that I did not understand in Go.
+%So what I did for some exercises that I could not understand completely is that
+%I rewrote them in Go.
+The result was more verbose; usually
+roughly two to three times the lines of code for the same algorithm.
+However, after writing the Go version, I understood not only the Go version,
+but also the Haskell version.
+
+After doing this a couple of times, I realised that I was constantly rewriting
+the same higher-order functions with different types, but more or less the same
+implementation. Thus, the idea of adding them as built-ins came up.
+
+`Funcheck' then came into play when I wanted to build something in Go first and
+then rewrite it in Haskell. It was hard to tell whether it was purely functional,
+but it needed to be in order to be easier to write the implementation in Haskell.
+
+This thesis is written based on my own struggles I had with Haskell, and it is
+my hope that someday, someone may benefit from the work done in this thesis.
+
+Special thanks to:
+
+My supervisors Gerrit Burkert and Karl Rege for their support and guidance,
+Tom Whiston for proofreading this thesis and improving my English,
+Eva Kuske for the consultation on writing and
+my employer nine (\href{http://nine.ch}{nine.ch}) for their flexible working times.

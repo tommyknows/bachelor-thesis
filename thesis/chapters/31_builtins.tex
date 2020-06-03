@@ -19,7 +19,8 @@ on GitHub, the most popular are\autocite{github-popular-haskell}:
 In these repositories, the number of occurrences of popular list functions has
 been counted. The analysis does not differentiate between different `kinds' of
 functions. For example, `fold' includes all occurrences of `foldr', `foldl' and
-`foldl\''. Also, the analysis has not been done with any kind of AST-parsing.
+`foldl\''; `map' includes occurrences of `fmap', `mapM' and `mapM\_'.
+Also, the analysis has not been done with any kind of AST-parsing.
 Rather, a simple `grep' has been used to find matches. This means that it is
 likely to contain some mismatches, for example in code comments. All in all,
 this analysis should only be an indicator of what functions are used most.
@@ -32,34 +33,35 @@ of pre-selected list functions, indicates that the most used functions are `:'
 \centering
 \begin{tabular}{ll}
 \toprule
-map & 1241 \\
+`:' (cons) & 2912 \\
 \midrule
-`:' (cons) & 1177 \\
+map & 2347 \\
 \midrule
 fold & 610 \\
 \midrule
-filter & 262 \\
+filter & 562 \\
 \midrule
-reverse & 154 \\
+take & 376 \\
 \midrule
-take & 104 \\
+drop & 238 \\
 \midrule
-drop & 81 \\
+reverse & 185 \\
+\midrule
+sum & 173 \\
+\midrule
+zip & 158 \\
+\midrule
+product & 56 \\
 \midrule
 maximum & 53 \\
 \midrule
-sum & 44 \\
-\midrule
-zip & 38 \\
-\midrule
-product & 15 \\
-\midrule
-minimum & 10 \\
-\midrule
-reduce & 8
+minimum & 26 \\
 \end{tabular}
-\caption{Occurrences of list functions\ref{appendix:function-occurrences}}\label{tab:occurrences-list-funcs}
+\caption[Occurrences of list functions]{Occurrences of list functions\footnotemark}
+\label{tab:occurrences-list-funcs}
 \end{table}
+
+\footnotetext{See Appendix~\ref{appendix:function-occurrences} for more information}
 %\footnote{The map function listed here also includes occurrences of `fmap'. A more
     %detailed look at the data shows that there are 632 occurrences of `fmap', which
     %means that `fmap' and `map' are used equally as often. As `fmap' however requires

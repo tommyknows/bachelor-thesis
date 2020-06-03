@@ -1,3 +1,34 @@
+\section{Information about this thesis}
+
+This thesis, including this document, is contained in a single git repository
+that can be found at \href{github.com/tommyknows/bachelor-thesis.git}{Github}.
+
+All the work that has been done is open sourced under the Apache License 2.0,
+except the Go source code, which has its own license.
+
+To view the code, build or reproduce results, this git repository can be cloned
+and its submodules checked out. The version that has been submissed can be checked
+out through the tag `v1.0.0':
+\begin{bashcode}
+$> git clone https://github.com/tommyknows/bachelor-thesis.git
+$> cd bachelor-thesis
+$> git checkout v1.0.0
+$> git submodule init
+$> git submodule update
+\end{bashcode}
+
+The directory `thesis' contains the \LaTeX\ code for this paper. There is a helper
+required for displaying code in the thesis which is located in `thesis/utils' and
+needs to be built with `go build .'. However, a PDF which should be on the same state
+as the source is provided in the repository too (`thesis/thesis.pdf').
+
+The `work' directory contains code that has been developed in this thesis. In this
+directory, the Go and funcheck source code can be found (see Appendix~\ref{appendix:install-fgo}
+and~\ref{appendix:build-funcheck}). Further, some examples
+of functional Go have been developed in the `example' directory. The `common-list-functions'
+folder contains the script as mentioned in Appendix~\ref{appendix:function-occurrences}.
+
+
 \section{Example for Functional Options}\label{appendix:funcopts}
 \begin{code}
     \gofile{../work/examples/functional-options/main.go}
@@ -5,10 +36,26 @@
 \end{code}
 
 \section{Analysis of function occurrences in Haskell code}\label{appendix:function-occurrences}
-The results of the analysis have been aquired by running the following command
-from the root of the git repository\cite{git-repo}:
+The results of the analysis have been aquired by running the `count-function' script
+that is located in `work/common-list-functions' in the git repository\autocite{git-repo}.
+
+The script utilises \href{https://github.com/BurntSushi/ripgrep}{ripgrep} to count the number of occurrences, so
+this must be installed in order to run this script.
 \begin{bashcode}
-./work/common-list-functions/count-function.sh "map " " : " "fold" "filter " "reverse " "take " "drop " "maximum" "sum " "zip " "product " "minimum " "reduce "
+$> ./count-function.sh ": " map fold filter take drop reverse sum zip product maximum minimum
+Searching for occurrences in subdirectories of bachelor-thesis/work/common-list-functions
+Found 2912 occurrences of :
+Found 2347 occurrences of map
+Found 610 occurrences of fold
+Found 562 occurrences of filter
+Found 376 occurrences of take
+Found 238 occurrences of drop
+Found 185 occurrences of reverse
+Found 173 occurrences of sum
+Found 158 occurrences of zip
+Found 56 occurrences of product
+Found 53 occurrences of maximum
+Found 26 occurrences of minimum
 \end{bashcode}
 
 \section{Mutating variables in Go}\label{appendix:mutation}
@@ -262,7 +309,7 @@ $> fgo build ./...
 \end{bashcode}
 
 
-\section{Building Funcheck}
+\section{Building Funcheck}\label{appendix:build-funcheck}
 
 Funcheck needs to be built against functional Go to properly detect the builtin functions.
 If you have not done so already, install `fgo' as shown in Appendix~\ref{appendix:install-fgo}.

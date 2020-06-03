@@ -10,19 +10,19 @@ like Haskell to become familiar with these concepts.
 However, many programmers struggle with the double duty
 of learning a new paradigm and a new syntax at the same time. Because of
 this, this paper expands on the idea of learning purely functional programming
-with a multi-paradigm programming language with a familiar syntax. The Go
-programming language has been the choice for this due to its syntactical
-simplicity and familiarity.
+with a multi-paradigm programming language and a familiar syntax. Go
+is the language of choice for this due to its syntactical symplicity
+and familiarity.
 
 The absence of a list datatype in Go is remediated by Go's slices.
 However, Go is missing the typical higher-order functions ---
 `map', `filter' and `fold' to name a few --- that are present in every
-functional programming language and many other programming languages too. Due to
-this, the most popular higher-order functions have been determined and, because of the
-absence of polymorphism in Go, implemented as built-in functions in the compiler.
+functional programming language and many other programming languages too.
+Due to the absence of polymorphism in Go, the most popular higher-order
+functions are added to the built-in functions in the compiler.
 
 Furthermore, this paper specifies a definition of what pure functional programming is and
-introduces `funcheck', a static code analysis tool that has been designed and implemented to
+introduces `funcheck', a static code analysis tool that is designed to
 report constructs that are non-functional.
 
 With the help of the newly built-in functions `fmap', `filter', `foldr', `foldl' and
