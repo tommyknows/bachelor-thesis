@@ -69,6 +69,12 @@ This algorithm can be translated to the following AST node:
 	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fmap-header}{end-fmap-header}
 	\caption{fmap AST translation\autocite{fmap-walk-implementation}}
 \end{code}
+
+The full AST code is not displayed here as, although the algorithm is simple, the AST translation
+is not as concise and more than 10 times the size. A demonstration on how a translation looks like
+will be introduced in Section~\ref{ch:ast-traversal}.
+The full implementation of this function is referenced in the code block's caption.
+
 \subsubsection{prepend}
 
 The general algorithm for `prepend' is:
@@ -160,7 +166,7 @@ And the same algorithm, but translated to AST statements:
 	\caption{filter AST translation\autocite{filter-walk-implementation}}
 \end{code}
 
-\subsubsection{Writing the AST traversal}
+\subsubsection{Writing the AST traversal}\label{ch:ast-traversal}
 
 The previous chapters have all shown the function headers of the `walk' functions
 that are used to traverse and rewrite the new built-ins. To illustrate how the
@@ -168,24 +174,31 @@ actual implementation of such an algorithm looks like in these functions, we
 provide a small example here. The full implementation of these algorithms can
 be viewed at the git diff\autocite{ba-go1-14-thesis-diff}.
 
+This demonstration shows the translation of the statement
+\begin{gocode}
+filtered := make([]T, 0)
+\end{gocode}
+into AST nodes, or rather the construction of these AST nodes.
+The type is simply a placeholder, as the AST construction uses the source slice's
+type. This source slice is another AST node of which the type can be obtained from.
+
 \begin{listing}
 	\begin{gocode}
-// the type here is not specified, as it is dynamic
-filtered := make([]T, 0)
-
-// this call translates to:
-// construct the first argument to make, the type
+// create the AST node for the first argument that is
+// being passed to `make', the type:
 makeType := nod(OTYPE, nil, nil)
-makeType.Type = source.Type // copy the type of the slice
+makeType.Type = source.Type // use the type of the slice
 
-// create the make(...) call
+// create the make(...) AST node
 makeDest := nod(OMAKE, nil, nil)
 // add the arguments (the type and an int constant 0
 makeDest.List.Append(makeType, nodintconst(0)) // make([]<T>, 0))
 
 // create the "variable" where the result of make will be stored
 filtered := temp(source.Type)
-l = append(l, nod(OAS, filtered, makeDest)) // filtered = make([]<T>, 0)
+// the final AST node that contains the statement
+//   filtered = make([]<T>, 0)
+final := nod(OAS, filtered, makeDest))
 \end{gocode}
 	\caption{Illustrating the difference between Go code and it's AST code}
 \end{listing}

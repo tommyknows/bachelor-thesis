@@ -1,4 +1,12 @@
 This chapter introduces the core concepts in Go that are needed to follow this paper.
+Go is a language similar to C, although with a few minor, but important differences.
+First, Go is garbage collected, meaning that the programmer does not need to allocate
+and free memory\footnote{although allocating memory is possible with the \mintinline{go}|new|
+built-in function}. Secondly, Go does not allow for pointer arithmetic.
+`Without pointer arithmetic it's possible to create a language that can never derive an
+illegal address that succeeds incorrectly'\autocite{go-pointerarithmetic}.
+
+Further, Go provides a built-in data type that does not exist in plain C: slices.
 
 \section{Go Slices}\label{sec:go-slices}
 
@@ -185,7 +193,7 @@ This is why one of the main goals when designing Go was fast compilation times:
     was called for.\autocite{go-faq}
 \end{quote}
 
-Go has taken some measures to to combat slow compilation times. In general, Go's dependency resolution is simpler
+Go has taken some measures to combat slow compilation times. In general, Go's dependency resolution is simpler
 compared to other languages, for example by not allowing circular dependencies.
 Furthermore, compilation is not even attempted if there are unused
 imports or unused declarations of variables, types and functions.
@@ -213,8 +221,8 @@ is done by tokenising the code (`lexical analysis' - the `lexer'), parsing
 (\gls{ast})\footnote{Technically, the syntax tree is a syntax \gls{dag}\autocite{ast-node-dag}}
 for each source file.
 
-Go has been designed to be easy to parse and analyse, which makes the parser
-simpler in it's design. For example, in contrast to many other programming languages,
+Go has been designed to be easy to parse and analyse. For example, in contrast
+to many other programming languages,
 Go does not require a symbol table to parse source code.\autocite{go-faq-symbol}.
 
 \subsection{Type-checking and AST-transformation}\label{sec:comp-type}
@@ -237,7 +245,9 @@ AST structure and runtime-calls to implement its functionality.
 \subsection{SSA}
 
 \newglossaryentry{ssa}{name=SSA,description={Single Static Assignment, an intermediate representation between the AST and the compiled binary that simplifies and improves compiler optimisations}}
-In the third phase, the AST is converted to \gls{ssa} form. SSA  is `a
+In the third phase, the AST is converted to \gls{ssa}\footnote{Single Static Assignment,
+an intermediate representation between the AST and the compiled binary that simplifies
+and improves compiler optimisations} form. SSA  is `a
 lower-level intermediate representation with specific properties that make it
 easier to implement optimizations and to eventually generate machine code from
 it'\autocite{compiler-readme}.

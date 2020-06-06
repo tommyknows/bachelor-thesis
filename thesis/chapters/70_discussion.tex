@@ -51,8 +51,12 @@ performance. Go by itself is relatively performant, however functional construct
 recursive function calls, come with a performance cost. While in purely functional languages
 this can be optimised, Go cannot or does not want to do these optimisations\footnote{For example,
 with tail call optimisation, the Go team explicitly decided not to do it because the stack trace
-would be lost}. Regardless, the performance of a language is not as important if it
-is not used in a production environment, which is why it was never a criteria in the first place.
+would be lost\autocite{go-tco-nope}}.
+
+While the newly built-in functions do not have any low-hanging fruits in regards to optimisation,
+they would benefit from more aggressive inlining\autocite{go-compiler-inline}, for example.
+Benchmarking and optimising these functions was out of scope for this thesis, but may be tackled
+in the future.
 
 \newglossaryentry{sumtypes}{name=sum types,description={Sum types, often also called aggregated types,
 variant or tagged union is a data structure that can hold one of several, predefined data types. For

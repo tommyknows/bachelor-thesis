@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage example:
-# ./count-function.sh ": " map fold filter take drop reverse sum zip product maximum minimum
+# ./count-function.sh ": " "map " fold filter take drop reverse sum zip product maximum minimum
 
 dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 

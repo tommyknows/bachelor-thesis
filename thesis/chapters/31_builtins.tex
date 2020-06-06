@@ -1,6 +1,7 @@
 \subsection{Choosing the functions}
 
-The first task is to implement some helper functions for slices, similar as to how they exist
+As mentioned in the introduction, the goal is to make functional programming in Go easier.
+To achieve this, the first task is to implement some helper functions for slices, similar to those that exist
 for lists in Haskell. To decide on which functions will be implemented, popular
 Haskell repositories on GitHub have been analysed. The popularity of repositories
 was decided to be based on their number of stars. Out of all Haskell projects
@@ -18,8 +19,10 @@ on GitHub, the most popular are\autocite{github-popular-haskell}:
 
 In these repositories, the number of occurrences of popular list functions has
 been counted. The analysis does not differentiate between different `kinds' of
-functions. For example, `fold' includes all occurrences of `foldr', `foldl' and
-`foldl\''; `map' includes occurrences of `fmap', `mapM' and `mapM\_'.
+functions. For example, `fold' includes all occurrences of \mintinline{haskell}|foldr|,
+\mintinline{haskell}|foldl| and \mintinline{haskell}|foldl'|; `map' includes
+occurrences of \mintinline{haskell}|fmap|, \mintinline{haskell}|mapM| and
+\mintinline{haskell}|mapM\_|.
 Also, the analysis has not been done with any kind of AST-parsing.
 Rather, a simple `grep' has been used to find matches. This means that it is
 likely to contain some mismatches, for example in code comments. All in all,
@@ -35,7 +38,7 @@ of pre-selected list functions, indicates that the most used functions are `:'
 \toprule
 `:' (cons) & 2912 \\
 \midrule
-map & 2347 \\
+map & 1241 \\
 \midrule
 fold & 610 \\
 \midrule
@@ -62,11 +65,11 @@ minimum & 26 \\
 \end{table}
 
 \footnotetext{See Appendix~\ref{appendix:function-occurrences} for more information}
-%\footnote{The map function listed here also includes occurrences of `fmap'. A more
-    %detailed look at the data shows that there are 632 occurrences of `fmap', which
-    %means that `fmap' and `map' are used equally as often. As `fmap' however requires
-    %some kind of implementation for an `iterable', it is out of scope for this paper.
-%}
+% TODO:
+% Hier kommt mir in den Sinn, dass ein paar Funktionen über Listen (weiss gerade nicht,
+%wie viele es sind), mit denen alle anderen Listenfunktionen implementiert werden können.
+%Sicher gehören first, rest, cons dazu.
+%Das Problem hier ist aber, dass das nicht hilft, denn da kommen wieder die Typen der Slices ins Spiel.
 
 Based on this information, it has been decided to implement the map, cons, fold
 and filter functions into the Go compiler\footnote{The cons function (`:') is overrepresented in this list,
@@ -79,8 +82,8 @@ and filter functions into the Go compiler\footnote{The cons function (`:') is ov
 \subsection{Map}
 
 The most used function in Haskell is map. The table~\ref{tab:occurrences-list-funcs}
-counts roughly 1200 occurrences of map, although around 600 of those occurrences are from
-fmap. fmap is part of the Functor type class\footnote{type classes
+counts roughly 1250 occurrences of map, although around 600 of those are from `fmap'.
+fmap is part of the Functor type class\footnote{type classes
     in Haskell are similar to interfaces in imperative and object-oriented
 languages}, which is described as `a type that can be mapped over'\autocite{functor-wiki}.
 In general, a common analogy of the Functor type class is a box. A functor is like a box
@@ -132,7 +135,7 @@ As there is already a `map' token in the Go compiler (for the map data type),
 the function will be called `fmap'. However, compared to Haskell's `fmap',
 Go's `fmap' only works on slices. This is due
 to the absence of an `functor'-like concept. Again, due to the absence of polymorphism,
-this cannot realistically built into the language.
+this cannot realistically built into the language in this context.
 
 Nonetheless, to avoid possible naming confusions, the `map' function in Go will
 be called `fmap'.
@@ -216,9 +219,10 @@ Fold, sometimes also named `reduce' or `aggregate', is another higher-order func
 that is very commonly used in functional programming.
 
 \begin{quote}
-    analyze a recursive data structure and through use of a given
-    combining operation, recombine the results of recursively processing its
-    constituent parts, building up a return value.\autocite{fold-wiki}
+	fold refers to a family of higher-order functions that
+	analyze a recursive data structure and through use of a given
+	combining operation, recombine the results of recursively processing its
+	constituent parts, building up a return value.\autocite{fold-wiki}
 \end{quote}
 
 In other words, fold processes a list one by one and executes a `combining operation'

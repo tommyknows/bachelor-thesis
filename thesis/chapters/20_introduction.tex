@@ -5,20 +5,23 @@
 
 \section{Learning Functional Programming}
 
-In 2007, C\# 3.0 has been released. Two years later, Ryan Dhal published the initial version
-of Node.js, eliminating JavaScript's ties to the browser and introducing it as a server-side
-programming language. In 2013, Java 8 was released. Within the same time frame, Python
-has been rapidly growing in popularity\autocite{python-popularity}.
+Within the last decade, concepts from functional programming have been brought into the daily life
+of almost every programmer. There are many events that contributed to this gain in popularity:
 
-What all these events have in common is that they brought along concepts from functional
-programming, so far mainly used in academia, into the daily life of many programmers.
+In 2007, C\# 3.0 was released, which introduced lambda expressions and laid the foundations for
+turning C\# into a hybrid Object-Oriented / Functional language\autocite{csharp-functional}.
+Two years later, Ryan Dhal published the initial version of Node.js, eliminating JavaScript's
+ties to the browser and introducing it as a server-side programming language, increasing the
+adoption of JavaScript further.
+In 2013, Java 8 was released and brought support for lambda expressions and streams.
+Within the same time frame, Python has been rapidly growing in popularity\autocite{python-popularity}.
 
 Further, many new multi-paradigm programming languages have been introduced,
 including Rust, Kotlin, Go and Dart. They all have functions as first-class citizens in
 the language since their initial release.
 
-Functional programming has landed in the wider programming-community, emerging from niche use-cases
-and academia.
+With these developments it can be said that functional programming has truly landed in the
+wider programming-community, emerging from niche use-cases and academia.
 For example Rust, the `most popular programming language' for 5 years in a row (2016--2020)
 according to the Stack Overflow Developer survey\autocite{rust-loved}, has been significantly
 influenced by functional programming languages\autocite{rust-functional}. Further, in idiomatic
@@ -59,7 +62,7 @@ quicksort (p:xs) = (quicksort lesser) ++ [p] ++ (quicksort greater)
 	\caption{Quicksort implementation in Haskell}\label{code:haskell-quicksort}
 \end{listing}
 
-While this is only a very short and clean piece of code, these 6 lines already pose many challenges to non-experienced Haskellers;
+While this is only a very short and clean piece of code, these 6 lines already pose many challenges to non-experienced Haskellers:
 
 \begin{itemize}
     \item The function's signature with no `fn' or `func' statement as they often appear in imperative languages
@@ -70,12 +73,13 @@ While this is only a very short and clean piece of code, these 6 lines already p
         it takes and which types are returned
 \end{itemize}
 
-Though some of these points are also available to programmers in imperative or object-oriented languages, the cumulative difference
+Although some of these constructs also exist in imperative or object-oriented languages, hte cumulative difference
 is not to underestimate and adds to Haskell's steep learning curve.
 
 \section{Goals}
 
-Learning a new paradigm and syntax at the same time can be daunting and discouraging for novices.
+As demonstrated in the example above, learning a new paradigm and syntax at the same time
+can be daunting and discouraging for novices.
 The entry barrier for functional programming should be lowered by
 using a modern, multi-paradigm language with a clear and familiar syntax. The functional
 programming beginner should be able to focus on the paradigm first, and then change to a language
@@ -88,8 +92,8 @@ should already support functions as first-class citizens. Additionally, it shoul
 typed, as a static type system makes it easier to reason about a program and can support the
 programmer while writing code.
 In the second part, a linter will be created to check code for non-functional statements. To achieve
-this, functional purity has to be defined, a ruleset has to be worked out and implemented into
-a static analysis tool.
+this, a definition of what functional purity means has to be selected and a ruleset has to be
+worked out and implemented into a static analysis tool.
 
 \section{Why Go}\label{sec:why-go}
 
@@ -108,7 +112,7 @@ Due to this clarity and unambiguity, the language is a perfect fit to grasp the 
 the inner workings of functional programming. It should be easy to read code and understand what
 it does without a lot of experience with the language.
 
-There are however a few downsides of using Go. So far, Go does not have polymorphism, which means
+There are however a few downsides of using Go. Currently, Go does not have polymorphism, which means
 that functions always have to be written with specific types. Due to this, Go also does not include
 common list processing functions like `map', `filter', `reduce' and more\footnote{Although Go does
 	have some polymorphic functions like `append', these are specified as built-in functions in the
@@ -140,12 +144,12 @@ func main() {
 
 Using functions as function parameters or return types is a commonly used feature in Go, not just
 within the standard library. Furthermore, design patterns have emerged within the community
-that use functional concepts. An example for this are `functional options'.
+that use functional concepts. An example of this are `functional options'.
 
 \subsection{Functional Options}
 
 The `functional options' pattern has been outlined in Dave Cheney's blog post `Functional options
-for friendly APIs' and is a great example on how to use the support for multiple paradigms.
+for friendly APIs'\autocite{functional-options} and is a great example on how to use the support for multiple paradigms.
 The basic idea with functional options is that a type constructor receives an unknown (0-n) amount
 of options:
 \begin{gocode}
@@ -205,7 +209,7 @@ However, multiple developers have already researched and tested Go's ability to 
 \subsection{Functional Go?}
 
 In his talk `Functional Go'\autocite{func-go-talk}, Francesc Campoy Flores analysed some commonly used functional
-language features in Haskell and how they can be ported with Go. Ignoring speed and stack overflows due to non-existent
+language features in Haskell and how they can be copied to Go. Ignoring speed and stack overflows due to non-existent
 tail call optimisation\autocite{go-tco}, the main issue is with the type system and the missing polymorphism.
 
 \subsection{go-functional}
@@ -220,7 +224,7 @@ monoids in Go. In the `README' file of the repository, he also states that:
     \autocite{go-functional-readme}
 \end{quote}
 
-\section{Conclusion}
+\section{Verdict}
 
 The aforementioned projects showcase the main issue with functional programming in Go: the missing
 helper functions that are prevalent in functional languages and that they currently cannot be implemented

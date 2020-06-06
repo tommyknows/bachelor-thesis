@@ -30,6 +30,13 @@ folder contains the script as mentioned in Appendix~\ref{appendix:function-occur
 
 
 \section{Example for Functional Options}\label{appendix:funcopts}
+
+This source code example demonstrates `functional options' as introduced in this paper.
+Functional options are usually passed to a constructor to configure the new instance, in
+this case a webserver. The advantages of functional options are that the API ends up to
+be cleaner and more easily extensible and allows the default use-case to be as simple
+as possible.
+
 \begin{code}
     \gofile{../work/examples/functional-options/main.go}
     \caption{Functional Options for a simple Webserver}
@@ -42,10 +49,10 @@ that is located in `work/common-list-functions' in the git repository\autocite{g
 The script utilises \href{https://github.com/BurntSushi/ripgrep}{ripgrep} to count the number of occurrences, so
 this must be installed in order to run this script.
 \begin{bashcode}
-$> ./count-function.sh ": " map fold filter take drop reverse sum zip product maximum minimum
+$> ./count-function.sh ": " "map " fold filter take drop reverse sum zip product maximum minimum
 Searching for occurrences in subdirectories of bachelor-thesis/work/common-list-functions
 Found 2912 occurrences of :
-Found 2347 occurrences of map
+Found 1241 occurrences of map
 Found 610 occurrences of fold
 Found 562 occurrences of filter
 Found 376 occurrences of take
@@ -71,6 +78,11 @@ Found 26 occurrences of minimum
 \end{code}
 
 \section{Foldl and Foldl' difference}\label{appendix:foldl-strictness}
+
+This code example shows the difference between foldl and foldl' in their
+execution. What can be seen is that foldl builds up a call stack, while
+foldl' executes the calls during the traversal.
+
 \begin{code}
     \begin{haskellcode}
 > (?) :: Int -> Int -> Int
@@ -102,7 +114,27 @@ foldl' (?) 6 [undefined,5,0] -->
     \caption{foldl and foldl' strictness\autocite{fold-types}}
 \end{code}
 
-\section{Workaround for the missing foldl' implementation in Go}\label{appendix:foldl-go}
+\section{Workaround for the missing foldl implementation in Go}\label{appendix:foldl-go}
+ % TODO: Ist nicht so ganz lazy, oder?
+
+%Die Berechnung wird immer einen Schritt hinterhergezogen. Vielleicht könnte man auch
+% die Berechnungen alle offen lassen und am Endce mit einer trampoline-Funktion abarbeiten?
+
+This code block exemplifies how foldl could be implemented in Go code. It is based on the example
+from Appendix~\ref{appendix:foldl-strictness}, rewritten in Go. While Go does not know about
+the concept of laziness, the programmer may implement the laziness himself by working with function
+closures.
+
+In this example, \mintinline{go}|*int| is used instead of \mintinline{go}|int| to simulate Haskell's
+\mintinline{haskell}|undefined| with a nil-pointer.
+If a nil-pointer is dereferenced, the program will panic.
+
+In the lazy version of this code (utilising `myFold' and `mulLazy'), the panic does not occur because
+the nil-pointer is never dereferenced as the function closure is never executed. This is equal
+to the `foldl' demonstration in Appendix~\ref{appendix:foldl-strictness}.
+
+The non-lazy version (`foldl' and `mul') executes the function while traversing the slice and thus panics.
+
 \begin{code}
 	\gofile{../work/examples/foldl-workaround/main.go}
 	\begin{bashcode}
@@ -122,6 +154,11 @@ exit status 2
 \end{code}
 
 \section{Prettyprint implementation}\label{appendix:prettyprint-func}
+
+These code blocks show the same package `prettyprint', once in idiomatic Go and once
+in functional Go. What can be seen is that the \mintinline{go}|for| loops have been replaced
+by the usage of `foldl' and anonymous functions.
+
 \begin{code}
 	\gofile{../work/funcheck/prettyprint/prettyprint.go}
 	\caption{The original prettyprint implementation}

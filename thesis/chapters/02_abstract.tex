@@ -3,34 +3,51 @@
 % !TEX encoding = UTF-8 Unicode
 % !TEX root = ../thesis.tex
 
+% TODO: "Sanduhr",
+% "Because of this difficulty" - was genau?
+% Sign Posting (like, furthermore, however). e.g. "The methods used in here..."
+% Leser mehr fuehren
+% Haskell zu spezifisch?
+% `like' -> such as
+% "Generelle Conclusion" (sanduhr) fehlt
+
 In the last decade, concepts from functional programming have grown in
 importance within the wider, non-functional programming community.
 Often it is recommended to learn a purely functional programming language
-like Haskell to become familiar with these concepts.
+such as Haskell to become familiar with these concepts.
 However, many programmers struggle with the double duty
-of learning a new paradigm and a new syntax at the same time. Because of
-this, this paper expands on the idea of learning purely functional programming
-with a multi-paradigm programming language and a familiar syntax. Go
-is the language of choice for this due to its syntactical symplicity
-and familiarity.
+of learning a new paradigm and a new syntax at the same time. To lower this
+effort, this paper extends on the idea of learning purely functional programming
+with a multi-paradigm programming language and a familiar syntax.
 
-The absence of a list datatype in Go is remediated by Go's slices.
-However, Go is missing the typical higher-order functions ---
-`map', `filter' and `fold' to name a few --- that are present in every
-functional programming language and many other programming languages too.
-Due to the absence of polymorphism in Go, the most popular higher-order
-functions are added to the built-in functions in the compiler.
+For this task, the language of choice is Go due to its syntactical
+simplicity and familiarity.
+However, a downside of Go is the lack of a built-in list type, as lists take a
+central role in functional programming. Although this is remediated by Go's slices,
+they are not accompanied by any higher-order list processing functions --- `map', `filter', and `fold' to name a
+few --- that are present in every functional programming language (and many
+other languages too).
+Due to the absence of polymorphism, in order to provide these higher-order functions in
+a user-friendly way it is necessary to build these functions into the compiler.
+%Further, because Go is missing polymorphism, the most popular higher-order functions
+%will need to be added to the built-in functions in the compiler in order to achieve
+%the best user experience.
+%Due to the absence of polymorphism in Go, the most popular higher-order
+%functions are added to the built-in functions in the compiler.
 
-Furthermore, this paper specifies a definition of what pure functional programming is and
+Furthermore, this paper settles on a definition of what pure functional programming is and
 introduces `funcheck', a static code analysis tool that is designed to
 report constructs that are non-functional.
 
-With the help of the newly built-in functions `fmap', `filter', `foldr', `foldl' and
+In conclusion, with the help of the newly built-in functions `fmap', `filter', `foldr', `foldl' and
 `prepend', as well as `funcheck' to lint code, Go proves itself to be a
 suitable language for getting started with functional programming.
-At the same time, it also shows that there is no way around learning a
-language like Haskell if fluency with functional programming concepts
-is desired. The primary reasons are that, although it may be unusual, Haskell's
+The primary factor for this is captured in the Go idiom `clear is better than clever'.
+While functional Go code is more verbose when compared to functional languages, it
+is also more obvious about it's inner workings.
+At the same time, it also illustrates why there is no way around learning a
+language such as Haskell if fluency with functional programming concepts
+is desired. The main reasons are that, although it may be unusual at first, Haskell's
 syntax is extremely concise, and that the language's design --- the type system,
 pattern matching, the purity guarantees and more --- provides a very effective toolset
 for purely functional programming.
