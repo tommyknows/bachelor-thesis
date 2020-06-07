@@ -38,27 +38,27 @@ of pre-selected list functions, indicates that the most used functions are `:'
 \toprule
 `:' (cons) & 2912 \\
 \midrule
-map & 1241 \\
+map, fmap & 1873 \\
 \midrule
-fold & 610 \\
+foldr, foldl, foldl' & 303 \\
 \midrule
-filter & 562 \\
+filter & 262 \\
 \midrule
-take & 376 \\
+reverse & 154 \\
 \midrule
-drop & 238 \\
+take & 108 \\
 \midrule
-reverse & 185 \\
+drop & 81 \\
 \midrule
-sum & 173 \\
+maximum & 45 \\
 \midrule
-zip & 158 \\
+sum & 44 \\
 \midrule
-product & 56 \\
+zip & 38 \\
 \midrule
-maximum & 53 \\
+product & 15 \\
 \midrule
-minimum & 26 \\
+minimum & 10 \\
 \end{tabular}
 \caption[Occurrences of list functions]{Occurrences of list functions\footnotemark}
 \label{tab:occurrences-list-funcs}
@@ -72,12 +72,7 @@ minimum & 26 \\
 %Das Problem hier ist aber, dass das nicht hilft, denn da kommen wieder die Typen der Slices ins Spiel.
 
 Based on this information, it has been decided to implement the map, cons, fold
-and filter functions into the Go compiler\footnote{The cons function (`:') is overrepresented in this list,
-    as it can also be used to deconstruct lists within pattern matching. Filtering
-    these occurrences would need a more advanced algorithm. However, even if $\tfrac{3}{4}$
-    of these usages are used in pattern matching, the cons function would still be
-    in the top 3.
-}.
+and filter functions into the Go compiler.
 
 \subsection{Map}
 

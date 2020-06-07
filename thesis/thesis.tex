@@ -2,7 +2,7 @@
 % !TEX TS-program = pdflatexmk
 % !TEX encoding = UTF-8 Unicode
 
-\RequirePackage[hyphens]{url}
+%\RequirePackage[hyphens]{url}
 \documentclass[%
   a4paper,
   twoside,
@@ -58,6 +58,12 @@
 %\usepackage{hyperref}
 %\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 
+\hypersetup{
+  colorlinks   = true, %Colours links instead of ugly boxes
+  %urlcolor     = blue, %Colour for external hyperlinks
+  linkcolor    = blue, %Colour of internal links
+  citecolor   = blue %Colour of citations
+}
 \usepackage[newfloat]{minted}
 \usepackage{listings}
 \newenvironment{code}{\captionsetup{type=listing}}{}
@@ -73,24 +79,25 @@
 
 
 \newcommand{\gofilerange}[4][]{%
-    \immediate\write18{./utils/delim -file="#2" -start="#3" -end="#4"}
-    \IfFileExists{code.lineno}
-      {\CatchFileEdef{\linenumber}{./code.lineno}{\endlinechar=-1 }}
-      {\def\linenumber{0}}
-    \edef\flags{firstnumber=\linenumber,#1}
-    \expandafter\gofile\expandafter[\flags]{./code.snippet}
-}
+    \immediate\write18{./utils/delim -file="#2" -start="#3" -end="#4"}%
+    \IfFileExists{code.lineno}%
+      {\CatchFileEdef{\linenumber}{./code.lineno}{\endlinechar=-1 }}%
+      {\def\linenumber{0}}%
+    \edef\flags{firstnumber=\linenumber,#1}%
+    \expandafter\gofile\expandafter[\flags]{./code.snippet}}
 
 %\sloppy
 
 \usepackage[
     backend=biber,
+    hyperref=true,
     style=ieee,
     dashed=false,
 ]{biblatex}
-\usepackage{xurl}
-\usepackage{caption}
+%\usepackage{xurl}
+\usepackage[skip=0pt]{caption}
 \usepackage[toc,page]{appendix}
+\usepackage{hyperref}
 \usepackage{glossaries}
 %\usepackage{listings}
 \makeglossaries

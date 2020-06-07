@@ -114,8 +114,8 @@ as reassignments in the AST.
 Thus, the basic building block for the AST traversal is the following \mintinline{go}|switch|
 statement:
 \begin{code}
-	\gofilerange{../work/funcheck/assigncheck/assigncheck.go}{start-basictypes}{end-basictypes}
-	\caption{Handling the basic AST types in funcheck}
+	\gofilerange{../work/funcheck/assigncheck/assigncheck.go}{start-basictypes}{end-basictypes}%
+	\caption{Handling the basic AST types in funcheck\autocite{funcheck-ast-types}}
 \end{code}
 The remaining two node types are \mintinline{go}|*ast.DeclStmt| and \mintinline{go}|*ast.AssignStmt|.
 They are not as simple to handle, which is why they are covered in their own chapters.

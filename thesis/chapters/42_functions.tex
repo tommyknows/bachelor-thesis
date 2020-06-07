@@ -66,7 +66,7 @@ func fmap(fn func(Type) Type1, src []Type) []Type1 {
 This algorithm can be translated to the following AST node:
 
 \begin{code}
-	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fmap-header}{end-fmap-header}
+	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fmap-header}{end-fmap-header}%
 	\caption{fmap AST translation\autocite{fmap-walk-implementation}}
 \end{code}
 
@@ -98,7 +98,7 @@ The implementation within `walkprepend' reflects these lines of Go code, but
 as AST nodes:
 
 \begin{code}
-	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-prepend-header}{end-prepend-header}
+	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-prepend-header}{end-prepend-header}%
 	\caption{prepend AST translation\autocite{prepend-walk-implementation}}
 \end{code}
 \subsubsection{foldr and foldl}
@@ -135,7 +135,7 @@ arguments to the fold function is switched.
 
 The AST walk translates fold to:
 \begin{code}
-	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fold-header}{end-fold-header}
+	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-fold-header}{end-fold-header}%
 	\caption{fold AST translation\autocite{fold-walk-implementation}}
 \end{code}
 \subsubsection{filter}\label{ch:impl-filter}
@@ -162,7 +162,7 @@ func filter(f func(Type) bool, s []Type) []Type {
 And the same algorithm, but translated to AST statements:
 
 \begin{code}
-	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-filter-header}{end-filter-header}
+	\gofilerange{../work/go/src/cmd/compile/internal/gc/walk.go}{start-filter-header}{end-filter-header}%
 	\caption{filter AST translation\autocite{filter-walk-implementation}}
 \end{code}
 

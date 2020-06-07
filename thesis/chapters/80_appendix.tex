@@ -38,7 +38,7 @@ be cleaner and more easily extensible and allows the default use-case to be as s
 as possible.
 
 \begin{code}
-    \gofile{../work/examples/functional-options/main.go}
+    \gofile{../work/examples/functional-options/main.go}%
     \caption{Functional Options for a simple Webserver}
 \end{code}
 
@@ -48,32 +48,38 @@ that is located in `work/common-list-functions' in the git repository\autocite{g
 
 The script utilises \href{https://github.com/BurntSushi/ripgrep}{ripgrep} to count the number of occurrences, so
 this must be installed in order to run this script.
+
 \begin{bashcode}
-$> ./count-function.sh ": " "map " fold filter take drop reverse sum zip product maximum minimum
-Searching for occurrences in subdirectories of bachelor-thesis/work/common-list-functions
-Found 2912 occurrences of :
-Found 1241 occurrences of map
-Found 610 occurrences of fold
-Found 562 occurrences of filter
-Found 376 occurrences of take
-Found 238 occurrences of drop
-Found 185 occurrences of reverse
-Found 173 occurrences of sum
-Found 158 occurrences of zip
-Found 56 occurrences of product
-Found 53 occurrences of maximum
-Found 26 occurrences of minimum
+./count-function.sh ":" "((map)|(fmap))" "((foldr)|(foldl'?))" "filter" "reverse" "take" "drop" "sum" "zip" "product" "maximum" "min
+imum"
+Searching for occurrences in subdirectories of /Users/ramon/Documents/Private/projects/bachelor-thesis/work/common-list-functions
+Found 2912 occurrences of ":"
+Found 1873 occurrences of "((map)|(fmap))"
+Found 303 occurrences of "((foldr)|(foldl'?))"
+Found 262 occurrences of "filter"
+Found 154 occurrences of "reverse"
+Found 108 occurrences of "take"
+Found 81 occurrences of "drop"
+Found 44 occurrences of "sum"
+Found 38 occurrences of "zip"
+Found 15 occurrences of "product"
+Found 45 occurrences of "maximum"
+Found 10 occurrences of "minimum"
 \end{bashcode}
+
+The terms are searched with a leading and trailing space to get exact matches. Further, as can be seen in
+the call to the script, the search combines the results of map together with fmap, and foldr with foldl
+and foldl'.
 
 \section{Mutating variables in Go}\label{appendix:mutation}
 \begin{code}
-	\gofile{../work/examples/mutate/main.go}
+	\gofile{../work/examples/mutate/main.go}%
 	\caption{Example on how to mutate complex types in Go}
 \end{code}
 
 \section{Shadowing variables in Go}\label{appendix:shadowing}
 \begin{code}
-	\gofile{../work/examples/shadowing/main.go}
+	\gofile{../work/examples/shadowing/main.go}%
 	\caption{Example on how shadowing works on block scopes}
 \end{code}
 
@@ -136,7 +142,7 @@ to the `foldl' demonstration in Appendix~\ref{appendix:foldl-strictness}.
 The non-lazy version (`foldl' and `mul') executes the function while traversing the slice and thus panics.
 
 \begin{code}
-	\gofile{../work/examples/foldl-workaround/main.go}
+	\gofile{../work/examples/foldl-workaround/main.go}%
 	\begin{bashcode}
 $> fgo run .
 0
@@ -160,7 +166,7 @@ in functional Go. What can be seen is that the \mintinline{go}|for| loops have b
 by the usage of `foldl' and anonymous functions.
 
 \begin{code}
-	\gofile{../work/funcheck/prettyprint/prettyprint.go}
+	\gofile{../work/funcheck/prettyprint/prettyprint.go}%
 	\caption{The original prettyprint implementation}
 \end{code}
 \begin{code}
