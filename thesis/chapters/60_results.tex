@@ -3,9 +3,6 @@
 % !TEX encoding = UTF-8 Unicode
 % !TEX root = ../thesis.tex
 
-% TODO: Abgrenzung zu Application für mich noch nicht ganz klar. Das Beispiel in diesem
-% Kapitel würde auch ins letzte Kapitel passen.
-
 To learn functional programming without being introduced to a new syntax at the same time
 ensures that programmers can fully concentrate on functional concepts. Although Go already
 supported a functional programming style, the programmer may not have known if the code was
@@ -105,55 +102,8 @@ described in Appendix~\ref{appendix:build-gopls}}
 and in the compilation phase, as well as a polymorphic function header, allowing the
 programmer to call the function with any allowed type.
 
-% TODO: talk a bit more about this code?
 Demonstrations of these functions and how functional Go code looks like can be seen in
 Chapter~\ref{ch:application}.
-%the code block~\ref{code:funcexample}. The example shows how lists can be processed with
-%the new built-in functions in a purely functional way.
-
-%\begin{listing}[ht]
-%\begin{gocode}
-%package main
-
-%import (
-	%"fmt"
-	%"strconv"
-%)
-
-%// Counterpart to Haskell's `derive Show` through code generation
-%//go:generate stringer -type parity
-
-%type parity int
-
-%const even parity = 0
-%const odd parity = 1
-
-%// shouldBe returns a function that returns true if an int is of the
-%// given parity
-%func shouldBe(p parity) func(i int) bool {
-	%return func(i int) bool {
-		%return i%2 == int(p)
-	%}
-%}
-
-%func main() {
-	%lst := []int{1, 2, 3, 4, 5}
-	%lstMult := fmap(func(i int) int { return i * 5 }, prepend(0, lst))
-
-	%addToString := func(s string, i int) string {
-		%return s + strconv.Itoa(i) + " "
-	%}
-	%// fold over even / odd numbers and add them to a string
-	%evens := foldl(addToString, even.String()+": ",
-		%filter(shouldBe(even), lstMult))
-	%odds := foldl(addToString, odd.String()+": ",
-		%filter(shouldBe(odd), lstMult))
-
-	%fmt.Println(evens, odds) // even: 0 10 20  odd: 5 15 25
-%}
-%\end{gocode}
-%\caption{Demonstration of the new built-in functions\label{code:funcexample}}
-%\end{listing}
 
 With these additions to Go and its ecosystem, aspiring functional programmers
 can fully concentrate of the concepts of functional programming while keeping

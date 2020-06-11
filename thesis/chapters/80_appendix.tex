@@ -121,10 +121,6 @@ foldl' (?) 6 [undefined,5,0] -->
 \end{code}
 
 \section{Workaround for the missing foldl implementation in Go}\label{appendix:foldl-go}
- % TODO: Ist nicht so ganz lazy, oder?
-
-%Die Berechnung wird immer einen Schritt hinterhergezogen. Vielleicht könnte man auch
-% die Berechnungen alle offen lassen und am Endce mit einer trampoline-Funktion abarbeiten?
 
 This code block exemplifies how foldl could be implemented in Go code. It is based on the example
 from Appendix~\ref{appendix:foldl-strictness}, rewritten in Go. While Go does not know about
