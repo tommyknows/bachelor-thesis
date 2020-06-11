@@ -3,25 +3,18 @@
 % !TEX encoding = UTF-8 Unicode
 % !TEX root = ../thesis.tex
 
-% TODO: "Sanduhr",
-% "Because of this difficulty" - was genau?
-% Sign Posting (like, furthermore, however). e.g. "The methods used in here..."
-% Leser mehr fuehren
-% Haskell zu spezifisch?
-% `like' -> such as
-% "Generelle Conclusion" (sanduhr) fehlt
-
 In the last decade, concepts from functional programming have grown in
 importance within the wider, non-functional programming community.
 Often it is recommended to learn a purely functional programming language
 such as Haskell to become familiar with these concepts.
 However, many programmers struggle with the double duty
-of learning a new paradigm and a new syntax at the same time. To lower this
-effort, this paper extends on the idea of learning purely functional programming
-with a multi-paradigm programming language and a familiar syntax.
+of learning a new paradigm and a new syntax at the same time.
+This paper proposes that by learning functional programming with a
+multi-paradigm programming language and a familiar syntax it is possible
+to lower this effort.
 
-For this task, the language of choice is Go due to its syntactical
-simplicity and familiarity.
+To achieve this goal, the programming language Go has been chosen due to
+its syntactical simplicity and familiarity.
 However, a downside of Go is the lack of a built-in list type, as lists take a
 central role in functional programming. Although this is remediated by Go's slices,
 they are not accompanied by any higher-order list processing functions --- `map', `filter', and `fold' to name a
@@ -29,13 +22,8 @@ few --- that are present in every functional programming language (and many
 other languages too).
 Due to the absence of polymorphism, in order to provide these higher-order functions in
 a user-friendly way it is necessary to build these functions into the compiler.
-%Further, because Go is missing polymorphism, the most popular higher-order functions
-%will need to be added to the built-in functions in the compiler in order to achieve
-%the best user experience.
-%Due to the absence of polymorphism in Go, the most popular higher-order
-%functions are added to the built-in functions in the compiler.
 
-Furthermore, this paper settles on a definition of what pure functional programming is and
+Furthermore, this paper adopts a definition of pure functional programming and
 introduces `funcheck', a static code analysis tool that is designed to
 report constructs that are non-functional.
 
