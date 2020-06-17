@@ -52,7 +52,7 @@ this must be installed in order to run this script.
 \begin{bashcode}
 ./count-function.sh ":" "((map)|(fmap))" "((foldr)|(foldl'?))" "filter" "reverse" "take" "drop" "sum" "zip" "product" "maximum" "min
 imum"
-Searching for occurrences in subdirectories of /Users/ramon/Documents/Private/projects/bachelor-thesis/work/common-list-functions
+Searching for occurrences in subdirectories of ./common-list-functions
 Found 2912 occurrences of ":"
 Found 1873 occurrences of "((map)|(fmap))"
 Found 303 occurrences of "((foldr)|(foldl'?))"
@@ -72,15 +72,25 @@ the call to the script, the search combines the results of map together with fma
 and foldl'.
 
 \section{Mutating variables in Go}\label{appendix:mutation}
+
+Source Code~\ref{code:mutation} shows how pointers are used to mutate data in Go. This does
+not necessarily need to be a `struct' type, pointers can be used of any type.
+Pointers have to be used to modify values because Go is a copy-by-value language and thus
+copies the parameters that are passed to a function.
+
 \begin{code}
 	\gofile{../work/examples/mutate/main.go}%
-	\caption{Example on how to mutate complex types in Go}
+	\caption{Example on how to mutate data in Go}\label{code:mutation}
 \end{code}
 
 \section{Shadowing variables in Go}\label{appendix:shadowing}
+
+Source Code~\ref{code:shadowing} demonstrates the block scoping and shadowing rules
+in Go.
+
 \begin{code}
 	\gofile{../work/examples/shadowing/main.go}%
-	\caption{Example on how shadowing works on block scopes}
+	\caption{Example on how shadowing works on block scopes}\label{code:shadowing}
 \end{code}
 
 \section{Foldl and Foldl' difference}\label{appendix:foldl-strictness}

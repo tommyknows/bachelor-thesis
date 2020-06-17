@@ -69,9 +69,9 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \contentsline {listing}{\numberline {1}{\ignorespaces Functional Options for a simple Webserver\relax }}{81}{listing.caption.57}%
-\contentsline {listing}{\numberline {2}{\ignorespaces Example on how to mutate complex types in Go\relax }}{83}{listing.caption.58}%
+\contentsline {listing}{\numberline {2}{\ignorespaces Example on how to mutate data in Go\relax }}{83}{listing.caption.58}%
 \contentsline {listing}{\numberline {3}{\ignorespaces Example on how shadowing works on block scopes\relax }}{84}{listing.caption.59}%
 \contentsline {listing}{\numberline {4}{\ignorespaces foldl and foldl' strictness\autocite {fold-types}\relax }}{85}{listing.caption.60}%
-\contentsline {listing}{\numberline {5}{\ignorespaces Working around the missing foldl implementation in Go\relax }}{86}{listing.caption.61}%
+\contentsline {listing}{\numberline {5}{\ignorespaces Working around the missing foldl implementation in Go\relax }}{87}{listing.caption.61}%
 \contentsline {listing}{\numberline {6}{\ignorespaces The original prettyprint implementation\relax }}{90}{listing.caption.62}%
 \contentsline {listing}{\numberline {7}{\ignorespaces The refactored, functional prettyprint implementation\relax }}{92}{listing.caption.63}%
