@@ -8,10 +8,10 @@ ensures that programmers can fully concentrate on functional concepts. Although 
 supported a functional programming style, the programmer may not have known if the code was
 purely functional or if there still were imperative constructs embedded.
 
-In the last chapters, functional purity has been defined as a law based on two rules; immutability
-and function purity. Immutability means that once assigned, a variable's value never
-changes. Function purity entails that functions do not have side effects and their return
-value is solely influenced by the function's parameters.
+In the last chapters, functional purity has been defined as a law based on one simple rule: immutability.
+Immutability dictates that once assigned, a variable's value never changes.
+This in turn leads to function purity, which means that functions do not have side
+effects and their return value is solely influenced by the function's parameters.
 
 It has been shown that although purely functional languages like Haskell aim to be completely
 pure, this objective is difficult to accomplish. The reason for this are Input / Output actions; user
@@ -22,7 +22,7 @@ does serve as documentation to its users (`if the function has IO, it is impure'
 guarantees a certain execution order.
 
 Go on the other hand does not have this issue, as the Go compiler does not optimise execution
-based on purity guarantees. Having a similar construct like the IO monad in Go would as such
+based on purity guarantees. Having a similar construct to the IO monad in Go would, as such,
 only serve documentation purposes. Because of this, the decision has been taken to ignore
 the impurity that is implied with IO actions.
 
@@ -61,7 +61,7 @@ file.go:3:2: reassignment of s
 \end{bashcode}
 
 This linter can be used and executed against any Go package. To eliminate the reported errors,
-code has to be rewritten in what ends up being purely functional code.
+code has to be rewritten in a purely functional manner.
 
 However, functional code often relies heavily on lists and list-processing functions.
 Although Go does not have a built-in list datatype, Go's slices, an abstraction built
@@ -108,7 +108,7 @@ Chapter~\ref{ch:application}.
 With these additions to Go and its ecosystem, aspiring functional programmers
 can fully concentrate of the concepts of functional programming while keeping
 a familiar syntax at hand. However, it should not be considered a fully featured
-purely functional programming language. Rather, it should serve as a starting point and
+functional programming language. Rather, it should serve as a starting point and
 make the transition to a language like Haskell easier.
 
 Differences in the syntax between Haskell and Go exemplify why purely functional programming
@@ -119,4 +119,4 @@ overhead that many programming languages, including Go, introduce.
 Using `the right tool for the job' is important, and this paper shows that imperative or
 object-oriented programming languages are not the right tool for production-grade
 functional programming. However, they can serve as a good starting point and help transitioning
-to it.
+to a pure functional programming language.

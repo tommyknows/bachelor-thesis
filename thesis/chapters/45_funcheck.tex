@@ -1,8 +1,8 @@
 As discussed in Chapter~\ref{sec:funcheck-theory}, to assist writing purely
-functional code, a linter needs to be written that detects reassignments within
+functional code, a linter needs to be implemented that detects reassignments within
 a Go program.
 
-To get a grasp about the issues this linter should report, the first step
+To get a grasp on the issues this linter should report, the first step
 is to capture some examples, cases that should be matched against.
 
 \subsection{Examples}
@@ -20,7 +20,7 @@ y++     // forbidden
 \end{gocode}
 
 Where the statements with a \mintinline{go}|// forbidden
-| comment should be reported.
+|comment should be reported.
 
 Adding block scoping to this, shadowing the old variable needs to be allowed:
 \begin{gocode}
@@ -65,13 +65,13 @@ for i := 0; i < 5; i++ { // forbidden
 }
 \end{gocode}
 
-All the aforementioned examples and more can be found in the testcases for funcheck\autocite{funcheck-examples}.
+All the aforementioned examples and more can be found in the test cases for funcheck\autocite{funcheck-examples}.
 
 \subsection{Building a linter}
 
 The Go ecosystem already provides an official library for building code analysis tools,
 the `analysis' package from the Go Tools repository\autocite{go-analysis}. With this package,
-implementing a static code analyser is being reduced to writing the actual AST node analysis.
+implementing a static code analyser is reduced to writing the actual AST node analysis.
 
 To define an analysis, a variable of type \mintinline{go}|*analysis.Analyzer| has to be declared:
 
@@ -91,7 +91,7 @@ information about the package that is being analysed and some helper-functions t
 diagnostics.
 
 With `analysis.Pass.Files` and the help of the `go/ast` package, traversing the syntax
-tree of every file in a package is made extremely convenient:
+tree of every file in a package becomes extremely convenient:
 
 \begin{gocode}
 for _, file := range pass.Files {
@@ -107,7 +107,7 @@ taken care of. The simpler ones are
 An `IncDecStmt' node is a \mintinline{go}|x++| or \mintinline{go}|x--|
 expression and should always be reported.
 `ForStmt' and `RangeStmt' are similar; a `RangeStmt' is a `for' loop with the
-\mintinline{go}|range| keyword instead of an init-, condition- and post-stametent.
+\mintinline{go}|range| keyword instead of an init-, condition- and post-statement.
 
 Both of these loop-types need to be reported explicitly as they do not show up
 as reassignments in the AST.

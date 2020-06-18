@@ -20,8 +20,8 @@ Further, many new multi-paradigm programming languages have been introduced,
 including Rust, Kotlin, Go and Dart. They all have functions as first-class citizens in
 the language since their initial release.
 
-With these developments it can be said that functional programming has truly landed in the
-wider programming-community, emerging from niche use-cases and academia.
+With these developments, it can be said that functional programming has emerged
+from niche use-cases and academia to truly arrive in the wider programming community.
 For example Rust, the `most popular programming language' for 5 years in a row (2016--2020)
 according to the Stack Overflow Developer survey\autocite{rust-loved}, has been significantly
 influenced by functional programming languages\autocite{rust-functional}. Further, in idiomatic
@@ -42,7 +42,7 @@ purely functional programming language\autocite{comparison-functional-languages}
 \section{Haskell}
 
 Haskell, the \textit{lingua franca} amongst functional programmers, is a lazily-evaluated, purely functional programming
-language. While Haskell's strengths stem from all it's features like type classes, type polymorphism, purity and more,
+language. While Haskell's strengths stem from all it's features like its advanced type system, pattern matching and more,
 these features are also what makes Haskell famously hard to learn\autocite{haskell-hard-one}\autocite{haskell-hard-two}\autocite{haskell-hard-three}\autocite{haskell-hard-four}.
 
 Beginner Haskell programmers face a very distinctive challenge in contrast to learning a new, non-functional programming language:
@@ -73,7 +73,7 @@ While this is only a very short and clean piece of code, these 6 lines already p
         it takes and which types are returned
 \end{itemize}
 
-Although some of these constructs also exist in imperative or object-oriented languages, hte cumulative difference
+Although some of these constructs also exist in imperative or object-oriented languages, the cumulative difference
 is not to underestimate and adds to Haskell's steep learning curve.
 
 \section{Goals}
@@ -130,6 +130,7 @@ func HandleFunc(pattern string, handler func(ResponseWriter, *Request))
 \end{gocode}
 is used to register functions for http server handling\autocite{go-http-doc}:
 
+\begin{code}
 \begin{gocode}
 func myHandler(w http.ResponseWriter, r *http.Request) {
     // Handle the given HTTP request
@@ -141,6 +142,8 @@ func main() {
     http.ListenAndServe(":8080", nil)
 }
 \end{gocode}
+\caption{Go web server handler function}
+\end{code}
 
 Using functions as function parameters or return types is a commonly used feature in Go, not just
 within the standard library. Furthermore, design patterns have emerged within the community
@@ -152,6 +155,7 @@ The `functional options' pattern has been outlined in Dave Cheney's blog post `F
 for friendly APIs'\autocite{functional-options} and is a great example on how to use the support for multiple paradigms.
 The basic idea with functional options is that a type constructor receives an unknown (0-n) amount
 of options:
+\begin{code}
 \begin{gocode}
 func New(requiredSetting string, opts ...option) *MyType {
 	t := &MyType{
@@ -168,10 +172,13 @@ func New(requiredSetting string, opts ...option) *MyType {
 
 type option func(t *MyType)
 \end{gocode}
+\caption{Constructor with functional options}
+\end{code}
 
 These options can then access the instance of \mintinline{go}|MyType| to modify it accordingly,
 for example:
 
+\begin{code}
 \begin{gocode}
 func EnableFeatureX() option {
 	return func(t *MyType) {
@@ -179,6 +186,8 @@ func EnableFeatureX() option {
 	}
 }
 \end{gocode}
+\caption{Example for a functional option}
+\end{code}
 
 To enable feature X, `New' can be called with that option:
 \begin{gocode}

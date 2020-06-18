@@ -1,13 +1,13 @@
 \section{Information about this thesis}
 
 This thesis, including this document, is contained in a single git repository
-that can be found at \href{github.com/tommyknows/bachelor-thesis.git}{Github}.
+that can be found at GitHub\autocite{git-repo}.
 
 All the work that has been done is open sourced under the Apache License 2.0,
 except the Go source code, which has its own license.
 
 To view the code, build or reproduce results, this git repository can be cloned
-and its submodules checked out. The version that has been submissed can be checked
+and its submodules checked out. The version that has been submitted can be checked
 out through the tag `v1.0.0':
 \begin{bashcode}
 $> git clone https://github.com/tommyknows/bachelor-thesis.git
@@ -28,22 +28,21 @@ and~\ref{appendix:build-funcheck}). Further, some examples
 of functional Go have been developed in the `example' directory. The `common-list-functions'
 folder contains the script as mentioned in Appendix~\ref{appendix:function-occurrences}.
 
-
 \section{Example for Functional Options}\label{appendix:funcopts}
 
 This source code example demonstrates `functional options' as introduced in this paper.
 Functional options are usually passed to a constructor to configure the new instance, in
-this case a webserver. The advantages of functional options are that the API ends up to
+this case a web server. The advantages of functional options are that the API ends up to
 be cleaner and more easily extensible and allows the default use-case to be as simple
 as possible.
 
 \begin{code}
     \gofile{../work/examples/functional-options/main.go}%
-    \caption{Functional Options for a simple Webserver}
+    \caption{Functional Options for a simple web server}
 \end{code}
 
 \section{Analysis of function occurrences in Haskell code}\label{appendix:function-occurrences}
-The results of the analysis have been aquired by running the `count-function' script
+The results of the analysis have been acquired by running the `count-function' script
 that is located in `work/common-list-functions' in the git repository\autocite{git-repo}.
 
 The script utilises \href{https://github.com/BurntSushi/ripgrep}{ripgrep} to count the number of occurrences, so
@@ -156,11 +155,7 @@ panic: runtime error: invalid memory address or nil pointer dereference
 [signal SIGSEGV: segmentation violation code=0x1 addr=0x0 pc=0x109e945]
 
 goroutine 1 [running]:
-main.what(0x2, 0x0, 0x2)
-		/tmp/map/main.go:16 +0x5
-main.main()
-		/tmp/map/main.go:12 +0x187
-exit status 2
+...
 	\end{bashcode}
 	\caption{Working around the missing foldl implementation in Go\label{code:foldl-go}}
 \end{code}
@@ -173,7 +168,7 @@ by the usage of `foldl' and anonymous functions.
 
 \begin{code}
 	\gofile{../work/funcheck/prettyprint/prettyprint.go}%
-	\caption{The original prettyprint implementation}
+	\caption{The original prettyprint implementation\autocite{prettyprint-orig}}
 \end{code}
 \begin{code}
 	\begin{gocode}
@@ -274,7 +269,14 @@ func render(fset *token.FileSet, x interface{}) string {
 	return buf.String()
 }
 	\end{gocode}
-	\caption{The refactored, functional prettyprint implementation}
+	\caption{The refactored, functional prettyprint implementation\autocite{prettyprint-functional}}
+\end{code}
+
+\section{Imitating Sum types in Go}\label{appendix:sum-types}
+
+\begin{code}
+    \gofile{../work/examples/sumtypes/main.go}%
+\caption{Demonstration of how sum types can be imitated with interfaces}
 \end{code}
 
 \section{Compiling and using functional Go}\label{appendix:install-fgo}
@@ -285,8 +287,7 @@ this thesis, these instructions should be followed.
 First, check out the Go source code:
 
 \begin{bashcode}
-$> git clone https://github.com/tommyknows/go.git
-$> cd go
+$> git clone https://github.com/tommyknows/go.git && cd go
 $> git checkout bachelor-thesis
 \end{bashcode}
 
@@ -413,26 +414,11 @@ $> mv ./gopls /usr/local/bin/gopls
 $> gopls -h
 \end{bashcode}
 
-
-
-% - Add your appendix here:
-
-\todo[inline]{
-  Anhang/Appendix:
-
-  \quad -- Projektmanagement: \\ % chktex 8
-  \qquad -- Offizielle Aufgabenstellung, Projektauftrag \\ % chktex 8
-  \qquad -- (Zeitplan) \\ % chktex 8
-  \qquad -- (Besprechungsprotokolle oder Journals) % chktex 8
-
-  \quad -- Weiteres: \\ % chktex 8
-  \qquad -- CD/USB-Stick mit dem vollständigen Bericht als PDF-File inklusive Film- und Fotomaterial \\ % chktex 8
-  \qquad -- (Schaltpläne und Ablaufschemata) \\ % chktex 8
-  \qquad -- (Spezifikation u. Datenblätter der verwendeten Messgeräte und/oder Komponenten) \\ % chktex 8
-  \qquad -- (Berechnungen, Messwerte, Simulationsresultate) \\ % chktex 8
-  \qquad -- (Stoffdaten) \\ % chktex 8
-  \qquad -- (Fehlerrechnungen mit Messunsicherheiten) \\ % chktex 8
-  \qquad -- (Grafische Darstellungen, Fotos) \\ % chktex 8
-  \qquad -- (Datenträger mit weiteren Daten (z. B. Software-Komponenten) inkl. Verzeichnis der auf diesem Datenträger abgelegten Dateien) \\ % chktex 8
-  \qquad -- (Softwarecode) % chktex 8
-}
+% generate a chapter without the chapter heading
+\clearpage
+\phantomsection
+\addtocounter{section}{1}
+\addcontentsline{toc}{section}{%
+	\protect\numberline{\thesection}%
+	Assignment}
+\includepdf[pages=-]{assignment.pdf}

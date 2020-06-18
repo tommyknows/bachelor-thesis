@@ -20,7 +20,4 @@ Structure and Files:
   - `go`: git submodule with the Go compiler code.
 - `proposals`: contains old proposals that where submitted.
 
-To check out the git submodules, run `git submodule init && git submodule update`.
-This will check out & fetch all submodules.
-
 See Appendix 1 in `thesis.pdf` for more information.

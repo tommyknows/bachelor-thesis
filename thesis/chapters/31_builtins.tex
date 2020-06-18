@@ -20,10 +20,9 @@ on GitHub, the most popular are\autocite{github-popular-haskell}:
 In these repositories, the number of occurrences of popular list functions has
 been counted. The analysis does not differentiate between different `kinds' of
 functions. For example, `fold' includes all occurrences of \mintinline{haskell}|foldr|,
-\mintinline{haskell}|foldl| and \mintinline{haskell}|foldl'|; `map' includes
-occurrences of \mintinline{haskell}|fmap|, \mintinline{haskell}|mapM| and
-\mintinline{haskell}|mapM\_|.
-Also, the analysis has not been done with any kind of AST-parsing.
+\mintinline{haskell}|foldl| and \mintinline{haskell}|foldl'|; `map' also includes
+occurrences of \mintinline{haskell}|fmap|.
+Further, the analysis has not been done with any kind of AST-parsing.
 Rather, a simple `grep' has been used to find matches. This means that it is
 likely to contain some mismatches, for example in code comments. All in all,
 this analysis should only be an indicator of what functions are used most.
@@ -64,7 +63,7 @@ minimum & 10 \\
 \label{tab:occurrences-list-funcs}
 \end{table}
 
-\footnotetext{See Appendix~\ref{appendix:function-occurrences} for more information}
+\footnotetext{See Appendix~\ref{appendix:function-occurrences} for how these results have been achieved}
 
 Based on this information, it has been decided to implement the map, cons, fold
 and filter functions into the Go compiler.

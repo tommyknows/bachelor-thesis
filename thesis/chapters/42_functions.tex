@@ -146,10 +146,9 @@ the size for the target slice is unknown until all items have been traversed,
 which is why filter does not allow for the same optimisations as the other
 functions.
 
-\begin{listing}
+\begin{code}
 	\begin{gocode}
-func filter(f func(Type) bool, s []Type) []Type {
-	var dst []Type
+func filter(f func(Type) bool, s []Type) (dst []Type) {
 	for i := range s {
 			if f(s) {
 				dst = append(dst, s[i])
@@ -158,7 +157,7 @@ func filter(f func(Type) bool, s []Type) []Type {
 }
 	\end{gocode}
 	\caption{filter implementation in Go}
-\end{listing}
+\end{code}
 And the same algorithm, but translated to AST statements:
 
 \begin{code}
@@ -182,7 +181,7 @@ into AST nodes, or rather the construction of these AST nodes.
 The type is simply a placeholder, as the AST construction uses the source slice's
 type. This source slice is another AST node of which the type can be obtained from.
 
-\begin{listing}
+\begin{code}
 	\begin{gocode}
 // create the AST node for the first argument that is
 // being passed to `make', the type:
@@ -201,4 +200,4 @@ filtered := temp(source.Type)
 final := nod(OAS, filtered, makeDest))
 \end{gocode}
 	\caption{Illustrating the difference between Go code and it's AST code}
-\end{listing}
+\end{code}

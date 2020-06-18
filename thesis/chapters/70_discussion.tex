@@ -71,7 +71,15 @@ Algebraic data types can be split up into two groups, product types and sum type
 Most product types can be built with Go too; records are basically
 equal to structs, and tuples are not needed too often, as functions can just return multiple values.
 Sum types however are not available in Go at all. It is possible to imitate sum types in Go
-with interfaces (see the example code in~\ref{code:funcexample}), but the compiler does not ensure that
-all cases are matched against\footnote{There is tooling available to check this\autocite{sushi-sumtypes},
-	but it is third party and not built into the language}. This may be an interesting area for further
-research and implementation possibilities.
+with interfaces (see the example code in Appendix~\ref{appendix:sum-types}), and ensure an
+exhaustive match by a linter. This linter should have been implemented as part of this thesis.
+However, after careful consideration, it has been decided that this will not be done
+due to the simple reason that such a linter already exists\autocite{sushi-sumtypes}.
+That linter could be merged with `funcheck', which is left as an exercise to the reader.
+
+Further, a linter does not eliminate the fact that sum types are not properly integrated
+into the language.
+This may be an interesting area for further
+research and implementation possibilities\footnote{There is a mention about sum types in the current
+Go Generics Proposal\autocite{go-generics-proposal}, but the initial implementation of generics will
+most likely not contain sum types}.

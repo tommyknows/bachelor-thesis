@@ -86,6 +86,13 @@
     \edef\flags{firstnumber=\linenumber,#1}%
     \expandafter\gofile\expandafter[\flags]{./code.snippet}}
 
+\newcommand{\unchapter}[1]{%
+  \begingroup
+  \let\@makesectionhead\@gobble % make \@makechapterhead do nothing
+  \section{#1}
+  \endgroup
+}
+\makeatother
 %\sloppy
 
 \usepackage[
@@ -94,11 +101,13 @@
     style=ieee,
     dashed=false,
 ]{biblatex}
-%\usepackage{xurl}
+\usepackage{xurl}
 \usepackage[skip=0pt]{caption}
 \usepackage[toc,page]{appendix}
 \usepackage{hyperref}
 \usepackage{glossaries}
+
+\usepackage{pdfpages}
 %\usepackage{listings}
 \makeglossaries
 %\usepackage{csquotes}
@@ -203,6 +212,12 @@
 % \let\clearpage\relax
 % \vspace{-4em}
 \listoftables
+
+\clearpage
+\phantomsection
+\addtocounter{chapter}{1}
+\addcontentsline{toc}{chapter}{%
+	Glossary}
 \printglossaries
 % \endgroup
 \cleardoublepage % chktex 1

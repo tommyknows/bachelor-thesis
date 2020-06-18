@@ -12,8 +12,8 @@ Further, Go provides a built-in data type that does not exist in plain C: slices
 
 As mentioned in Section~\ref{sec:why-go}, Go does not have a `list' implementation and lists are rarely used.
 The reason for this
-is twofold. First, as Go does not have polymorphism, it is not possible for users to implement a generic
-`list' type that would work with any underlying type. Second, the Go authors added `slices' as a core type
+is twofold. Firstly, as Go does not have polymorphism, it is not possible for users to implement a generic
+`list' type that would work with any underlying type. Secondly, the Go authors added `slices' as a core type
 to the language. From a usage perspective, lists would not add anything compared to slices.
 
 Go's Slices can be viewed as an abstraction over arrays, to mitigate some of the weaknesses of arrays
@@ -50,9 +50,8 @@ be copied into the new one. This happens transparently to the user.
 
 \begin{gocode}
 // []<T> initialises a slice, while [n]<T> initialises an
-// array, which is of fixed length n. One can also use `...'
-// instead of a natural number, to let the compiler count
-// the number of elements.
+// array, which is of fixed length n. We're only working
+// with slices here.
 s := []string{"first", "second", "third"}
 head := s[0]
 tail := s[1:]
@@ -71,8 +70,8 @@ s = append(s, t...)
 s = append([]string{"zeroth"}, s...)
 \end{gocode}
 
-Append is a variadic function, meaning it takes \textit{n} elements. If the slice is of type \textit{[]<T>},
-the appended elements have to be of type \textit{<T>}.
+Append is a variadic function, meaning it takes \textit{n} elements. If the slice is of type \mintinline{go}|[]T|,
+the appended elements have to be of type \mintinline{go}|T|.
 
 To join two lists, the second list is expanded into
 variadic arguments.
@@ -139,7 +138,7 @@ s = r.([]string)
 \end{gocode}
 
 This exemplifies why using the empty interface is not an option. Further, the
-function could not really be type-checked at compile type, as there is no indication
+function could not really be type-checked at compile time, as there is no indication
 of which argument's type must be equal.
 
 \section{Built-in functions}
