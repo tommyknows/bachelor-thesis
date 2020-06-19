@@ -1,0 +1,46 @@
+introduction:
+  - Functional Programming Hype
+  - Haskell => functional par excellence:
+      - examples
+      - learning curve extremely steep, both for syntax & paradigm
+  - Conclusion; Easier, more familiar (& verbose) introduction to FP needed:
+      - should not be "productive", but easy to learn FP
+      - Cleary state the goal; Educational language
+  - Why choose Go:
+      - Easy & familiar syntax (C)
+      - GC (Rust too complicated, though more powerful TS for FP)
+  - Existing Work:
+      - Talk by Francesc @ GopherCon; functional Go
+  - Downsides of Go:
+      - type system (polymorphism, sum types)
+      - no Lists
+      - no FP enforcement
+      - Examples to everything, possibly comparison to Haskell?
+      - TCO / benchmarking?
+  - Work to be done / mitigation:
+      - Powerful list implementation (polymorphic, supported by compiler) (Syntax TBD)
+      - FuncCheck (Rules TBD)
+related_work:
+  - ???
+-------- DONE --------
+methodology:
+  - list functions implementation:
+      - plan, benchmarks, constraints & limitations, goal
+      - which functions:
+        - map (name? fmap?)
+        - prepend (similar to append, but way more expensive :-) )
+        - filter
+        - reduce
+        - zip
+  - funccheck:
+      - research "rules" for FP
+      - compare them
+      - create a curated list of rules
+      - implement those in a linter
+      - inspect results
+application:
+  - ???
+experiments_and_results:
+  - ???
+discussion:
+  - ???

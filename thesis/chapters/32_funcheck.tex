@@ -1,0 +1,446 @@
+To learn functional programming without a purely functional language, the
+developer needs to know which statements are functional and which
+would not exist or be possible in a purely functional language.
+For this reason, a `functional checker' should be created. It should work
+in a similar fashion to linters like `shellcheck', `go vet' or `gosimple'\footnote{
+    A list of Go linters can be found in golangci-lint\autocite{golangci-lint}.
+}, with different `rules' that are reported upon. This tool will be named `funcheck'.
+
+A set of rules should be compiled to identify common `non-functional' constructs
+which should then be reported upon.
+
+The first step is to define a set of rules.
+
+\subsection{Functional Purity}\label{sec:func-purity}
+
+The goal of funcheck is to report every construct that can not be considered
+to be purely functional. As there is no agreed upon definition on what
+functional purity is\autocite{functional-controversy}, the first step is to
+define functional purity for the context of this thesis:
+
+\begin{quote}
+    A style of building the structure and elements of computer programs that
+    treats all computation as the evaluation of mathematical functions. Purely
+    functional programming may also be defined by forbidding changing state and
+    mutable data.
+
+    Purely functional programming consists in ensuring that functions, inside
+    the functional paradigm, will only depend on their arguments, regardless of
+    any global or local state.\autocite{functional-purity-wiki}
+\end{quote}
+
+This definition roughly brakes down into two parts; immutability and function
+purity. These parts and how they translate to Go will be discussed in the
+following chapters.
+
+\subsection{Forbidding mutability and changing state}\label{sec:mutability}
+
+\newglossaryentry{copy-by-value}{name=copy by value, description={Copy by value
+    refers to the argument-passing style where the supplied arguments are
+    copied. To pass references in Go, the developer needs to use pointers
+instead}}
+
+Immutability refers to objects --- variables --- that are unchangeable. This means
+that their state cannot be modified after it's creation and first assignment.
+
+Many programming languages provide features for making variables immutable.
+
+In Rust for example, variables are immutable by default. To explicitly declare
+a mutable variable, the \mintinline{rust}|mut| keyword has to be used: \mintinline{rust}|let mut x = 5;|.
+
+Java, in contrast, uses the \mintinline{java}|final| keyword:
+\begin{quote}
+    A final variable can only be initialized once\autocite{final-java}
+\end{quote}
+`Only be initialized once' means that it cannot be reassigned later, effectively
+making that variable immutable.
+A caveat with Java's \mintinline{java}|final| keyword is that the immutability
+is only tied to the reference of that object, not
+it's contents (one may still change a field of an immutable object).
+
+C and C++ have two features to achieve immutability, the \mintinline{c}|#define|
+preprocessor and the \mintinline{c}|const| keyword.
+The \mintinline{c}|#define| directive does not declare variables, but rather
+works in a similar way to string replacement at compile time. These directives
+can also be expressions. For example, this is a valid define statement:
+\begin{ccode}
+#define AGE (20/2)
+\end{ccode}
+
+However, because \mintinline{c}|#define| is just text substitution, these
+identifiers are untyped.
+
+The \mintinline{c}|const| qualifier specifies that a variable's value
+will not be changed, making it immutable. This is effectively the equivalent
+to Java's \mintinline{java}|final|.
+
+Go has the \mintinline{go}|const| keyword too, and similar to C, constants can only be
+characters, strings, booleans or numeric values\footnote{In contrast to C, Go does
+have a boolean type}. A complex type --- a struct, interface or function --- cannot be constant.
+
+This means that the programmer cannot write
+\mintinline{go}|const x = MyStruct{A: a, B: b}| to make a struct immutable.
+
+A solution to making variables
+immutable is to explicitly not allow any mutations in a program, effectively
+disallowing all reassignments.
+To do this in Go, the simplest solution is
+to disallow the assignment operator \mintinline{go}|=|, and only
+allow it in combination with a declaration (\mintinline{go}|:=|).
+
+This solution also has the side-effect that it makes it impossible to mutate
+existing, complex data structures like maps and slices\footnote{By not
+    allowing assignments, elements can not be updated by
+\mintinline{go}|s[0] = "zero"| / \mintinline{go}|m["key"] = "value"|.}.
+
+There are additional operators that work in a similar way to the assignment
+operator, for example \mintinline{go}|++|, \mintinline{go}|--| and
+\mintinline{go}|+=|. These are all `hidden' assignments and will need to
+be reported upon too.
+
+Go being a \gls{copy-by-value} language, mutating existing variables
+across functions works by passing pointers to these variables\footnote{
+An example for this can be found in Appendix~\ref{appendix:mutation}.}.
+When removing the regular assignment operators, the usage of pointers becomes
+second nature, as it cannot be updated either way.
+Technically, the only advantage that pointers have left, is that less memory has
+to be copied\footnote{The pointer still has to be passed, and thus copied, to the
+called function} if a variable's type is big enough\footnote{For example, it is
+	cheaper to copy an \mintinline{go}|int32| than to take address of it, copy that
+(64 bit, on most systems) address and dereferencing it again}.
+This optimisation is left to the developer.
+
+In functional languages in contrast, this optimisation is usually left to the compiler
+and there are no pointers at all in the language\footnote{Except for things like the `foreign
+function interface' (FFI) in Haskell, which allows to call C functions from Haskell code}.
+
+A feature not discussed so far is shadowing. Shadowing a variable in a different
+scope is still possible by redeclaring it. As expected, even with the above
+mentioned limitations, the rules for shadowing variables do not change. This
+can be seen in Appendix~\ref{appendix:shadowing}.
+
+\subsection{Pure functions}
+
+A pure function is a function where the return value is only dependent on
+the arguments. With the same arguments, the function should always return
+the same values. The evaluation of the function is also not allowed to have
+any `side effects', meaning that it should not mutate non-local variables or
+references\footnote{This also includes `local static' variables, but Go does
+not have a way to make variables `static'.}.
+
+As discussed in the last Chapter~\ref{sec:mutability}, if reassignments
+are not allowed, mutating global variables is not possible either.
+
+If global state cannot be changed, it also cannot influence a function's return values.
+
+As such, forbidding reassignments is an extremely simple solution to
+ensure functional purity within the program. However, there is one
+important aspect that the solution does not solve: interacting with the outside world.
+
+\subsection{IO}
+Network and file access, time, randomness, user input and sensors are all examples
+of IO, things that interact with state outside of the program.
+
+Input and Output in a program --- through whether channel it may be --- is
+impure by design. Due to this, the Haskell language authors faced a difficult
+challenge; how to add impure functions to an otherwise completely pure
+language.
+
+In a pure language, functions only depend on their arguments, have
+no side effects and return a value computed from these arguments. Because
+of this, the execution order of functions is not relevant, a function
+can be executed whenever its return value is needed.
+Due to this, the compiler can optimise the code, calling the functions
+in a specific (or in no specific) order or omitting calls if their return
+values are unused.
+
+However, impure IO functions introduce some difficulties.
+
+For example, one would expect that it is possible to write a trivial `writeFile'
+function that takes a filename and a string with the contents for that file with
+the function definition roughly being:
+
+\begin{haskellcode}
+writeFile :: String -> String
+\end{haskellcode}
+Supposed that this function could be called with
+\mintinline{haskell}|writeFile "hello.txt" "Hello World"|. The function
+does not return anything, or its return value, for example the number
+of bytes that have been written to the file, is discarded on the call site.
+
+As there is no dependency on that function anymore, the compiler assumes that
+this function does not need to be executed at all --- it still expects all
+functions to be pure (even if this is not the case in this example).
+Being able to follow the purity guarantees, the compiler emits the call
+to the writeFile function and the file never gets written.
+
+Similarly, for getting user input:
+\begin{haskellcode}
+getChar :: Char
+\end{haskellcode}
+If this function is called multiple times, the compiler may reorder the
+execution of these calls, again, because it expects the functions to be
+pure, so the execution order should not matter:
+\begin{haskellcode}
+get2Chars = [getChar, getChar]
+\end{haskellcode}
+However, in this example, execution order is extremely important.
+
+To solve this problem, Haskell introduced the IO monad, in which
+all functions are wrapped with a `RealWorld' argument. So the
+\mintinline{haskell}|getChar| example would be written as\footnote{
+	This is not the actual function header for getChar, only an illustration.
+	The actual function header of getChar is \mintinline{haskell}|getChar :: IO Char|.
+}:
+
+\begin{haskellcode}
+getChar :: RealWorld -> (Char, RealWorld)
+\end{haskellcode}
+This can be read as `take the current RealWorld, do something with it,
+and return a Char and a (possibly changed) RealWorld'\autocite{haskell-io}.
+
+With this solution, the compiler cannot reorder or omit IO actions, ensuring
+the correct execution of the program.
+
+The IO monad is a sophisticated solution to work around the purity guarantees and
+enables Haskellers to use impure functions in an otherwise completely pure language.
+Put another way: the IO monad exists because of compiler optimisations, which in turn are
+based on the assumption that everything is pure.
+
+In Go, the compiler does not and can not make this assumption. There also
+is no `pure' keyword to mark a function as such. For that reason, the
+compiler cannot optimise as aggressively, and the whole IO problem does
+not exist. However, in the context of this thesis, interacting with the outside world ---
+using IO-functions --- means that functional purity cannot be guaranteed anymore.
+Haskell's solution to this issue is relatively complex, and while it may be applicable
+to Go, it would require massively rewriting Go's standard library. Furthermore,
+the IO monad does not make impure functions magically pure. Rather, it
+clearly marks functions as impure.
+
+Another issue, apart from the amount of work that would be needed, is that
+the goal is to provide an easy introduction to functional programming.
+IO, as one may see in these examples, is one of the hardest topics.
+
+For those reasons, although it may violate the functional purity requirements,
+the underlying issue with IO will be ignored. This means that the programmer
+will still be able to use IO functions as in regular Go programs.
+
+\subsection{Assignments in Go}
+
+As described in Section~\ref{sec:mutability}, the only check that needs
+to be done is that there are no reassignments in the code. There are a few
+exceptions to this rule, which will be covered later. First, it is important to have
+a few examples and test cases to be clear on what should be reported.
+
+To declare variables in Go, the \mintinline{go}|var| keyword is used.
+The var keyword needs to be followed by one or more identifiers and maybe
+types or the initial value. These are all valid declarations:
+
+\begin{listing}
+	\begin{gocode}
+var i int
+var U, V, W float64
+var k = 1
+var x, y float32 = -1, -2
+	\end{gocode}
+	\caption{Go Variable Declarations}
+\end{listing}
+What can be seen in this example is that the type of the variable can be
+deducted automatically\footnote{The compiler will infer the type at compile
+time. That operation is always successful, although it may not be what
+the programmer desires. For example, \mintinline{go}|var x = 5| will
+always result in \mintinline{go}|x| to be of type \mintinline{go}|int|.},
+or be specified explicitly.
+
+However, the notation \mintinline{go}|var k = 1| is seldomly seen. This
+is due to the fact that there is a second way to declare and initialise
+variables to a specific value, the `short variable declaration' syntax:
+
+\begin{gocode}
+k := 1
+\end{gocode}
+\begin{quote}
+It is shorthand for a regular variable declaration with initializer expressions but no types:
+
+\begin{bnfcode}
+"var" IdentifierList = ExpressionList .
+\end{bnfcode}
+\autocite{short-hand-decl}
+\end{quote}
+
+In practice, the short variable declaration is used more often due to the
+fact that there is no need to specify the type of the variable manually and
+is shorter than its counterpart \mintinline{go}|var x = y|.
+
+Go also has increment, decrement and various other operators to reassign
+variables. Most of the operators that take a `left' and `right' expression
+also have a short-hand notation to reassign the value back to the variable,
+for example\footnote{This is a non-exhaustive list of operators. A complete listing
+of operators can be found in the Go language spec\autocite{spec-operators}.}:
+
+
+\begin{listing}
+\begin{gocode}
+var x = 5
+x += 5 // equal to x = x + 5
+x %= 3 // equal to x = x % 3
+x <<= 2 // equal to x = x << 2 (bit-shift)
+\end{gocode}
+	\caption{Go Assignment Operators}
+\end{listing}
+All these operators are reassigning values and should be reported.
+
+However, as mentioned in the beginning of this chapter, there are a few exceptions
+to this rule:
+
+\subsubsection{Function Assignments}\label{sec:func-reassign}
+
+A variable declaration brings an identifier into scope. The Go Language Specification
+defines this scope according to the following rule:
+\begin{quote}
+    The scope of a constant or variable identifier declared inside a function begins
+    at the end of the ConstSpec or VarSpec (ShortVarDecl for short variable
+    declarations) and ends at the end of the innermost containing block.
+\autocite{spec-scope}\end{quote}
+
+This definition holds an important caveat for function definitions:
+\begin{quote}
+    The scope [...] begins \textbf{at the end} of the ConstSpec or VarSpec [...].
+\end{quote}
+
+This means that when defining a function, the functions identifier is not
+in scope within that function:
+
+\begin{listing}
+\begin{gocode}
+func X() {
+	f := func() {
+		f() // <- 'f' is not in scope yet.
+	}
+}
+\end{gocode}
+	\caption{Go scoping issue with recursive functions}
+\end{listing}
+In the above example, the function \mintinline{go}|f| cannot be called recursively. This is due
+to the fact that the identifier \mintinline{go}|f| is not in scope at \mintinline{go}|f|'s definition.
+Instead, it only enters scope after the closing brace of function \mintinline{go}|f|.
+
+This cannot be changed within the compiler without touching a lot of the scoping
+rules and changing these scoping rules may have unintended side effects. To exemplify,
+a naive solution to the issue would be to bring the identifier into scope right after the
+assignment operator (\mintinline{go}|=|). However, this would introduce further
+edge cases, as for example \mintinline{go}|x := x|, and extra measures would have
+to be taken to make such constructs illegal again.
+
+However, there is a simple, although verbose solution to this problem: The function
+has to be declared in advance:
+
+\begin{listing}
+	\begin{gocode}
+func X() {
+	var f func() // f enters scope after this line
+	f = func() {
+		f() // this is allowed, as f is in scope
+	}
+}
+\end{gocode}
+	\caption{Fixing the scope issue on recursive functions}
+\end{listing}
+This exception will need to be allowed by the assignment checker, as recursive functions
+are one of the building blocks in functional programming.
+
+\subsubsection{Multiple Assignments}\label{sec:multi-assign}
+
+\newglossaryentry{ebnf}{name=EBNF, description={Extended Backus-Naur Form, an extended version of the `Backus-Naur
+Form, a notation technique to describe programming language syntax}}
+
+As discussed at the beginning of this Chapter, the short variable declaration brings
+a variable into scope and assigns it to a given expression (value). It is also
+possible to declare multiple variables at once, as can be seen in the \gls{ebnf}
+notation:
+\begin{listing}
+	\begin{bnfcode}
+ShortVarDecl = IdentifierList ":=" ExpressionList .
+	\end{bnfcode}
+\end{listing}
+This clearly shows that both left- and right-hand side take a list, meaning one or more
+elements, making a statement like \mintinline{go}|x, y := 1, 2| valid\footnote{This also
+	holds true for the \mintinline{go}|var| keyword}.
+
+However, there is an important note to be found in the language specification:
+
+\begin{quote}
+Unlike regular variable declarations, a short variable declaration may redeclare
+variables provided they were originally declared earlier in the same block (or
+the parameter lists if the block is the function body) with the same type, and
+at least one of the non-blank\footnote{The blank identifier (\mintinline{go}|_|)
+    discards a value; \mintinline{go}|x, _ := f()|} variables is new. As a consequence, redeclaration
+can only appear in a multi-variable short declaration. Redeclaration does not
+introduce a new variable; it \textbf{just assigns a new value to the original}\autocite{short-hand-decl}.
+    \begin{gocode}
+field1, offset := nextField(str, 0)
+field2, offset := nextField(str, offset)  // redeclares offset
+    \end{gocode}
+\end{quote}
+
+This should not be allowed, as the programmer can introduce mutation by redeclaring
+already existing variables in a short variable declaration.
+
+\subsubsection{For Loops}
+
+Although the aforementioned rules cover almost every case of reassignment, they miss
+one of the most important parts: For loops.
+
+In Go, there is only one looping construct, the \mintinline{go}|for| loop. However, it can
+be used in roughly four different ways:
+
+The infinite loop:
+\begin{gocode}
+for {
+	// ...
+}
+\end{gocode}
+The while loop:
+\begin{gocode}
+for x == true { // boolean expression
+	// ...
+}
+\end{gocode}
+The regular C-style for loop:
+\begin{gocode}
+for x := 0; x < 10; x++ {
+	// ...
+}
+\end{gocode}
+And the range loop, which allows to range (iterate) over slices, maps and channels\footnote{Channels
+have not been discussed in this thesis, but are an important building block in Go's concurrency
+features. They work similarly to Unix Pipes (`|'), in that they allow to send data in and receive
+it on the other `side'. A \mintinline{go}|range| receives as long as the channel is not closed.}:
+\begin{gocode}
+for idx, elem := range []int{1,8,5,4} {
+	// ...
+}
+\end{gocode}
+Range returns two values, both of which can be omitted\footnote{The values can be omitted
+    by using the blank identifier `\_'. Skipping the index is thus
+    \mintinline{go}|_, elem := range s|, while skipping the value with
+\mintinline{go}|i, _ := range s| which is equal to just \mintinline{go}|i := range s|.}. When
+ranging over a slice, the index and a copy of the element at that index is returned. For
+maps, the key and a copy of the corresponding value is returned.
+
+Except of the C-style for loop, the loops do not have a reassignment statement when
+converted to the AST. For this reason, they would not be detected by the previously defined rule and thus
+the programmer could use them.
+However, issues emerge when having a closer look at the loop constructs.
+
+The \mintinline{go}|range| loop needs to keep track of the element, and it does so (internally)
+by using a pointer. This results in a (internal) reassignment.
+
+The regular C-style for loop and the `while' loop do not work at all without reassignments.
+Although in the while-loop the reassignment happens at another place, most probably within the loop,
+it is easier for the user if a report on the loop construct is generated instead.
+
+The infinite loop does not contain any reassignments and is thereby be legal by the
+definition of the reassignment rule. Because of this, it should not be reported.
+
+All other for-loops need to be reported as they contain internal reassignments.

@@ -1,0 +1,362 @@
+% \iffalse meta-comment
+% !TEX program  = pdfLaTeX
+%<*internal>
+\iffalse
+%</internal>
+%<*readme>
+----------------------------------------------------------------
+zhawthesis --- A LaTeX class for writing a thesis at ZHAW.
+E-mail: camerden@students.zhaw.ch
+Released under the LaTeX Project Public License v1.3c or later
+See http://www.latex-project.org/lppl.txt
+----------------------------------------------------------------
+
+The zhawthesis class provides a framework to build your thesis
+around.
+
+Please note: zhawthesis is not officially endorsed by the
+ZHAW Zurich University of Applied Sciences!
+%</readme>
+%<*internal>
+\fi
+\def\nameofplainTeX{plain}
+\ifx\fmtname\nameofplainTeX\else
+  \expandafter\begingroup
+\fi
+%</internal>
+%<*install>
+\input docstrip.tex
+\keepsilent
+\askforoverwritefalse
+\preamble
+----------------------------------------------------------------
+zhawthesis --- A LaTeX class for writing a thesis at ZHAW.
+E-mail: camerden@students.zhaw.ch
+Released under the LaTeX Project Public License v1.3c or later
+See http://www.latex-project.org/lppl.txt
+----------------------------------------------------------------
+
+\endpreamble
+\postamble
+
+Copyright (C) 2019 by Dennis Camera <camerden@students.zhaw.ch>
+
+This work may be distributed and/or modified under the
+conditions of the LaTeX Project Public License (LPPL), either
+version 1.3c of this license or (at your option) any later
+version.  The latest version of this license is in the file:
+
+http://www.latex-project.org/lppl.txt
+
+This work is "maintained" (as per LPPL maintenance status).
+
+This work consists of the file  zhawthesis.dtx
+and the derived files           zhawthesis.ins,
+                                zhawthesis.pdf and
+                                zhawthesis.cls.
+
+\endpostamble
+\usedir{tex/latex/zhawthesis}
+\generate{
+  \file{\jobname.cls}{\from{\jobname.dtx}{class}}
+}
+%</install>
+%<install>\endbatchfile
+%<*internal>
+\usedir{source/latex/zhawthesis}
+\generate{
+  \file{\jobname.ins}{\from{\jobname.dtx}{install}}
+}
+\nopreamble\nopostamble
+\usedir{doc/latex/zhawthesis}
+% XXX: Do not generate README.txt since we already have a README.md in this repository
+% \generate{
+%   \file{README.txt}{\from{\jobname.dtx}{readme}}
+% }
+\ifx\fmtname\nameofplainTeX
+  \expandafter\endbatchfile
+\else
+  \expandafter\endgroup
+\fi
+%</internal>
+%<*class>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{zhawthesis}[2019/02/28 v1.0 Initial version]
+%</class>
+%<*driver>
+\documentclass{ltxdoc}
+\usepackage[T1]{fontenc}
+\usepackage[numbered]{hypdoc}
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+\OnlyDescription
+\usepackage{microtype}
+\begin{document}
+  \DocInput{\jobname.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+%\GetFileInfo{\jobname.cls}
+%
+%\title{^^A
+%  \textsf{zhawthesis} --- ZHAW thesis\thanks{^^A
+%    This file describes version \fileversion, last revised \filedate.^^A
+%  }^^A
+%}
+%\author{^^A
+%  Dennis Camera\thanks{E-mail: camerden@students.zhaw.ch}^^A
+%}
+%\date{Released \filedate}
+%
+%\maketitle
+%
+%\changes{v1.0}{2019/02/28}{First public release}
+%
+%\StopEventually{^^A
+%  \clearpage
+%  \PrintChanges
+%  \PrintIndex
+%}
+%
+%\section*{The Code}
+%    \begin{macrocode}
+%<*class>
+%    \end{macrocode}
+%% ========================================================================== %%
+%%                                 Thesis class                               %%
+%% ========================================================================== %%
+
+
+\def\zhaw@babellangde{nswissgerman}
+\def\zhaw@babellangen{english}
+
+\newcommand{\zhaw@lang}{de}
+\newcommand{\zhaw@babellang}{\zhaw@langde}
+\newif\if@german\@germantrue
+
+\newcommand{\zhaw@thesistype}{}
+\newcommand{\zhaw@thesistypelong}{}
+
+\DeclareOption{ba}{
+  \renewcommand{\zhaw@thesistype}{BA}
+  \renewcommand{\zhaw@thesistypelong}{%
+    \if@german{Bachelorarbeit}\else{Bachelor thesis}\fi%
+  }
+}
+\DeclareOption{pa}{
+  \renewcommand{\zhaw@thesistype}{PA}
+  \renewcommand{\zhaw@thesistypelong}{%
+    \if@german{Projektarbeit}\else{Project work}\fi%
+  }
+}
+
+
+\DeclareOption{german}{
+  \@germantrue
+  \renewcommand{\zhaw@lang}{de}
+  \renewcommand{\zhaw@babellang}{\zhaw@babellangde}
+  \PassOptionsToClass{\zhaw@babellang}{scrbook}
+}
+\DeclareOption{english}{
+  \@germanfalse
+  \renewcommand{\zhaw@lang}{en}
+  \renewcommand{\zhaw@babellang}{\zhaw@babellangen}
+  \PassOptionsToClass{\zhaw@babellang}{scrbook}
+}
+
+
+% Passes and class options to the underlying article class
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{scrbook}}
+\ProcessOptions
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+
+\LoadClass[listof=totoc,bibliography=totoc]{scrbook}
+
+\RequirePackage{microtype}
+\RequirePackage{graphicx}
+
+\if@german
+  \RequirePackage[\zhaw@babellangen,main=\zhaw@babellangde]{babel}
+\else
+  \RequirePackage[\zhaw@babellangde,main=\zhaw@babellangen]{babel}
+\fi
+\babeltags{de=\zhaw@babellangde,en=\zhaw@babellangen}
+\RequirePackage{iflang}
+
+\RequirePackage[autostyle=try,strict=true,german=swiss,english=british]{csquotes}
+
+\RequirePackage[output-decimal-marker={.},group-separator={'}]{siunitx}
+\sisetup{detect-all}
+
+
+% hyperref
+\RequirePackage[pdfpagelabels]{hyperref}
+\hypersetup{%
+  unicode,
+  pdfauthor={\@author},
+  pdftitle={\@title},
+  pdfsubject={\zhaw@thesistypelong},
+  pdfkeywords={Thesis;LaTeX},  % TODO: Complete
+  pdfcreator={pdfLaTeX},
+  pdfduplex={DuplexFlipLongEdge},
+  pdflang={\zhaw@lang},
+  bookmarksopen,
+  bookmarksnumbered
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Configure header and footers
+
+\RequirePackage[automark]{scrlayer-scrpage}
+\automark[chapter]{chapter}
+\clearpairofpagestyles
+\lehead{\@title}
+\rohead{\@author}
+\ofoot[\pagemark]{\pagemark}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ZHAW functions
+
+\newcommand{\zhaw@institute}{}
+\providecommand{\zhawinstitute}[1]{\renewcommand{\zhaw@institute}{#1}}
+
+\newcommand{\zhaw@logocolour}{pantone2945}
+\providecommand{\zhawlogocolour}[1]{\renewcommand{\zhaw@logocolour}{#1}}
+
+\newcommand{\zhaw@major}{}
+\providecommand{\major}[1]{\renewcommand{\zhaw@major}{#1}}
+
+\newcommand{\zhaw@semester}{}
+\providecommand{\zhawsemester}[1]{\renewcommand{\zhaw@semester}{#1}}
+
+\newcommand{\zhaw@mainsupervisor}{}
+\providecommand{\mainsupervisor}[1]{\renewcommand{\zhaw@mainsupervisor}{#1}}
+
+\newcommand{\zhaw@subsupervisor}{}
+\providecommand{\subsupervisor}[1]{\renewcommand{\zhaw@subsupervisor}{#1}}
+
+\newcommand\zhaw@industrypartner{}
+\providecommand{\industrypartner}[1]{\renewcommand{\zhaw@industrypartner}{#1}}
+
+\newcommand{\zhaw@extsupervisor}{}
+\providecommand{\externalsupervisor}[1]{\renewcommand{\zhaw@extsupervisor}{#1}}
+
+
+\newcommand{\zhaw@titlepagerow}[2]{%
+  \begin{minipage}[t]{0.3\textwidth}
+    \hrule\vskip 5mm
+    \textbf{#1}
+  \end{minipage}
+  % \hskip 0.03\textwidth
+  \hfil
+  \begin{minipage}[t]{0.67\textwidth}
+    \hrule\vskip 5mm
+    #2 \\
+  \end{minipage}%
+}
+
+\newcommand{\zhaw@maketitlepage}{
+  \thispagestyle{empty}
+  \clearpage
+  \begin{titlepage}
+    \sffamily
+    % Logo
+    \begin{picture}(0,0)
+      \put(-30,-50){
+        \includegraphics[width=84.2mm]{logos/zhaw/\zhaw@lang-zhaw-\zhaw@institute-\zhaw@logocolour}
+      }
+    \end{picture}
+
+    \vskip 10mm
+    \hskip 26mm
+    \begin{minipage}[b]{0.91\textwidth}
+      \vskip 20mm
+      {\huge
+        % Projekt Name (max. 2 Zeilen)
+        \textbf{\underline{{\zhaw@thesistypelong} in {\zhaw@major}}} \\
+        \textbf{\underline{{\zhaw@semester}}} \\
+
+        % Projekt Titel (max. 4 Zeilen)
+        {
+          \huge{\@title} \\[1.25ex]
+          \large{\@subtitle}
+        }
+        \vspace{9mm}
+      }
+
+      \zhaw@titlepagerow{\IfLanguageName{nswissgerman}{Autoren}{Author}}{%
+        \@author \\
+      }
+
+      \if\zhaw@mainsupervisor\empty\else
+      \zhaw@titlepagerow{\IfLanguageName{nswissgerman}{Hauptbetreuung}{Main supervisor}}{%
+        \zhaw@mainsupervisor \\
+      }
+      \fi
+
+      \if\zhaw@subsupervisor\empty\else
+      \zhaw@titlepagerow{\IfLanguageName{nswissgerman}{Nebenbetreuung}{Sub supervisor}}{%
+        \zhaw@subsupervisor \\
+      }
+      \fi
+
+      \if\zhaw@industrypartner\empty\else
+      \zhaw@titlepagerow{\IfLanguageName{nswissgerman}{Industriepartner}{Industrial partner}}{%
+        \zhaw@industrypartner \\
+      }
+      \fi
+
+      \if\zhaw@extsupervisor\empty\else
+      \zhaw@titlepagerow{\IfLanguageName{nswissgerman}{Externe Betreuung}{External supervisor}}{%
+        \zhaw@extsupervisor \\
+      }
+      \fi
+
+      \zhaw@titlepagerow{\IfLanguageName{nswissgerman}{Datum}{Date}}{%
+        \@date \\
+      }
+    \end{minipage}
+    \vskip 5mm
+  \end{titlepage}
+}
+\renewcommand{\maketitle}{\zhaw@maketitlepage}
+
+\RequirePackage{pdfpages}
+\providecommand{\makedeclarationoforiginality}{%
+  \cleardoublepage%
+  \if@german%
+    \includepdf{includes/Erklaerung_Selbstaendigkeit_SoE_\zhaw@thesistype_de.pdf}
+  \else%
+    \includepdf{includes/Declaration_of_Originality_SoE_\zhaw@thesistype_en.pdf}
+  \fi%
+}
+
+
+\AtBeginDocument{%
+  \pagestyle{scrheadings}
+
+  % Set 1st level itemize bullet symbol to --
+  \def\labelitemi{--}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Functions
+
+% Define math operators
+\providecommand\norm[1]{\left\lVert#1\right\rVert}
+
+% \signed{...} function for quote blocks
+\def\signed #1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip2em
+  \hbox{}\nobreak\hfil(#1)%
+  \parfillskip=0pt \finalhyphendemerits=0 \endgraf}}
+
+%    \begin{macrocode}
+%</class>
+%    \end{macrocode}
+%\Finale

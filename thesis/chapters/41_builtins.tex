@@ -1,0 +1,120 @@
+\subsection{Required Steps}
+
+Adding a built-in function to the Go language requires a few more steps than just
+adding support within the compiler. While it would technically be enough to
+support the translation between Go code and the compiled binary, there would be
+no visibility for a developer that there is a function which could be used.
+For a complete implementation, the following steps are necessary:
+\begin{itemize}
+	\item Adding the Godoc\autocite{godoc} that describes the function and it's usage
+	\item Adding type-checking support in external packages for tools like
+		Gopls\footnote{Gopls is Go's official language server implementation\autocite{gopls}.}
+	\item Adding the implementation within the internal\footnote{
+			`internal' packages can only be imported by other packages that
+			are rooted at the parent of the `internal' directory. It is used to
+			make specific packages not importable  in order to decrease potential API surface\autocite{internal-packages}.
+		}
+		package of the compiler
+		\begin{itemize}
+			\item Adding the \gls{ast} node type
+			\item Adding type-checking for that node type
+			\item Adding the AST traversal (`walk') for that node type, translating it
+				to AST nodes that the compiler already knows and can translate
+				to built-in runtime-calls or \gls{ssa}
+		\end{itemize}
+\end{itemize}
+
+The Go source code that is relevant for this thesis can be classified into three different
+types. One is the Godoc --- the documentation for the new built-in functions. The
+other two are the `public' and the `private' implementation of these built-ins.
+
+The `private' implementation is located within the
+\textit{src/cmd/compile/internal} package\autocite{internal-packages}. Because it
+is an internal package, it can only
+be used by the packages in \textit{src/cmd/compile}, which contain the
+implementation of the compiler itself.
+
+When calling
+\begin{bashcode}
+$> go build .
+\end{bashcode}
+the compiler is invoked indirectly
+through the main `go' binary. To directly invoke the compiler,
+\begin{bashcode}
+$> go tool compile
+\end{bashcode}
+can be used.
+
+Everything that is not in \textit{src/cmd/compile} is referred to as the `public'
+part of the compiler in this thesis. The `public' parts are used by external
+tools, for example Gopls, for type-checking, source code validation and
+analysis.
+
+\subsection{Adding the Godoc}
+In Go, documentation is generated directly from comments within the source code
+\autocite{godoc}. This also applies to built-in functions in the compiler, which
+have a function stub to document their behaviour\autocite{godoc-builtin}, but
+no implementation, as that is done in the compiler\autocite{builtin-impl}.
+
+The documentation for built-ins should be as short and precise as possible.
+The usage of `Type' and `Type1' has been decided based on other built-ins
+like `append' and 'delete'.
+The function headers are derived from their Haskell counterparts, adjusted
+to the Go nomenclature.
+
+\begin{code}
+	\gofilerange{../work/go/src/builtin/builtin.go}{begin-newbuiltins}{end-newbuiltins}%
+	\caption{Godoc for the new built-in functions\autocite{new-builtins-godoc}}
+\end{code}
+\subsection{Public packages}
+
+To enable tooling support for the new built-in functions, they have to be
+registered in the `go/*' packages. The only package that is affected by new
+built-ins is `go/types'.
+
+\begin{quote}
+Note that the `go/*` family of packages, such as `go/parser` and `go/types`,
+have no relation to the compiler. Since the compiler was initially written in C,
+the `go/*` packages were developed to enable writing tools working with Go code,
+such as `gofmt` and `vet`.\autocite{compiler-readme}
+\end{quote}
+
+In the `types' package, the built-ins have to be registered as such and as
+`predeclared' functions:
+
+\begin{code}
+	\gofilerange{../work/go/src/go/types/universe.go}{start-builtin}{end-builtin}%
+	\gofilerange{../work/go/src/go/types/universe.go}{start-predeclared}{end-predeclared}%
+	\caption{Registering new built-in functions\autocite{new-builtins-universe}}
+\end{code}
+This registration defines the type of the built-in --- they are all expressions,
+as they return a value --- and the number of arguments.
+After that, the type-checking and its associated tests have been implemented, but
+are not shown here. The implementation can be located in the `src/go/types' package
+in the files `builtins.go', `builtins\_test.go' and `universe.go' See the git
+diff\autocite{ba-go1-14-thesis-diff} to view the changes that have been made.
+
+This concludes the type-checking for external tools.
+`gopls' can be compiled against these changed public packages\footnote{
+See Appendix~\ref{appendix:build-gopls} for instructions on how to build Gopls.
+} and will then return errors if the wrong types are used. For example, when trying
+to prepend an integer to a string slice:
+
+\begin{gocode}
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println(prepend(3, []string{"hello", "world"}))
+}
+\end{gocode}
+
+Gopls will report a type-checking error:
+\begin{bashcode}
+$ gopls check main.go
+/tmp/playground/main.go:6:22-23: cannot convert 3 (untyped int constant) to string
+\end{bashcode}
+
+\subsection{Private packages}
+\input{chapters/42_functions.tex}

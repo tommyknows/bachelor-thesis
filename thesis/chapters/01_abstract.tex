@@ -1,0 +1,42 @@
+% -*- mode: latex; coding: utf-8; TeX-master: ../thesis -*-
+% !TEX TS-program = pdflatexmk
+% !TEX encoding = UTF-8 Unicode
+% !TEX root = ../thesis.tex
+
+In the last decade, concepts from functional programming have grown in
+importance within the wider, non-functional programming community.
+Often it is recommended to learn a purely functional programming language
+such as Haskell to become familiar with these concepts.
+However, many programmers struggle with the double duty
+of learning a new paradigm and a new syntax at the same time.
+This paper proposes that by learning functional programming with a
+multi-paradigm programming language and a familiar syntax it is possible
+to lower this effort.
+
+To achieve this goal, the programming language Go has been chosen due to
+its syntactical simplicity and familiarity.
+However, a downside of Go is the lack of a built-in list type, as lists take a
+central role in functional programming. Although this is remediated by Go's slices,
+they are not accompanied by any higher-order list processing functions --- `map', `filter', and `fold' to name a
+few --- that are present in every functional programming language (and many
+other languages too).
+Due to the absence of polymorphism, in order to provide these higher-order functions in
+a user-friendly way it is necessary to build these functions into the compiler.
+
+Furthermore, this paper adopts a definition of pure functional programming and
+introduces `funcheck', a static code analysis tool that is designed to
+report constructs that are non-functional.
+
+In conclusion, I demonstrate that with the help of the newly built-in
+functions `fmap', `filter', `foldr', `foldl' and
+`prepend', as well as `funcheck' to lint code, Go proves itself to be a
+suitable language for getting started with functional programming.
+The primary factor for this is reflected in the Go idiom `clear is better than clever'.
+While functional Go code is more verbose when compared to functional languages, it
+is also more obvious about its inner workings.
+At the same time, it also illustrates why there is no way around learning a
+language such as Haskell if fluency with functional programming concepts
+is desired. The main reasons are that, although it may be unusual at first, Haskell's
+syntax is extremely concise, and that the language's design --- the type system,
+pattern matching, the purity guarantees and more --- provides a very effective toolset
+for purely functional programming.

@@ -1,0 +1,85 @@
+% -*- mode: latex; coding: utf-8; TeX-master: ../thesis -*-
+% !TEX TS-program = pdflatexmk
+% !TEX encoding = UTF-8 Unicode
+% !TEX root = ../thesis.tex
+
+The aforementioned extensions to the Go language and its tooling should be a help to learn
+functional programming. I believe that through these extensions it is easier to write
+purely functional code in Go, enabling a developer to learn functional programming with
+a familiar syntax in an obvious way. Here, Go's simplicity and verbosity are a key differentiator
+to other languages. Instead of having as many features as possible to support every usecase,
+Go has been designed with simplicity in mind\footnote{For example, Go only has 25 keywords, compared
+to 37 in C99 and 84 in C++11}.
+
+In many cases, this leads to more `verbose' code --- more lines of code compared to a similar
+implementation in other languages. However, I argue that, especially for the first steps
+in functional programming,
+
+\begin{quote}
+Clear is better than clever\autocite{cheney-clear}
+\end{quote}
+
+Staying in touch with this core Go principle, this results in functional code that may be
+verbose, but easy to read and understand.
+
+It should be clear that the result is not a `production-ready' functional programming language.
+It is a language to help getting started with functional programming; either by re-implemeting pieces
+of code that have not been clear in how they work, or by taking an imperative block of code
+and refactoring it to make it purely functional.
+
+In many cases, the resulting code will still look familiar to the imperative counterpart,
+even if `funcheck' assures that it is purely functional. This, I believe, bridges the gap
+that developers usually have to overcome by themselves.
+
+To be a purely functional programming language, Go is missing too many features that would be
+required to write concise functional code. The very basic type system\footnote{Not only
+	does Go not have polymorphism (yet), Go's type system is simple by design: there are no
+	implicit type conversions, no sum types (tagged unions, variant) and almost no type inference.
+}, no advanced pattern matching and only explicit currying are all examples why Go is not useful
+in day-to-day functional programming.
+
+At the same time, the obvious nature of Go is exactly because it is missing all
+of these features. The Go team explicitly tries not to include too many features within
+the language in order to keep the complexity of code to a minimum\autocite{go-feature}.
+The simplicity of the language is a key feature of Go and an important reason why it was
+chosen to implement the ideas in the first place.
+Especially for learning new concepts, hiding implementations and ideas behind features
+may not be what is desired and helpful.
+
+On another note, what has not been an aspect in this thesis is
+performance. Go by itself is relatively performant, however functional constructs, for example
+recursive function calls, come with a performance cost. While in purely functional languages
+this can be optimised, Go cannot or does not want to do these optimisations\footnote{For example,
+with tail call optimisation, the Go team explicitly decided not to do it because the stack trace
+would be lost\autocite{go-tco-nope}}.
+
+While the newly built-in functions do not have any low-hanging fruits in regards to optimisation,
+they would benefit from more aggressive inlining\autocite{go-compiler-inline}, for example.
+Benchmarking and optimising these functions was out of scope for this thesis, but may be tackled
+in the future.
+
+\newglossaryentry{sumtypes}{name=sum types,description={Sum types, often also called aggregated types,
+variant or tagged union is a data structure that can hold one of several, predefined data types. For
+example, Haskell's \mintinline{haskell}|Either| holds either a value of type A or type B. Similar to that,
+\mintinline{haskell}|Maybe| can hold either a concrete value, or `Nothing'}}
+
+The number one issue that still exists is the simple type system. Not only the lack of polymorphism, which
+has been mitigated slightly by providing the most used higher-order functions as built-ins, but also the
+lack of algebraic data types, especially \gls{sumtypes}.
+
+Algebraic data types can be split up into two groups, product types and sum types.
+Most product types can be built with Go too; records are basically
+equal to structs, and tuples are not needed too often, as functions can just return multiple values.
+Sum types however are not available in Go at all. It is possible to imitate sum types in Go
+with interfaces (see the example code in Appendix~\ref{appendix:sum-types}), and ensure an
+exhaustive match by a linter. This linter should have been implemented as part of this thesis.
+However, after careful consideration, it has been decided that this will not be done
+due to the simple reason that such a linter already exists\autocite{sushi-sumtypes}.
+That linter could be merged with `funcheck', which is left as an exercise to the reader.
+
+Further, a linter does not eliminate the fact that sum types are not properly integrated
+into the language.
+This may be an interesting area for further
+research and implementation possibilities\footnote{There is a mention about sum types in the current
+Go Generics Proposal\autocite{go-generics-proposal}, but the initial implementation of generics will
+most likely not contain sum types}.

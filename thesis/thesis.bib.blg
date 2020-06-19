@@ -1,0 +1,8 @@
+[0] Config.pm:304> INFO - This is Biber 2.14 running in TOOL mode
+[0] Config.pm:307> INFO - Logfile is 'thesis.bib.blg'
+[88] biber-darwin:322> INFO - === Fri Apr 10, 2020, 13:34:33
+[102] Utils.pm:75> INFO - Globbing data source 'thesis.bib'
+[102] Utils.pm:91> INFO - Globbed data source 'thesis.bib' to thesis.bib
+[113] Biber.pm:4451> INFO - Looking for bibtex format file 'thesis.bib'
+[114] bibtex.pm:1653> INFO - LaTeX decoding ...
+[152] bibtex.pm:1471> INFO - Found BibTeX data source 'thesis.bib'

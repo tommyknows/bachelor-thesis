@@ -1,0 +1,28 @@
+[submodule "work/common-list-functions/shellcheck"]
+	path = work/common-list-functions/shellcheck
+	url = https://github.com/koalaman/shellcheck.git
+[submodule "work/common-list-functions/pandoc"]
+	path = work/common-list-functions/pandoc
+	url = https://github.com/jgm/pandoc.git
+[submodule "work/common-list-functions/postgrest"]
+	path = work/common-list-functions/postgrest
+	url = https://github.com/PostgREST/postgrest.git
+[submodule "work/common-list-functions/semantic"]
+	path = work/common-list-functions/semantic
+	url = https://github.com/github/semantic.git
+[submodule "work/common-list-functions/purescript"]
+	path = work/common-list-functions/purescript
+	url = https://github.com/purescript/purescript.git
+[submodule "work/common-list-functions/compiler"]
+	path = work/common-list-functions/compiler
+	url = https://github.com/elm/compiler.git
+[submodule "work/common-list-functions/Haxl"]
+	path = work/common-list-functions/Haxl
+	url = https://github.com/facebook/Haxl.git
+[submodule "work/go"]
+	path = work/go
+	url = https://github.com/tommyknows/go.git
+	branch = bachelor-thesis
+[submodule "work/funcheck"]
+	path = work/funcheck
+	url = https://github.com/tommyknows/funcheck.git
