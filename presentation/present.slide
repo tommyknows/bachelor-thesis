@@ -1,0 +1,140 @@
+# Functional Go
+...an easier introduction to functional programming
+29 Jun 2020
+Summary: Presentation of my bachelor thesis functional Go
+
+
+
+Ramon Rüttimann
+me@ramonr.ch
+
+## (Learning) Functional Programming is hard
+
+[What I Wish I Knew When Learning Haskell](http://dev.stephendiehl.com/hask/tutorial.pdf) - 475 pages
+
+FUP@ZHAW teaches the very basics of functional programming with Haskell
+- Changed the way I think about problems
+- I understand the (very) basics
+- Could not write production-ready code
+- Learning syntax + paradigm
+
+.code quicksort.hs
+
+## Making it easier
+
+Learn functional programming without learning a new syntax
+
+Choose a language that:
+
+- has a familiar syntax (with familiar keywords)
+- is statically typed
+- supports functions as first class citizens ("multi-paradigm")
+- is as simple as possible
+
+plus: add tooling to ensure a purely functional style
+
+## The chosen one: Go
+
+- C-like syntax
+- statically typed
+- multi-paradigm
+- simple
+
+> Clear is better than clever
+
+Go Proverbs - Rob Pike
+
+.image gopher.png _ 240
+
+## Issues with Go
+
+- No list type
+  - but slices
+  - no difference in usage, but in runtime
+- No list processing functions (higher-order functions)
+- No polymorphism
+  - apart from (compiler) built-in functions
+  - every call translated at compile time (AST rewriting)
+  - `append`, `make`, `len`, `new`, `copy`, ...
+
+.code code/map.go
+
+## Adding new built-in functions to the compiler
+
+fmap, foldr, foldl, prepend, filter
+
+- documentation (Godoc)
+- type checking
+  - for external tools
+  - within the compiler
+- AST walking / rewriting
+  - instead of directly writing code, write the code as AST nodes
+
+## Example Builtin: fmap
+
+.code code/walk/walk.go /START OMIT/,/END OMIT/
+
+## Tooling: funcheck
+
+Goal: add tooling to ensure a purely functional style
+
+-> Write a code analysis tool that reports non-functional constructs
+
+Definition of "purely functional":
+> [...] Purely functional programming may also be defined by forbidding changing state and mutable data.
+> Purely functional programming consists in ensuring that functions [...] will only depend on their arguments, regardless of any global or local state.
+
+Purely functional programming - Wikipedia
+
+## One rule to rule them all
+
+Do not allow reassigments
+
+- Disallow the `=` operator
+- Only allow using `:=` (short variable declarations)
+
+
+.play -numbers code/reassignments/main.go /START OMIT/,/END OMIT/
+
+## ...with exceptions
+
+> [...], a short variable declaration may redeclare variables [...]
+> with the same type [...]. As a consequence, redeclaration can only appear in a multi-variable short
+> declaration. Redeclaration does not introduce a new variable; it just assigns
+> a new value to the original
+
+Go Language Specification
+
+.play -numbers code/reassignments/issues/main.go /START OMIT/,/END OMIT/
+
+## Finding declarations
+
+.play -numbers code/declprint/main.go /START OMIT/,/END OMIT/
+
+## Putting it together
+
+- Finds all (re)assignments through position, not the operator that is being used
+- Recursive function literals need an exception
+- For- and range-loops need to be reported explicitly
+- Increment & Decrement operators need to be reported explicitly
+
+.code code/funcliteral/main.go /START OMIT/,/END OMIT/
+
+## Functional Go
+
+.play -edit code/quicksort/main.go /START OMIT/,/END OMIT/ HLcustom
+
+## Conclusion
+
+- Clear is better than clever
+  - Verbosity is (in this case) a good thing
+- Effort is lowered by the new built-in functions
+- Does not / can not replace actual purely functional languages
+  - Limitations of the type system
+  - Performance considerations
+- Open Source
+
+.image me.png _ 215
+
+: Type System: Polymorphism, sum types
+: Performance: TCO (tail call optimisations)
